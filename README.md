@@ -16,7 +16,10 @@ type Obj = {
   age : number;
 }
 
-const useBoard = playTartakower<Obj>({ name: "Caro-Kann", age: 28});
+const useBoard = playTartakower<Obj>({ name: "Caro-Kann", age: 28 });
 ```
 ## use a store
-useBoard is a custom hook that return `[board, setBoard]` tuple just like useState in React.js.
+useBoard is a custom hook that return `[board, setBoard]` tuple just like useState in React.js. board contains state, and you can update state use setBoard function.
+```ts
+const [board, setBoard] = useBoard<Obj>();
+```
