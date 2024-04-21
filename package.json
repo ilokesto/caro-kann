@@ -1,8 +1,8 @@
 {
-  "name": "ayden",
-  "version": "1.0.0",
+  "name": "caro-kann",
+  "version": "1.0.1",
   "description": "extra-micro state management",
-  "main": "index.js",
+  "main": "Caro–Kann.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
