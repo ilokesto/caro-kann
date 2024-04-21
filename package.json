@@ -1,6 +1,6 @@
 {
   "name": "caro-kann",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "extra-micro state management",
   "main": "index.ts",
   "scripts": {
