@@ -1,0 +1,22 @@
+{
+  "name": "ayden",
+  "version": "1.0.0",
+  "description": "extra-micro state management",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "react",
+    "state",
+    "manager",
+    "management",
+    "store"
+  ],
+  "author": "Jeong Jinho <wpfekdml@me.com>",
+  "license": "MIT",
+  "peerDependencies": {
+    "@types/react": "^18.2.79",
+    "react": "^18.2.0"
+  }
+}
