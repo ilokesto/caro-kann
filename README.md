@@ -12,7 +12,7 @@ If you looking for a very simple form of state-management solution, Caro-kann co
 
 ## import
 
-`import playTartakower from "caro-kann";`
+`import { playTartakower } from "caro-kann";`
 
 ## create a store
 

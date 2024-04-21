@@ -6,7 +6,7 @@ type Board<T> = {
   subscribe: (callback: () => void) => () => void;
 };
 
-const playTartakower = <T>(initialState: T) => {
+export const playTartakower = <T>(initialState: T) => {
   const createBoard = (initialState: T): Board<T> => {
     let board = initialState;
     const callbacks = new Set<() => void>();
@@ -42,5 +42,3 @@ const playTartakower = <T>(initialState: T) => {
 
   return useBoard;
 };
-
-export default playTartakower;
