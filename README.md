@@ -3,6 +3,8 @@ Caro-Kann is a TypeScript Library for managing 'global state' in React.js and Ne
 
 If you looking for a very simple form of state-management solution, Caro-kann could be an option for you. Caro-Kann is simple to use, but has all the features we needs. You only need to know two hooks: playTartakower and useBoard.
 
+
+
 # How to use
 ## install
 `npm i caro-kann`
@@ -27,4 +29,10 @@ useBoard is a custom hook that return `[board, setBoard]` tuple just like useSta
 const [board, setBoard] = useBoard<Obj>();
 ```
 
-## store 
+## store with selector
+Sometimes you don't need all the values ​​of a state, but only some property values. In this case, you can provide a selector function as the first argument to the useBoard function.
+for example, If a component you create dosen't need to know value of name property, you can use useBoard and selector function just like a code below.
+```ts
+const [board, setBoard] = useBoard<number>((state) => state.age);
+```
+If values other than the age property value change, this will prevent the component from re-rendering. 
