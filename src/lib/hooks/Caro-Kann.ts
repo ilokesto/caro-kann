@@ -1,12 +1,12 @@
 import { createContext, useContext, useSyncExternalStore } from "react";
 
-type Board<T> = {
+interface Board<T> {
   getBoard: () => T;
   setBoard: (action: T | ((prev: T) => T)) => void;
   subscribe: (callback: () => void) => () => void;
-};
+}
 
-export const playTartakower = <T,>(initialState: T) => {
+export const playTartakower = <T>(initialState: T) => {
   const createBoard = (initialState: T): Board<T> => {
     let board = initialState;
     const callbacks = new Set<() => void>();
@@ -30,7 +30,7 @@ export const playTartakower = <T,>(initialState: T) => {
 
   const Board = createContext<Board<T>>(createBoard(initialState));
 
-  const useBoard = <S,>(selector?: (state: T) => S) => {
+  const useBoard = <S>(selector?: (state: T) => S) => {
     const { getBoard, setBoard, subscribe } = useContext(Board);
 
     const notationSnapshot = () => (selector ? selector(getBoard()) : getBoard());
