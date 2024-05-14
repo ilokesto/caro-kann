@@ -6,6 +6,8 @@ interface Board<T> {
   subscribe: (callback: () => void) => () => void;
 }
 
+type setBoard<T> = Pick<Board<T>, "setBoard">["setBoard"];
+
 export const playTartakower = <T>(initialState: T) => {
   const createBoard = (initialState: T): Board<T> => {
     let board = initialState;
@@ -30,15 +32,18 @@ export const playTartakower = <T>(initialState: T) => {
 
   const Board = createContext<Board<T>>(createBoard(initialState));
 
-  const useBoard = <S>(selector?: (state: T) => S) => {
+  function useBoard(): [T, setBoard<T>];
+  function useBoard<S>(selector: (state: T) => S): [S, setBoard<T>];
+
+  function useBoard<S>(selector?: (state: T) => S) {
     const { getBoard, setBoard, subscribe } = useContext(Board);
 
     const notationSnapshot = () => (selector ? selector(getBoard()) : getBoard());
 
     const board = useSyncExternalStore(subscribe, notationSnapshot, notationSnapshot);
 
-    return [board as S, setBoard] as const;
-  };
+    return [board, setBoard] as const;
+  }
 
   return useBoard;
 };
