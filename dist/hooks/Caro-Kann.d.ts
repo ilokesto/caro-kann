@@ -1,1 +1,5 @@
-export declare const playTartakower: <T>(initialState: T) => <S>(selector?: (state: T) => S) => readonly [S, (action: T | ((prev: T) => T)) => void];
+import { setBoard } from "./Types";
+export declare const playTartakower: <T>(initialState: T) => {
+    (): [T, setBoard<T>];
+    <S>(selector: (state: T) => S): [S, setBoard<T>];
+};
