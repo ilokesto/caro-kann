@@ -1,3 +1,6 @@
+[Caro-Kann Korean Docs / 한국어 공식 문서](https://lackluster.tistory.com/99)
+
+
 # Caro-Kann
 
 Caro-Kann is a TypeScript Library for managing 'global state' in React.js and Next.js.
