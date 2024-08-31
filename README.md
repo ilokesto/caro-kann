@@ -168,8 +168,9 @@ export default function Comp() {
 # BoardContext
 
 
-필요하다면 BoardContext 컴포넌트를 사용하여 특정 컴포넌트에서는 useBoard가 전역 상태와는 다른 값을 구독하도록 만들 수 있습니다. BoardContext 컴포넌트는 value prop을 받는데, 여기에는 playTartakower에 제공한 초기값과 호환되는 타입의 값만 넣을 수 있습니다.
-아래의 예시에서 Comp 컴포넌트는 useBoard를 사용하고 있습니다. 하지만 두 개의 Comp 컴포넌트는 BoardContext의 유무에 따라 서로 다른 값을 구독하게 됩니다.
+If needed, you can use the BoardContext component to make useBoard subscribe to a different value than the global state within a specific component. The BoardContext component accepts a value prop, which must be of a type compatible with the initial value provided to playTartakower.
+
+In the example below, the Comp component uses useBoard. However, the two Comp components will subscribe to different values depending on whether BoardContext is present or not.
 
 ```tsx
 import { playTartakower } from "caro-kann";
