@@ -3,49 +3,162 @@
 
 # Caro-Kann
 
-Caro-Kann is a TypeScript Library for managing 'global state' in React.js and Next.js.
+caro-kann is a global state management tool that operates using the useSyncExternalStore hook. It supports TypeScript and can be used with Next.js and React.js.
 
-If you looking for a very simple form of state-management solution, Caro-kann could be an option for you. Caro-Kann is simple to use, but has all the features we needs. You only need to know two hooks: playTartakower and useBoard.
+If you need global state but don't require complex state management, caro-kann could be the right solution for you. It offers all the necessary features while maintaining simple syntax that can be learned in just 5 minutes.
 
-# How to use
+&nbsp;
 
-## install
-
-`npm i caro-kann`
-
-## import
-
-`import { playTartakower } from "caro-kann";`
-
-## create a store
-
-playTartakower is a custom hook that creates a store that contains global states.
-
+# install and import
 ```ts
-type Human = {
-  name: string;
-  age: number;
-  canStand: boolean;
-};
-
-const useBoard = playTartakower<Human>({ name: "Caro-Kann", age: 28, canStand: true });
+npm i caro-kann
+```
+```ts
+import { playTartakower } from "Sicilian";
 ```
 
-## use a store
 
-useBoard is a custom hook that return `[board, setBoard]` tuple just like useState in React.js. board contains state, and you can update state use setBoard function.
+&nbsp;
+# create a store with playTartakower
 
-```ts
-const [board, setBoard] = useBoard<Human>();
-```
+To create a store that can store external state, you need to execute the playTartakower function. This function takes an initial value, stores it in an internal store, and returns an object consisting of useBoard and BoardContext.
 
-## store with selector
-
-Sometimes you don't need all the values ​​of a state, but only some property values. In this case, you can provide a selector function as the first argument to the useBoard function.
-for example, If a component you create doesn't need to know value of name property, you can use useBoard and selector function just like a code below.
+One crucial point to remember is that the evaluation of the playTartakower function must occur outside of a component. This is because Caro-Kann operates based on global state.
 
 ```ts
-const [board, setBoard] = useBoard<number>((state) => state.age);
+// @/hooks/useBoard/Human.ts
+const { useBoard, BoardContext} = playTartakower({ name: "Caro-Kann", age: 28, canStand: true });
+
+export { useBoard, BoardContext }
 ```
 
-If values other than the age property value change, this will prevent the component from re-rendering.
+# useBoard
+
+useBoard is a custom hook that return `[board, setBoard]` tuple just like useState in React.js.
+
+```tsx
+export default function Comp() {
+  const [board, setBoard] = useBoard();
+
+  const handleClick = (n: number) => () => {
+    return setBoard((prev) => prev + n)
+  }
+
+  return (
+    <div>
+      <p>{board.name}</p>
+      <p>{board.age}</p>
+
+      <button type="button" onClick={handleClick(1)}>
+        get old!
+      </button>
+    </div>
+  );
+}
+```
+
+## useBoard with selecterFn
+
+If a component references a global state in the form of an object, the component will re-render even if a property that the component does not use changes. To prevent this, **useBoard allows you to retrieve only specific property values from the global state object through a selector function**. In the example code below, the component does not re-render when the canStand value in the global state changes.
+
+```tsx
+export default function Comp() {
+  const [humanName] = useBoard((prev) => prev.name);
+  const [humanAge] = useBoard((prev) => prev.age);
+
+  return (
+    <div>
+      <p>{humanName}</p>
+      <p>{humanAge}</p>
+    </div>
+  );
+}
+```
+
+### Caution When Using Selector Functions
+
+The selector function must return an existing property from the global state. What happens if, instead of selecting the name and age properties separately, you return a new object that combines these values, as in the example above? In this case, although type inference will work correctly, you will immediately run into an infinite loop that will crash the call stack. This issue is related to the snapshotCache problem in useSyncExternalStore.
+
+```tsx
+export default function Comp() {
+  // call-stack explosion!!
+  const [human] = useBoard((prev) => ({ name: prev.name, age: prev.age}));
+
+  return (
+    <div>
+      <p>{human.name}</p>
+      <p>{human.age}</p>
+    </div>
+  );
+}
+```
+It's not impossible to work around this issue and use a new object, but doing so makes maintenance more difficult and increases the likelihood of human error during collaboration. Therefore, I won't present any of the workarounds I've discovered here. It's recommended that you avoid returning a new object through the selector function and instead **write your code to return an existing property from the global state**.
+
+The selector function determines which value to set in the 'board' located at the 0th index of the tuple. This means that the presence of a selector function does not affect the behavior of the setBoard function in any way.
+
+```tsx
+export default function Comp() {
+  const [humanName, setBoard] = useBoard((prev) => prev.name);
+  const [humanAge] = useBoard((prev) => prev.age);
+
+  return (
+    <div>
+      <p>{humanName}</p>
+      <p>{humanAge}</p>
+    </div>
+  );
+}
+```
+
+## useBoard with calcFn
+
+Earlier, I mentioned that "the selector function determines the board value." By leveraging this characteristic of the selector function, it can be used similarly to derived atoms in Jotai. This characteristic of the selector function can be referred to as a calculation function, and the state derived through the calculation function is called a derived state. Like derived atoms, **derived states are automatically recalculated whenever the existing state changes**.
+
+```tsx
+export default function Comp() {
+  const [age, setAge] = useBoard();
+  const [isOld] = useBoard((prev) => (prev > 30 ? true : false));
+
+  const handleClick = (n: number) => () => {
+    return setAge((prev) => prev + n)
+  }
+
+  return (
+    <>
+      <p>{`님 나이 ${isOld ? "벌써" : "아직"} ${age}이에요? ${isOld ? "너무 늙으신 듯" : "아직 응애네"}`}</p>
+
+      <button type="button" onClick={handleClick(1)}>
+        get old!
+      </button>
+    </>
+  );
+}
+```
+
+<img width="1374" alt="스크린샷 2024-08-25 오후 7 58 02" src="https://img1.daumcdn.net/thumb/R1600x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FMvyus%2FbtsHptAkZ7O%2FMyog9aEw7uzmWlXGqFzj1K%2Fimg.webp">
+
+Derived state is confined within the scope of a single component. If you want to use the same derived state across multiple components, separating it into a custom hook can be a viable solution.
+
+
+```tsx
+// @/hooks/useBoard/age.ts
+export const useAgeBoard = playTartakower(25);
+
+// @/hooks/useBoard/calcFn/isOld.ts
+export const useIsOld = () => {
+  const isOldCalcFn = (prev) => prev > 30 ? true : false
+  
+  const [isOld] = useAgeBoard(isOldCalcFn);
+  
+  return isOld
+}
+
+// @/page/comp.tsx
+export default function Comp() {
+  const isOld = useIsOld();
+
+  return {...}
+}
+```
+
+# BoardContext
