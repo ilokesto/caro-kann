@@ -1,6 +1,8 @@
 [Caro-Kann Korean Docs / 한국어 공식 문서](https://lackluster.tistory.com/99)
 
 
+&nbsp;
+
 # Caro-Kann
 
 caro-kann is a global state management tool that operates using the useSyncExternalStore hook. It supports TypeScript and can be used with Next.js and React.js.
@@ -161,4 +163,43 @@ export default function Comp() {
 }
 ```
 
+&nbsp;
+
 # BoardContext
+
+
+필요하다면 BoardContext 컴포넌트를 사용하여 특정 컴포넌트에서는 useBoard가 전역 상태와는 다른 값을 구독하도록 만들 수 있습니다. BoardContext 컴포넌트는 value prop을 받는데, 여기에는 playTartakower에 제공한 초기값과 호환되는 타입의 값만 넣을 수 있습니다.
+아래의 예시에서 Comp 컴포넌트는 useBoard를 사용하고 있습니다. 하지만 두 개의 Comp 컴포넌트는 BoardContext의 유무에 따라 서로 다른 값을 구독하게 됩니다.
+
+```tsx
+import { playTartakower } from "caro-kann";
+
+const { useBoard, BoardContext } = playTartakower(3);
+
+export default function Home() {
+  return (
+    <>
+      <BoardContext value={5}>
+        <Comp />
+      </BoardContext>
+      
+      <Comp />
+    </>
+  );
+}
+
+const Comp = () => {
+  const [state, setState] = useBoard();
+
+  return (
+    <>
+      <p>{state}</p>
+      <button onClick={() => setState((prev) => ++prev)}>+ 1</button>
+    </>
+  );
+};
+```
+
+![화면 기록 2024-08-31 오후 3 20 02](https://img1.daumcdn.net/thumb/R1600x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FJ74Ep%2FbtsJlW1PXON%2FeXTlVyFBvrPds1RITYOQW0%2Fimg.webp)
+
+
