@@ -3,13 +3,13 @@ import { Board, setBoard } from "./Types";
 import createBoard from "./funcs/createBoard";
 
 export const playTartakower = <T,>(initialState: T) => {
-  const BoardContext = createContext<Board<T>>(createBoard(initialState));
+  const Board = createContext<Board<T>>(createBoard(initialState));
 
   function useBoard(): [T, setBoard<T>];
   function useBoard<S>(selector: (state: T) => S): [S, setBoard<T>];
 
   function useBoard<S>(selector?: (state: T) => S) {
-    const { getBoard, setBoard, subscribe } = useContext(BoardContext);
+    const { getBoard, setBoard, subscribe } = useContext(Board);
 
     const notationSnapshot = () => (selector ? selector(getBoard()) : getBoard());
 
@@ -18,11 +18,11 @@ export const playTartakower = <T,>(initialState: T) => {
     return [board, setBoard] as const;
   }
 
-  const BoardProvider = ({ value, children }: { value: T; children: ReactNode }) => {
-    return <BoardContext.Provider value={createBoard(value)}>{children}</BoardContext.Provider>;
+  const BoardContext = ({ value, children }: { value: T; children: ReactNode }) => {
+    return <Board.Provider value={createBoard(value)}>{children}</Board.Provider>;
   };
 
-  return { useBoard, BoardProvider };
+  return { useBoard, BoardContext };
 };
 
 playTartakower(1);

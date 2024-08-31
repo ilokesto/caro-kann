@@ -5,7 +5,7 @@ export declare const playTartakower: <T>(initialState: T) => {
         (): [T, setBoard<T>];
         <S>(selector: (state: T) => S): [S, setBoard<T>];
     };
-    BoardProvider: ({ value, children }: {
+    BoardContext: ({ value, children }: {
         value: T;
         children: ReactNode;
     }) => import("react/jsx-runtime").JSX.Element;
