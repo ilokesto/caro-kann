@@ -1,14 +1,14 @@
 import { CreateBoard } from "../Types";
 
-const createBoard: CreateBoard = (initialState) => {
-  let board = initialState;
+const createBoard: CreateBoard = (initState) => {
+  let board = initState;
   const callbacks = new Set<() => void>();
   const getBoard = () => board;
 
-  type InivtialState = typeof initialState;
+  type InitState = typeof initState;
 
-  const setBoard = (nextState: InivtialState | ((prev: InivtialState) => InivtialState)) => {
-    board = typeof nextState === "function" ? (nextState as (prev: InivtialState) => InivtialState)(board) : nextState;
+  const setBoard = (nextState: InitState | ((prev: InitState) => InitState)) => {
+    board = typeof nextState === "function" ? (nextState as (prev: InitState) => InitState)(board) : nextState;
     callbacks.forEach((callback) => callback());
   };
 

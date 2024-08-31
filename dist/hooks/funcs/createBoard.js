@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const createBoard = (initialState) => {
-    let board = initialState;
+const createBoard = (initState) => {
+    let board = initState;
     const callbacks = new Set();
     const getBoard = () => board;
     const setBoard = (nextState) => {
