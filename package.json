@@ -1,6 +1,6 @@
 {
   "name": "caro-kann",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
@@ -30,6 +30,7 @@
     "@vitejs/plugin-react": "^4.2.1",
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.34.1",
+    "rollup-plugin-terser": "^7.0.2",
     "typescript": "^5.4.5",
     "vite": "^5.2.10"
   }

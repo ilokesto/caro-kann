@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import type { UserConfig } from "vite";
+import { terser } from "rollup-plugin-terser"; // Terser 플러그인 추가
 
 export default defineConfig(({ command }): UserConfig => {
   if (command === "build") {
@@ -14,7 +15,7 @@ export default defineConfig(({ command }): UserConfig => {
           formats: ["cjs"],
           fileName: "index",
         },
-        minify: false,
+        minify: true,
         rollupOptions: {
           external: ["react", "react-dom"],
           output: {
@@ -23,6 +24,10 @@ export default defineConfig(({ command }): UserConfig => {
               "react-dom": "ReactDOM",
             },
           },
+          plugins: [terser({
+            format: {
+              comments: false, // 주석 제거
+            }})] // Terser 플러그인 추가
         },
       },
     };

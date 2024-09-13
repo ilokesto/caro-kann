@@ -1,5 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const createBoard = (initState) => {
     let board = initState;
     const callbacks = new Set();
@@ -16,4 +14,4 @@ const createBoard = (initState) => {
     };
     return { getBoard, setBoard, subscribe };
 };
-exports.default = createBoard;
+export default createBoard;

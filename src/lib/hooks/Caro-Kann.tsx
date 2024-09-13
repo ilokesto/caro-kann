@@ -24,5 +24,3 @@ export const playTartakower = <T,>(initialState: T) => {
 
   return { useBoard, BoardContext };
 };
-
-playTartakower(1);
