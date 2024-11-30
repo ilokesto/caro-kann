@@ -1,7 +1,7 @@
 import { createContext, ReactNode } from "react";
 import { Board, UseBoard } from "./types/Types";
-import createBoard from "./funcs/createBoard";
 import { useStore } from "./funcs/useStore";
+import { createBoard } from "./funcs/createBoard";
 
 export const playTartakower = <T,>(initialState: T) => {
   const Board = createContext<Board<T>>(createBoard(initialState));

@@ -1,6 +1,6 @@
 import { CreateBoard } from "../types/Types";
 
-const createBoard: CreateBoard = (initState) => {
+export const createBoard: CreateBoard = (initState) => {
   type InitState = typeof initState;
 
   let board = initState;
@@ -24,4 +24,3 @@ const createBoard: CreateBoard = (initState) => {
   return { getBoard, setBoard, subscribe };
 };
 
-export default createBoard;
