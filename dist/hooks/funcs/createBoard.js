@@ -1,4 +1,4 @@
-const createBoard = (initState) => {
+export const createBoard = (initState) => {
     let board = initState;
     const callbacks = new Set();
     const getBoard = () => board;
@@ -14,4 +14,3 @@ const createBoard = (initState) => {
     };
     return { getBoard, setBoard, subscribe };
 };
-export default createBoard;

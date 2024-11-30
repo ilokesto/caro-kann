@@ -1,3 +1,2 @@
-import { CreateBoard } from "../Types";
-declare const createBoard: CreateBoard;
-export default createBoard;
+import { CreateBoard } from "../types/Types";
+export declare const createBoard: CreateBoard;
