@@ -1,4 +1,4 @@
-import { CreateBoard } from "../Types";
+import { CreateBoard } from "../types/Types";
 
 const createBoard: CreateBoard = (initState) => {
   type InitState = typeof initState;
