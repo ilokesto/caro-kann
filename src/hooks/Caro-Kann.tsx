@@ -7,7 +7,7 @@ export const playTartakower = <T,>(initialState: T) => {
   const Board = createContext<Board<T>>(createBoard(initialState));
 
   const useBoard: UseBoard<T> = <S,>(selector?: (state: T) => S) => {
-    return selector ? useStore(Board, selector) : useStore(Board);
+    return selector ? useStore(initialState, Board, selector) : useStore(initialState, Board);
   };
 
   const BoardContext = ({ value, children }: { value: T; children: ReactNode }) => {
