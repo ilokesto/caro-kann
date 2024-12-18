@@ -165,96 +165,48 @@ function Comp() {
 }
 ```
 
+&nbsp;
 
-## useBoard with calcFn
+# useDerivedBoard
 
-Earlier, I mentioned that "the selector function determines the board value." By leveraging this characteristic of the selector function, it can be used similarly to derived atoms in Jotai. This characteristic of the selector function can be referred to as a calculation function, and the state derived through the calculation function is called a derived state. Like derived atoms, **derived states are automatically recalculated whenever the existing state changes**.
-
+Just like useBoard accepts a selector function, **useDerivedBoard accepts a derivation function**. However, unlike selector functions, there are no specific restrictions on derivation functions.
+Using a derivation function, you can create **derived states** based on existing states, similar to derived atoms in Jotai. This is useful for enhancing the reusability and composability of states, and helps simplify complex state management logic. Like derived atoms, **derived states are recalculated whenever the referenced state changes**.
 ```tsx
-export default function Comp() {
-  const [age, setAge] = useBoard();
-  const [isOld] = useBoard((prev) => (prev > 30 ? true : false));
-
-  const handleClick = (n: number) => () => {
-    return setAge((prev) => prev + n)
-  }
-
+function CompB() {
+  const [a, setA] = useBoard(store => store.a)
+ 
   return (
-    <>
-      <p>{`님 나이 ${isOld ? "벌써" : "아직"} ${age}이에요? ${isOld ? "너무 늙으신 듯" : "아직 응애네"}`}</p>
-
-      <button type="button" onClick={handleClick(1)}>
-        get old!
-      </button>
-    </>
+    <button onClick={() => setA(prev => prev + 1)}>
+      Now a is { a }. Next, a will be { a + 1 } 
+    </button>
+  )
+}
+ 
+function CompC() {
+  const hasVotingRights = useDerivedBoard(store => store.a >= 18);
+ 
+  return (
+    <div>
+      {
+        hasVotingRights
+          ? "You have voting rights."
+          : "You do not have voting rights.";
+      }
+    </div>;
   );
-}
+};
 ```
-
-<img width="1374" alt="스크린샷 2024-08-25 오후 7 58 02" src="https://img1.daumcdn.net/thumb/R1600x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FMvyus%2FbtsHptAkZ7O%2FMyog9aEw7uzmWlXGqFzj1K%2Fimg.webp">
-
-Derived state is confined within the scope of a single component. If you want to use the same derived state across multiple components, separating it into a custom hook can be a viable solution.
-
-
-```tsx
-// @/hooks/useBoard/age.ts
-export const useAgeBoard = playTartakower(25);
-
-// @/hooks/useBoard/calcFn/isOld.ts
-export const useIsOld = () => {
-  const isOldCalcFn = (prev) => prev > 30 ? true : false
-  
-  const [isOld] = useAgeBoard(isOldCalcFn);
-  
-  return isOld
-}
-
-// @/page/comp.tsx
-export default function Comp() {
-  const isOld = useIsOld();
-
-  return {...}
-}
-```
+<img width="1374" alt="스크린샷 2024-08-25 오후 7 58 02" src="https://img1.daumcdn.net/thumb/R1600x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FEeQEP%2FbtsLpa2XhCx%2FbmxMgUChLBdaDIkFU4lqyK%2Fimg.webp">
 
 &nbsp;
 
 # BoardContext
 
 
-If needed, you can use the BoardContext component to make useBoard subscribe to a different value than the global state within a specific component. The BoardContext component accepts a value prop, which must be of a type compatible with the initial value provided to playTartakower.
+If needed, you can use the BoardContext component to make a specific node in the DOM tree subscribe to a store different from the global state. The BoardContext component accepts a value prop, which can only contain values that are compatible with the type of the initial value provided to playTartakower.
 
-In the example below, the Comp component uses useBoard. However, the two Comp components will subscribe to different values depending on whether BoardContext is present or not.
+Now, let's return to the initial example. Both CompA and CompB are using the value of a from the object state. However, depending on the presence of BoardContext, CompA subscribes to the value of a from the global state, while CompB subscribes to the value of a provided by BoardContext. If you look at the image below, you can see that each component is handled independently.
 
-```tsx
-import { playTartakower } from "caro-kann";
-
-const { useBoard, BoardContext } = playTartakower(3);
-
-export default function Home() {
-  return (
-    <>
-      <BoardContext value={5}>
-        <Comp />
-      </BoardContext>
-      
-      <Comp />
-    </>
-  );
-}
-
-const Comp = () => {
-  const [state, setState] = useBoard();
-
-  return (
-    <>
-      <p>{state}</p>
-      <button onClick={() => setState((prev) => ++prev)}>+ 1</button>
-    </>
-  );
-};
-```
-
-![화면 기록 2024-08-31 오후 3 20 02](https://img1.daumcdn.net/thumb/R1600x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FJ74Ep%2FbtsJlW1PXON%2FeXTlVyFBvrPds1RITYOQW0%2Fimg.webp)
+<img width="1374" alt="스크린샷 2024-08-25 오후 7 58 02" src="https://img1.daumcdn.net/thumb/R1600x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FoCs3K%2FbtsLmsrboSC%2FKnsN9OfiigvlIeNK4mcHd1%2Fimg.webp">
 
 
