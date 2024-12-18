@@ -1,13 +1,65 @@
-[Caro-Kann Korean Docs / 한국어 공식 문서](https://lackluster.tistory.com/99)
+[Caro-Kann Korean Docs / 한국어 공식 문서](https://lackluster.tistory.com/151)
 
 
 &nbsp;
 
 # Caro-Kann
 
-caro-kann is a global state management tool that operates using the useSyncExternalStore hook. It supports TypeScript and can be used with Next.js and React.js.
-
-If you need global state but don't require complex state management, caro-kann could be the right solution for you. It offers all the necessary features while maintaining simple syntax that can be learned in just 5 minutes.
+Caro-Kann is a global state management tool internally built with the useSyncExternalStore hook. It supports TypeScript and is compatible with both Next.js and React.js. With a syntax similar to useState, Caro-Kann is intuitive for developers familiar with React.js.
+Like other state management tools, it requires no additional boilerplate to get started and is ready to use out of the box. Below is an example code snippet demonstrating how to use Caro-Kann:
+```tsx
+const {
+  useBoard,
+  useDerivedBoard,
+  BoardContext,
+} = playTartakower({ a: 0, b: 0, c: 0 });
+ 
+export default function Page() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+      <CompA />
+      <BoardContext value={{ a: 15, b: 0, c: 0 }}>
+        <CompB />
+        <CompC />
+      </BoardContext>
+    </div>
+  )
+}
+ 
+function CompA() {
+  const [board, setBoard] = useBoard();
+  
+  return (
+    <button onClick={() => setBoard(prev => ({...prev, a: prev.a + 1}))}>
+      Now a is { board.a }. Next, a will be { board.a + 1 } 
+    </button>
+  )
+}
+ 
+function CompB() {
+  const [a, setA] = useBoard(store => store.a)
+ 
+  return (
+    <button onClick={() => setA(prev => prev + 1)}>
+      Now a is { a }. Next, a will be { a + 1 } 
+    </button>
+  )
+}
+ 
+function CompC() {
+  const hasVotingRights = useDerivedBoard(store => store.a >= 18);
+ 
+  return (
+    <div>
+      {
+        hasVotingRights
+          ? "You have voting rights."
+          : "You do not have voting rights.";
+      }
+    </div>;
+  );
+};
+```
 
 &nbsp;
 
