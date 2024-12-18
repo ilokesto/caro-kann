@@ -1,3 +1,1 @@
-import { playTartakower } from "./hooks/Caro-Kann";
-
-export { playTartakower };
+export { playTartakower } from "./hooks/Caro-Kann";

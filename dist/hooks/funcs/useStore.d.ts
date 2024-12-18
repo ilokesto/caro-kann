@@ -1,2 +1,2 @@
-import { UseStore } from "../types/Types";
+import { UseStore } from "../types";
 export declare const useStore: UseStore;

@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
-import { UseBoard } from "./types/Types";
-export declare const playTartakower: <T>(initialState: T) => {
+import { UseBoard } from "./types";
+export declare function playTartakower<T>(initialState: T): {
     useBoard: UseBoard<T>;
     BoardContext: ({ value, children }: {
         value: T;

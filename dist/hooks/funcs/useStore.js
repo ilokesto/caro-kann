@@ -5,23 +5,23 @@ export const useStore = (initialState, Board, selector) => {
     const serverSnapshot = () => selector ? selector(initialState) : initialState;
     const board = useSyncExternalStore(subscribe, snapshot, serverSnapshot);
     if (selector) {
-        const target = selector?.toString().split(".").at(1) ?? selector?.toString().split(/[\[\]\"]+/).at(1);
-        const setTargetBoard = (value) => {
-            if (typeof value === "function") {
-                setBoard((prev) => {
-                    return {
-                        ...prev,
-                        [target]: value(prev[target]),
-                    };
-                });
+        const path = selector.toString().split(".").slice(1);
+        const updateNestedValue = (obj, path, value) => {
+            if (path.length === 1) {
+                obj[path[0]] = value;
             }
             else {
-                setBoard((prev) => {
-                    return {
-                        ...prev,
-                        [target]: value,
-                    };
-                });
+                if (!obj[path[0]])
+                    obj[path[0]] = {};
+                updateNestedValue(obj[path[0]], path.slice(1), value);
+            }
+        };
+        const setTargetBoard = (value) => {
+            if (typeof value === "function") {
+                setBoard((prev) => { updateNestedValue(prev, path, value(selector(prev))); return prev; });
+            }
+            else {
+                setBoard((prev) => { updateNestedValue(prev, path, value); return prev; });
             }
         };
         return [board, setTargetBoard];

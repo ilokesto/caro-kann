@@ -1,2 +1,2 @@
-import { CreateBoard } from "../types/Types";
+import { CreateBoard } from "../types";
 export declare const createBoard: CreateBoard;

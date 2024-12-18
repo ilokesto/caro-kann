@@ -1,5 +1,5 @@
 import { Context, useContext, useSyncExternalStore } from "react";
-import { Board, UseStore } from "../types/Types";
+import { Board, UseStore } from "../types";
 
 export const useStore: UseStore = <T, S>(initialState: T, Board: Context<Board<T>>, selector?: (state: T) => S) => {
   const { getBoard, setBoard, subscribe } = useContext(Board);
@@ -10,24 +10,22 @@ export const useStore: UseStore = <T, S>(initialState: T, Board: Context<Board<T
   const board = useSyncExternalStore(subscribe, snapshot, serverSnapshot);
 
   if (selector) {
-    type TargetProps = keyof ReturnType<typeof getBoard>;
-    type TargetValue = ReturnType<typeof getBoard>[typeof target];
+    const path = selector.toString().split(".").slice(1);
 
-    const target =
-      selector.toString().split(".").at(1) as TargetProps
-      ?? selector.toString().split(/[\[\]\"]+/).at(1) as TargetProps;
-
-    const setTargetBoard = (value: TargetValue | ((prev: TargetValue) => TargetValue)) => {
-      if (typeof value === "function") {
-        setBoard((prev) => ({
-            ...prev,
-            [target]: (value as (prev: TargetValue) => TargetValue)(prev[target]),
-        }));
+    const updateNestedValue = (obj: any, path: string[], value: any) => {
+      if (path.length === 1) {
+        obj[path[0]] = value;
       } else {
-        setBoard((prev) => ({
-            ...prev,
-            [target]: value,
-        }));
+        if (!obj[path[0]]) obj[path[0]] = {};
+        updateNestedValue(obj[path[0]], path.slice(1), value);
+      }
+    };
+
+    const setTargetBoard = (value: S | ((prev: S) => S)) => {
+      if (typeof value === "function") {
+        setBoard((prev) => {updateNestedValue(prev, path, (value as (prev: S) => S)(selector(prev))); return prev;});
+      } else {
+        setBoard((prev) => {updateNestedValue(prev, path, value); return prev;});
       }
     };
 
