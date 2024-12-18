@@ -15,23 +15,19 @@ export const useStore: UseStore = <T, S>(initialState: T, Board: Context<Board<T
 
     const target =
       selector.toString().split(".").at(1) as TargetProps
-      ?? selector?.toString().split(/[\[\]\"]+/).at(1) as TargetProps;
+      ?? selector.toString().split(/[\[\]\"]+/).at(1) as TargetProps;
 
     const setTargetBoard = (value: TargetValue | ((prev: TargetValue) => TargetValue)) => {
       if (typeof value === "function") {
-        setBoard((prev) => {
-          return {
+        setBoard((prev) => ({
             ...prev,
             [target]: (value as (prev: TargetValue) => TargetValue)(prev[target]),
-          };
-        });
+        }));
       } else {
-        setBoard((prev) => {
-          return {
+        setBoard((prev) => ({
             ...prev,
             [target]: value,
-          };
-        });
+        }));
       }
     };
 
