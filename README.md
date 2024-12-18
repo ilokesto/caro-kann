@@ -6,6 +6,7 @@
 # Caro-Kann
 
 Caro-Kann is a global state management tool internally built with the useSyncExternalStore hook. It supports TypeScript and is compatible with both Next.js and React.js. With a syntax similar to useState, Caro-Kann is intuitive for developers familiar with React.js.
+
 Like other state management tools, it requires no additional boilerplate to get started and is ready to use out of the box. Below is an example code snippet demonstrating how to use Caro-Kann:
 ```tsx
 const {
