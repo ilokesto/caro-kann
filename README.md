@@ -17,7 +17,7 @@ const {
  
 export default function Page() {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+    <div>
       <CompA />
       <BoardContext value={{ a: 15, b: 0, c: 0 }}>
         <CompB />
