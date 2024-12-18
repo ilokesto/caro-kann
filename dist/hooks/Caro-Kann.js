@@ -5,12 +5,16 @@ import { createBoard } from "./funcs/createBoard";
 export function playTartakower(initialState) {
     const Board = createContext(createBoard(initialState));
     const useBoard = (selector) => {
-        // if (selector && /[?&\[\]:|]/.test(selector.toString())) throw new Error("Invalid selector function");
+        if (selector && /[?&\[\]:|]/.test(selector.toString()))
+            throw new Error("Invalid selector function");
         return selector ? useStore(initialState, Board, selector) : useStore(initialState, Board);
+    };
+    const useDerivedBoard = (selector) => {
+        return useStore(initialState, Board, selector)[0];
     };
     const BoardContext = ({ value, children }) => {
         return _jsx(Board.Provider, { value: createBoard(value), children: children });
     };
-    return { useBoard, BoardContext };
+    return { useBoard, useDerivedBoard, BoardContext };
 }
 ;
