@@ -64,106 +64,107 @@ function CompC() {
 
 &nbsp;
 
+
+# what's new in caro-kann@2.1.0
+* In previous versions of Caro-Kann, using a selector function allowed you to retrieve only specific property values from the global state in object form. Therefore, regardless of the presence of a selector function, the setter always operated on the entire global state. Now, when a selector function is used, the setter can only modify the property value pointed to by the selector function.
+* The selector function has been updated to effectively handle nested object states. However, this requires a specific way of writing the selector function. More details will be provided in the useBoard section below.
+* With the change in how selector functions influence the behavior of the setter, the handling of derived states has also changed. Derived states are now obtained through useDerivedBoard instead of useBoard. Additionally, while useBoard returns a tuple, useDerivedBoard returns only the derived state without a setter.
+
+&nbsp;
+
 # install and import
 ```ts
-npm i caro-kann
+npm i caro-kann@latest
 ```
 ```ts
-import { playTartakower } from "Sicilian";
+import { playTartakower } from "caro-kann";
 ```
-
 
 &nbsp;
 # create a store with playTartakower
 
-To create a store that can store external state, you need to execute the playTartakower function. This function takes an initial value, stores it in an internal store, and returns an object consisting of useBoard and BoardContext.
+In Caro-Kann, a **store** is defined as an external space where the global state is stored. To create such a store, Caro-Kann uses the playTartakower function. This function takes an initial value, stores it in the internal store, and returns an object consisting of useBoard, useDerivedBoard, and BoardContext.
 
-One crucial point to remember is that the evaluation of the playTartakower function must occur outside of a component. This is because Caro-Kann operates based on global state.
+It is important to remember that the evaluation of the playTartakower function must occur outside of the component. Otherwise, the store may be lost depending on the component's lifecycle.
 
 ```ts
-// @/hooks/useBoard/Human.ts
-const { useBoard, BoardContext} = playTartakower({ name: "Caro-Kann", age: 28, canStand: true });
-
-export { useBoard, BoardContext }
+const {
+  useBoard,
+  useDerivedBoard,
+  BoardContext,
+} = playTartakower({ a: 0, b: 0, c: 0 });
 ```
 
+&nbsp;
 # useBoard
 
 useBoard is a custom hook that return `[board, setBoard]` tuple just like useState in React.js.
 
 ```tsx
-export default function Comp() {
+function CompA() {
   const [board, setBoard] = useBoard();
+  
+  return (
+    <button onClick={() => setBoard(prev => ({...prev, a: prev.a + 1}))}>
+      Now a is { board.a }. Next, a will be { board.a + 1 } 
+    </button>
+  )
+}
+```
 
-  const handleClick = (n: number) => () => {
-    return setBoard((prev) => prev + n)
+## selecter function
+
+If a component references a global state in the form of an object structure, the component will re-render even if properties that are not being used are changed. To prevent this, useBoard allows retrieving only specific property values from the global state in the form of an object through a selector function. In the example code below, the component will not re-render even when the a property value of the global state is changed.
+```tsx
+function Comp() {
+  const [b, setB] = useBoard(store => store.b);
+  
+  return (
+    <button onClick={() => setB(prev => prev + 1}>
+      Now b is { b }. Next, b will be { b + 1 } 
+    </button>
+  )
+}
+```
+When using a selector function, the behavior of the setter is also modified to only change specific property values. This becomes clearer when examined through types.
+```tsx
+const setBoard: (action: {
+  a: number;
+  b: number;
+} | ((prev: {
+    a: number;
+    b: number;
+}) => {
+    a: number;
+    b: number;
+})) => void
+ 
+const setB: (action: number | ((prev: number) => number)) => void
+```
+Using a selector function also allows you to effectively handle nested object states as shown below. To do this, there are a few rules to follow when writing selector functions. First, all selector functions must be written as inline anonymous functions. Additionally, only dot notation should be used to select values from the nested object state in the store. If these rules are not followed when writing a selector function, you will encounter a runtime error :)
+```tsx
+const { useBoard } = playTartakower({
+  a: 0,
+  b: {
+    c: 0,
+    d: {
+      e: 0,
+      f: 0
+    }
   }
-
+})
+ 
+function Comp() {
+  const [e, setE] = useBoard(store => store.b.d.e)
+ 
   return (
-    <div>
-      <p>{board.name}</p>
-      <p>{board.age}</p>
-
-      <button type="button" onClick={handleClick(1)}>
-        get old!
-      </button>
-    </div>
-  );
+    <button onClick={() => setE(prev => prev + 1)}>
+      Now e is { e }. Next, e will be { e + 1 } 
+    </button>
+  )
 }
 ```
 
-## useBoard with selecterFn
-
-If a component references a global state in the form of an object, the component will re-render even if a property that the component does not use changes. To prevent this, **useBoard allows you to retrieve only specific property values from the global state object through a selector function**. In the example code below, the component does not re-render when the canStand value in the global state changes.
-
-```tsx
-export default function Comp() {
-  const [humanName] = useBoard((prev) => prev.name);
-  const [humanAge] = useBoard((prev) => prev.age);
-
-  return (
-    <div>
-      <p>{humanName}</p>
-      <p>{humanAge}</p>
-    </div>
-  );
-}
-```
-
-### Caution When Using Selector Functions
-
-The selector function must return an existing property from the global state. What happens if, instead of selecting the name and age properties separately, you return a new object that combines these values, as in the example above? In this case, although type inference will work correctly, you will immediately run into an infinite loop that will crash the call stack. This issue is related to the snapshotCache problem in useSyncExternalStore.
-
-```tsx
-export default function Comp() {
-  // call-stack explosion!!
-  const [human] = useBoard((prev) => ({ name: prev.name, age: prev.age}));
-
-  return (
-    <div>
-      <p>{human.name}</p>
-      <p>{human.age}</p>
-    </div>
-  );
-}
-```
-It's not impossible to work around this issue and use a new object, but doing so makes maintenance more difficult and increases the likelihood of human error during collaboration. Therefore, I won't present any of the workarounds I've discovered here. It's recommended that you avoid returning a new object through the selector function and instead **write your code to return an existing property from the global state**.
-
-The selector function determines which value to set in the 'board' located at the 0th index of the tuple. This means that the presence of a selector function does not affect the behavior of the setBoard function in any way.
-
-```tsx
-export default function Comp() {
-  const [humanName, setBoard] = useBoard((prev) => prev.name);
-  const [humanAge] = useBoard((prev) => prev.age);
-
-  return (
-    <div>
-      <p>{humanName}</p>
-      <p>{humanAge}</p>
-    </div>
-  );
-}
-```
 
 ## useBoard with calcFn
 
