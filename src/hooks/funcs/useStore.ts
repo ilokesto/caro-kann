@@ -5,19 +5,24 @@ export const useStore: UseStore = <T, S>(initialState: T, Board: Context<Board<T
   const { getBoard, setBoard, subscribe } = useContext(Board);
 
   const snapshot = () => selector ? selector(getBoard()) : getBoard();
-  const serverSideSnapshot = () => selector ? selector(initialState) : initialState;
+  const serverSnapshot = () => selector ? selector(initialState) : initialState;
 
-  const board = useSyncExternalStore(subscribe, snapshot, serverSideSnapshot);
+  const board = useSyncExternalStore(subscribe, snapshot, serverSnapshot);
 
   if (selector) {
-    const target = selector?.toString().split(".").at(1) as keyof ReturnType<typeof getBoard> ?? selector?.toString().split("\[\"").at(1)?.split("\"\]").at(0) as keyof ReturnType<typeof getBoard>
+    type TargetProps = keyof ReturnType<typeof getBoard>;
+    type TargetValue = ReturnType<typeof getBoard>[typeof target];
 
-    const setTargetBoard = (value: ReturnType<typeof getBoard>[typeof target] | ((prev: ReturnType<typeof getBoard>[typeof target]) => ReturnType<typeof getBoard>[typeof target])) => {
+    const target =
+      selector.toString().split(".").at(1) as TargetProps
+      ?? selector?.toString().split(/[\[\]\"]+/).at(1) as TargetProps;
+
+    const setTargetBoard = (value: TargetValue | ((prev: TargetValue) => TargetValue)) => {
       if (typeof value === "function") {
         setBoard((prev) => {
           return {
             ...prev,
-            [target]: (value as (prev: ReturnType<typeof getBoard>[typeof target]) => ReturnType<typeof getBoard>[typeof target])(prev[target]),
+            [target]: (value as (prev: TargetValue) => TargetValue)(prev[target]),
           };
         });
       } else {
