@@ -19,14 +19,13 @@ export function useStore(initialState, Board, selector) {
             throw new Error("Invalid selector function");
         const path = selector.toString().split(".").slice(1);
         const setTargetBoard = (value) => {
-            if (typeof value === "function") {
-                setBoard((prev) => { updateNestedValue(prev, path, value(selector(prev))); return prev; });
-            }
-            else {
-                setBoard((prev) => { updateNestedValue(prev, path, value); return prev; });
-            }
+            setBoard((prev) => {
+                const newBoard = { ...prev };
+                selector ? updateNestedValue(newBoard, path, value(selector(prev))) : updateNestedValue(newBoard, path, value);
+                return newBoard;
+            });
         };
-        return [board, setTargetBoard, setBoard];
+        return [board, setTargetBoard];
     }
     else {
         return [board, setBoard];

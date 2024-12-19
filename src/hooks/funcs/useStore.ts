@@ -23,15 +23,16 @@ export function useStore<T, S>(initialState: T, Board: Context<Board<T>>, select
   if (selector) {
     if (/[?&:|\[\]]/.test(selector.toString())) throw new Error("Invalid selector function");
     const path = selector.toString().split(".").slice(1);
-    const setTargetBoard = (value: S | ((prev: S) => S)) => {
-      if (typeof value === "function") {
-        setBoard((prev) => {updateNestedValue(prev, path, (value as (prev: S) => S)(selector(prev))); return prev;});
-      } else {
-        setBoard((prev) => {updateNestedValue(prev, path, value); return prev;});
-      }
-    };
 
-    return [board, setTargetBoard, setBoard] as const;
+    const setTargetBoard = (value: S | ((prev: S) => S)) => { setBoard((prev) => {
+      const newBoard = {...prev};
+
+      selector ? updateNestedValue(newBoard, path, (value as (prev: S) => S)(selector(prev))) : updateNestedValue(newBoard, path, value)
+
+      return newBoard;
+    })}
+
+    return [board, setTargetBoard] as const;
   } else {
     return [board, setBoard] as const;
   }
