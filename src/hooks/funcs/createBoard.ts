@@ -22,4 +22,3 @@ export const createBoard: CreateBoard = (initState) => {
 
   return { getBoard, setBoard, subscribe };
 };
-
