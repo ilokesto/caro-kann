@@ -32,7 +32,7 @@ export function useStore<T, S>(initialState: T, Board: Context<Board<T>>, select
       return newBoard;
     })}
 
-    return [board, setTargetBoard] as const;
+    return [board, setTargetBoard, setBoard] as const;
   } else {
     return [board, setBoard] as const;
   }
