@@ -11,7 +11,7 @@ export function playTartakower<T>(initialState: T) {
   function useBoard(): readonly [T, SetStore<T>];
   function useBoard<S>(selector: (state: T) => S): readonly [S, SetStore<S>, SetStore<T>];
   function useBoard<S>(selector?: (state: T) => S): any {
-    const [board, setBoard] = useStore(Board, initialState, selector);
+    const [board, setBoard] = selector ? useStore(Board, initialState, selector) : useStore(Board, initialState);
 
     if (selector) {
       const path = parseObjectPath(selector.toString());

@@ -7,7 +7,7 @@ import { useStore } from "./funcs/syncBoard";
 export function playTartakower(initialState) {
     const Board = createContext(createBoard(initialState));
     function useBoard(selector) {
-        const [board, setBoard] = useStore(Board, initialState, selector);
+        const [board, setBoard] = selector ? useStore(Board, initialState, selector) : useStore(Board, initialState);
         if (selector) {
             const path = parseObjectPath(selector.toString());
             const setTargetBoard = createSetTargetBoard(setBoard, path, selector);
