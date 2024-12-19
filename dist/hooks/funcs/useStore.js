@@ -9,7 +9,7 @@ const updateNestedValue = (obj, path, value) => {
         updateNestedValue(obj[path[0]], path.slice(1), value);
     }
 };
-export const useStore = (initialState, Board, selector) => {
+export function useStore(initialState, Board, selector) {
     const { getBoard, setBoard, subscribe } = useContext(Board);
     const snapshot = () => selector ? selector(getBoard()) : getBoard();
     const serverSnapshot = () => selector ? selector(initialState) : initialState;
@@ -24,9 +24,9 @@ export const useStore = (initialState, Board, selector) => {
                 setBoard((prev) => { updateNestedValue(prev, path, value); return prev; });
             }
         };
-        return [board, setTargetBoard];
+        return [board, setTargetBoard, setBoard];
     }
     else {
         return [board, setBoard];
     }
-};
+}

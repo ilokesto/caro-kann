@@ -1,12 +1,14 @@
 import { createContext, ReactNode } from "react";
-import { Board, UseBoard } from "./types";
+import { Board, SetStore } from "./types";
 import { useStore } from "./funcs/useStore";
 import { createBoard } from "./funcs/createBoard";
 
 export function playTartakower<T>(initialState: T) {
   const Board = createContext<Board<T>>(createBoard(initialState));
 
-  const useBoard: UseBoard<T> = <S,>(selector?: (state: T) => S) => {
+  function useBoard(): readonly [T, SetStore<T>];
+  function useBoard<S>(selector: (state: T) => S): readonly [S, SetStore<S>, SetStore<T>];
+  function useBoard<S>(selector?: (state: T) => S): any {
     if (selector && /[?&:|\[\]]/.test(selector.toString())) throw new Error("Invalid selector function");
 
     return selector ? useStore(initialState, Board, selector) : useStore(initialState, Board);

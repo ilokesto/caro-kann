@@ -1,5 +1,5 @@
 import { Context, useContext, useSyncExternalStore } from "react";
-import { Board, UseStore } from "../types";
+import { Board } from "../types";
 
 const updateNestedValue = (obj: any, path: string[], value: any) => {
   if (path.length === 1) {
@@ -10,7 +10,9 @@ const updateNestedValue = (obj: any, path: string[], value: any) => {
   }
 };
 
-export const useStore: UseStore = <T, S>(initialState: T, Board: Context<Board<T>>, selector?: (state: T) => S) => {
+export function useStore<T>(initialState: T, Board: Context<Board<T>>): readonly [T, Board<T>["setBoard"]];
+export function useStore<T, S>(initialState: T, Board: Context<Board<T>>, selector: (state: T) => S): readonly [S, Board<T>["setBoard"]];
+export function useStore<T, S>(initialState: T, Board: Context<Board<T>>, selector?: (state: T) => S) {
   const { getBoard, setBoard, subscribe } = useContext(Board);
 
   const snapshot = () => selector ? selector(getBoard()) : getBoard();
@@ -28,7 +30,7 @@ export const useStore: UseStore = <T, S>(initialState: T, Board: Context<Board<T
       }
     };
 
-    return [board, setTargetBoard] as const;
+    return [board, setTargetBoard, setBoard] as const;
   } else {
     return [board, setBoard] as const;
   }
