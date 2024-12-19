@@ -143,10 +143,11 @@ function Comp() {
   )
 }
 ```
-Using a selector function also allows you to effectively handle nested object states as shown below. To do this, there are a few rules to follow when writing selector functions. First, all selector functions must be written as inline anonymous functions. Additionally, only dot notation should be used to select values from the nested object state in the store. If these rules are not followed when writing a selector function, you will encounter a runtime error :)
+By using selector functions, you can effectively handle nested object states as shown below. To write selector functions, there are a few rules to follow. First, all selector functions must be written as arrow functions. Also, variables cannot be used to select values from the nested object state within the store. Lastly, the five special characters { ? : & } cannot be used in selector functions. If you don't follow these rules while writing selector functions, you will encounter runtime errors. :)
+
 ```tsx
 const { useBoard } = playTartakower({
-  a: 0,
+  ["a-to-z"]: 0,
   b: {
     c: 0,
     d: {
@@ -155,16 +156,21 @@ const { useBoard } = playTartakower({
     }
   }
 })
- 
-function Comp() {
-  const [e, setE] = useBoard(store => store.b.d.e)
- 
-  return (
-    <button onClick={() => setE(prev => prev + 1)}>
-      Now e is { e }. Next, e will be { e + 1 } 
-    </button>
-  )
-}
+
+// Selector functions must only be arrow functions
+const getAtoZ = (store) => store["a-to-z"]
+const [atoZ, setAtoZ] = useBoard(getAtoZ) // ok
+
+// It is fine to mix dot notation and bracket notation
+const [e, setE] = useBoard(store => store["b"].d.e) // ok
+
+// Variables cannot be used within bracket notation
+const c = "c"
+const [c, setC] = useBoard(store => store.b[c]) // Error
+
+// Special characters { ? : & } cannot be used
+const [b, setB] = useBoard(store => typeof store.b !== object ? true : false) // Error
+const [f, setF] = useBoard({ b: { d: { f }}} => f) // Error
 ```
 
 &nbsp;
