@@ -114,7 +114,7 @@ function CompA() {
 
 ## selecter function
 
-If a component references a global state in the form of an object structure, the component will re-render even if properties that are not being used are changed. To prevent this, useBoard allows retrieving only specific property values from the global state in the form of an object through a selector function. In the example code below, the component will not re-render even when the a property value of the global state is changed.
+If a component references a global state in the form of an object structure, the component will re-render even if properties that are not being used are changed. To prevent this, useBoard allows retrieving only specific property values from the global state in the form of an object through a selector function. In the example code below, the component will not re-render even when the a property value of the global state is changed. What's more, when a selector function is used, the setter no longer targets the entire set of properties but instead modifies only the specific properties selected by the selector function.
 ```tsx
 function Comp() {
   const [b, setB] = useBoard(store => store.b);
@@ -126,20 +126,22 @@ function Comp() {
   )
 }
 ```
-When using a selector function, the behavior of the setter is also modified to only change specific property values. This becomes clearer when examined through types.
+However, even if a component only uses the value of a, there may be cases where you need to modify the value of b. To handle this situation, when a selector function is provided, useBoard returns setBoard as the third element of the tuple.
 ```tsx
-const setBoard: (action: {
-  a: number;
-  b: number;
-} | ((prev: {
-    a: number;
-    b: number;
-}) => {
-    a: number;
-    b: number;
-})) => void
- 
-const setB: (action: number | ((prev: number) => number)) => void
+function Comp() {
+  const [a, setA, setBoard] = useBoard(store => store.a);
+  
+  return (
+    <>
+      <button onClick={() => setA(prev => prev + 1}>
+        Now a is { a }. Next, a will be { a + 1 } 
+      </button>
+      <button onClick={() => setBoard(prev => ({...prev, b: prev.b + 1})}>
+        change b
+      </button>
+    </>
+  )
+}
 ```
 Using a selector function also allows you to effectively handle nested object states as shown below. To do this, there are a few rules to follow when writing selector functions. First, all selector functions must be written as inline anonymous functions. Additionally, only dot notation should be used to select values from the nested object state in the store. If these rules are not followed when writing a selector function, you will encounter a runtime error :)
 ```tsx
