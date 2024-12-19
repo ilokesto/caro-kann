@@ -1,5 +1,3 @@
-import { Context } from "react";
-
 export interface Board<T> {
   getBoard: () => T;
   setBoard: (action: T | ((prev: T) => T)) => void;

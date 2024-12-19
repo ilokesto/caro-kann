@@ -5,8 +5,6 @@ import { createBoard } from "./funcs/createBoard";
 export function playTartakower(initialState) {
     const Board = createContext(createBoard(initialState));
     function useBoard(selector) {
-        if (selector && /[?&:|\[\]]/.test(selector.toString()))
-            throw new Error("Invalid selector function");
         return selector ? useStore(initialState, Board, selector) : useStore(initialState, Board);
     }
     ;

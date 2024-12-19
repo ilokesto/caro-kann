@@ -15,6 +15,8 @@ export function useStore(initialState, Board, selector) {
     const serverSnapshot = () => selector ? selector(initialState) : initialState;
     const board = useSyncExternalStore(subscribe, snapshot, serverSnapshot);
     if (selector) {
+        if (/[?&:|\[\]]/.test(selector.toString()))
+            throw new Error("Invalid selector function");
         const path = selector.toString().split(".").slice(1);
         const setTargetBoard = (value) => {
             if (typeof value === "function") {
