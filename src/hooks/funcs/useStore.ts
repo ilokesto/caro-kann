@@ -27,7 +27,7 @@ export function useStore<T, S>(initialState: T, Board: Context<Board<T>>, select
     const setTargetBoard = (value: S | ((prev: S) => S)) => { setBoard((prev) => {
       const newBoard = {...prev};
 
-      selector ? updateNestedValue(newBoard, path, (value as (prev: S) => S)(selector(prev))) : updateNestedValue(newBoard, path, value)
+      typeof value === "function" ? updateNestedValue(newBoard, path, (value as (prev: S) => S)(selector(prev))) : updateNestedValue(newBoard, path, value)
 
       return newBoard;
     })}

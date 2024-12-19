@@ -21,11 +21,11 @@ export function useStore(initialState, Board, selector) {
         const setTargetBoard = (value) => {
             setBoard((prev) => {
                 const newBoard = { ...prev };
-                selector ? updateNestedValue(newBoard, path, value(selector(prev))) : updateNestedValue(newBoard, path, value);
+                typeof value === "function" ? updateNestedValue(newBoard, path, value(selector(prev))) : updateNestedValue(newBoard, path, value);
                 return newBoard;
             });
         };
-        return [board, setTargetBoard];
+        return [board, setTargetBoard, setBoard];
     }
     else {
         return [board, setBoard];
