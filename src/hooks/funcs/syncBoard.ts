@@ -7,7 +7,8 @@ export function useStore<T, S>(Board: Context<Board<T>>, initialState: T, select
 export function useStore<T, S>(Board: Context<Board<T>>, initialState: T, selector?: (value: T) => S): any {
   const { getBoard, setBoard, subscribe } = useContext(Board);
   const snapshot = () => selector ? selector(getBoard()) : getBoard();
-  const board = useSyncExternalStore(subscribe, snapshot, snapshot);
+  const serverSnapshot = () => selector ? selector(initialState) : initialState;
+  const board = useSyncExternalStore(subscribe, snapshot, serverSnapshot);
 
   return [board, setBoard] as const
 }
