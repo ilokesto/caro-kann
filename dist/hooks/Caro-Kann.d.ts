@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
-import { SetStore } from "./types";
-export declare function playTartakower<T>(initialState: T): {
+import type { SetStore, StorageConfig } from "./types";
+export declare function playTartakower<T>(initialState: T, options?: StorageConfig): {
     useBoard: {
         (): readonly [T, SetStore<T>];
         <S>(selector: (state: T) => S): readonly [S, SetStore<S>, SetStore<T>];

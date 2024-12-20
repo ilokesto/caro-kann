@@ -1,12 +1,12 @@
 import { createContext, ReactNode } from "react";
-import { Board, SetStore } from "./types";
+import type { Board, SetStore, StorageConfig } from "./types";
 import { createBoard } from "./funcs/createBoard";
 import { parseObjectPath } from "./funcs/parseObjectPath";
 import { createSetTargetBoard } from "./funcs/createSetTargetBoard";
 import { useStore } from "./funcs/syncBoard";
 
-export function playTartakower<T>(initialState: T) {
-  const Board = createContext<Board<T>>(createBoard(initialState));
+export function playTartakower<T>(initialState: T, options?: StorageConfig) {
+  const Board = createContext<Board<T>>(createBoard(initialState, options));
 
   function useBoard(): readonly [T, SetStore<T>];
   function useBoard<S>(selector: (state: T) => S): readonly [S, SetStore<S>, SetStore<T>];
