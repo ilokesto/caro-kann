@@ -4,7 +4,7 @@ import { createBoard } from "./funcs/createBoard";
 import { createSetTargetBoard } from "./funcs/createSetTargetBoard";
 import { useStore } from "./funcs/useStore";
 
-export function playTartakower<T>(initState: T, options?: Options) {
+export function playTartakower<T>(initState: T, options?: Options<T>) {
   const Board = createContext<Board<T>>(createBoard(initState, options));
 
   const useBoard: UseBoard<T> = <S,>(selector?: (state: T) => S): any => {

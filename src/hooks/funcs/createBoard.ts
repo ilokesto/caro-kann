@@ -7,7 +7,8 @@ export const createBoard: CreateBoard = (initState, options) => {
 
   const storageKey = options?.local ?? options?.session ?? '';
   const storageType = options?.local ? 'local' : options?.session ? 'session' : null;
-  const initialState = storageType ? getStorage(storageKey, storageType, initState) : initState;
+  const migrate = options?.migrate;
+  const initialState = storageType ? getStorage(storageKey, storageType, initState, migrate).state : initState;
 
   let board = initialState;
   const callbacks = new Set<() => void>();
@@ -26,5 +27,5 @@ export const createBoard: CreateBoard = (initState, options) => {
     return () => callbacks.delete(callback);
   };
 
-  return { getBoard, setBoard, subscribe, getInitState: () => initialState };
+  return { getBoard, setBoard, subscribe, getInitState: () => initState };
 };

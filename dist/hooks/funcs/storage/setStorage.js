@@ -1,6 +1,8 @@
+import { getStorage } from "./getStorage";
 export const setStorage = (key, storageType, value) => {
     try {
-        const serializedValue = JSON.stringify(value);
+        const { version } = getStorage(key, storageType, value);
+        const serializedValue = JSON.stringify({ state: value, version });
         if (storageType === 'local') {
             localStorage.setItem(key, serializedValue);
         }
@@ -9,6 +11,6 @@ export const setStorage = (key, storageType, value) => {
         }
     }
     catch (e) {
-        console.error('Failed to write to storage', e);
+        console.error('Caro-Kann : Failed to write to storage', e);
     }
 };

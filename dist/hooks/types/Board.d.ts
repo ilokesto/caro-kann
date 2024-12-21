@@ -7,10 +7,9 @@ export interface Board<T> {
     getInitState: () => T;
 }
 export type SetBoard<T> = (action: T | ((prev: T) => T)) => void;
-export type CreateBoard = <T>(initValue: T, options?: Options) => Board<T>;
-export type GetBoard<T> = T extends infer R ? R : never;
+export type CreateBoard = <T>(initValue: T, options?: Options<T>) => Board<T>;
 export type UseBoard<T> = {
-    (): readonly [GetBoard<T>, SetBoard<T>];
+    (): readonly [T, SetBoard<T>];
     <S>(selector: (state: T) => S): readonly [S, SetBoard<S>, SetBoard<T>];
 };
 export type UseStore = {

@@ -10,7 +10,7 @@ export interface Board<T> {
 
 export type SetBoard<T> = (action: T | ((prev: T) => T)) => void
 
-export type CreateBoard = <T>(initValue: T, options?: Options) => Board<T>;
+export type CreateBoard = <T>(initValue: T, options?: Options<T>) => Board<T>;
 
 export type UseBoard<T> = {
     (): readonly [T, SetBoard<T>];
