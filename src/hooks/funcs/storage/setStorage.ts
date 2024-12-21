@@ -1,14 +1,13 @@
-import { getStorage } from "./getStorage";
+import { SetStorage } from "../../types";
 
-export const setStorage = <T>(key: string, storageType: 'local' | 'session', value: T): void => {
+export const setStorage: SetStorage = ({storageKey, storageType, storageVersion: version, value: state}) => {
   try {
-    const {version} = getStorage(key, storageType, value);
-    const serializedValue = JSON.stringify({ state: value, version });
+    const serializedValue = JSON.stringify({ state, version });
 
     if (storageType === 'local') {
-      localStorage.setItem(key, serializedValue);
+      localStorage.setItem(storageKey, serializedValue);
     } else if (storageType === 'session') {
-      sessionStorage.setItem(key, serializedValue);
+      sessionStorage.setItem(storageKey, serializedValue);
     }
   } catch (e) {
     console.error('Caro-Kann : Failed to write to storage', e);

@@ -1,13 +1,11 @@
-import { getStorage } from "./getStorage";
-export const setStorage = (key, storageType, value) => {
+export const setStorage = ({ storageKey, storageType, storageVersion: version, value: state }) => {
     try {
-        const { version } = getStorage(key, storageType, value);
-        const serializedValue = JSON.stringify({ state: value, version });
+        const serializedValue = JSON.stringify({ state, version });
         if (storageType === 'local') {
-            localStorage.setItem(key, serializedValue);
+            localStorage.setItem(storageKey, serializedValue);
         }
         else if (storageType === 'session') {
-            sessionStorage.setItem(key, serializedValue);
+            sessionStorage.setItem(storageKey, serializedValue);
         }
     }
     catch (e) {

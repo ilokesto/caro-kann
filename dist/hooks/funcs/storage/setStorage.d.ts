@@ -1,1 +1,2 @@
-export declare const setStorage: <T>(key: string, storageType: 'local' | 'session', value: T) => void;
+import { SetStorage } from "../../types";
+export declare const setStorage: SetStorage;

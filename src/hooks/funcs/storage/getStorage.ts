@@ -1,29 +1,24 @@
-import { Options } from "../../types";
+import { GetStorage } from "../../types";
 
-export const getStorage = <T>(key: string, storageType: 'local' | 'session', defaultValue: T, migrate?: Options<T>["migrate"]): { state: T, version: number} => {
+export const getStorage: GetStorage = ({storageKey, storageType, migrate, initState}) => {
   try {
     let storedValue: string | null = null;
 
     if (storageType === 'local') {
       if (migrate) {
         const { version: newVersion, strategy } = migrate;
-        const { state, version } = JSON.parse(localStorage.getItem(key)!)
+        const { state, version, updatedAt } = JSON.parse(localStorage.getItem(storageKey)!)
 
-        const newState = () => {
-          if (newVersion <= version) {
-            console.error('Caro-Kann : The version of the data is the same or newer than the version of the migration strategy. The data will not be migrated.');
-            return JSON.stringify({ state, version });
-          } else {
-            return JSON.stringify({ state: strategy(state, version), version: newVersion });
-          }
-        }
+        const newState = () => newVersion <= version
+          ? JSON.stringify({ state, version, updatedAt })
+          : JSON.stringify({ state: strategy(state, version), version: newVersion, updatedAt })
 
-        localStorage.setItem(key, newState());
+        localStorage.setItem(storageKey, newState());
       }
 
-      storedValue = localStorage.getItem(key);
+      storedValue = localStorage.getItem(storageKey);
     } else if (storageType === 'session') {
-      storedValue = sessionStorage.getItem(key);
+      storedValue = sessionStorage.getItem(storageKey);
     }
 
     if (storedValue !== null) {
@@ -34,5 +29,5 @@ export const getStorage = <T>(key: string, storageType: 'local' | 'session', def
     console.error('Caro-Kann : Failed to read from storage', e);
   }
 
-  return { state : defaultValue, version: 0 }; // 데이터가 없거나 오류 발생 시 기본값 반환
+  return { state : initState, version: 0}; // 데이터가 없거나 오류 발생 시 기본값 반환
 };

@@ -1,2 +1,3 @@
 export * from "./Board";
-export * from "./options";
+export * from "./Options";
+export * from "./Storage";

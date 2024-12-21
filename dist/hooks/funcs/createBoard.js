@@ -1,20 +1,18 @@
 import { getStorage } from "./storage/getStorage";
+import { parseOptions } from "./storage/parseOptions";
 import { setStorage } from "./storage/setStorage";
 export const createBoard = (initState, options) => {
-    const storageKey = options?.local ?? options?.session ?? '';
-    const storageType = options?.local ? 'local' : options?.session ? 'session' : null;
-    const migrate = options?.migrate;
-    const initialState = storageType ? getStorage(storageKey, storageType, initState, migrate).state : initState;
-    let board = initialState;
+    const optionObj = parseOptions(options);
+    const initialState = optionObj.storageType ? getStorage({ ...optionObj, initState }).state : initState;
     const callbacks = new Set();
-    const getBoard = () => board;
+    let board = initialState;
     const setBoard = (nextState) => {
         board = typeof nextState === "function" ? nextState(board) : nextState;
-        if (storageType) {
-            setStorage(storageKey, storageType, getBoard());
-        }
+        if (optionObj.storageType)
+            setStorage({ ...optionObj, value: board });
         callbacks.forEach((cb) => cb());
     };
+    const getBoard = () => board;
     const subscribe = (callback) => {
         callbacks.add(callback);
         return () => callbacks.delete(callback);
