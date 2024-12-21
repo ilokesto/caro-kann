@@ -6,7 +6,7 @@ import { useStore } from "./funcs/useStore";
 export function playTartakower(initState, options) {
     const Board = createContext(createBoard(initState, options));
     const useBoard = (selector) => {
-        const [board, setBoard] = useStore(Board, selector);
+        const [board, setBoard] = selector ? useStore(Board, selector) : useStore(Board);
         if (selector)
             return [board, createSetTargetBoard(setBoard, selector), setBoard];
         else

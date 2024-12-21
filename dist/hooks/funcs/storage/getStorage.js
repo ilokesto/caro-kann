@@ -11,7 +11,7 @@ export const getStorage = (key, storageType, defaultValue, migrate) => {
                         return JSON.stringify({ state, version });
                     }
                     else {
-                        return JSON.stringify({ state: strategy(state, version, newVersion), version: newVersion });
+                        return JSON.stringify({ state: strategy(state, version), version: newVersion });
                     }
                 };
                 localStorage.setItem(key, newState());

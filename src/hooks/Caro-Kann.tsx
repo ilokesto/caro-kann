@@ -8,7 +8,7 @@ export function playTartakower<T>(initState: T, options?: Options<T>) {
   const Board = createContext<Board<T>>(createBoard(initState, options));
 
   const useBoard: UseBoard<T> = <S,>(selector?: (state: T) => S): any => {
-    const [board, setBoard] = useStore(Board, selector!);
+    const [board, setBoard] = selector ? useStore(Board, selector) : useStore(Board);
 
     if (selector) return [board, createSetTargetBoard(setBoard, selector), setBoard] as const;
     else return [board, setBoard] as const;

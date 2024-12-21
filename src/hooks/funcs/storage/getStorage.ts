@@ -14,7 +14,7 @@ export const getStorage = <T>(key: string, storageType: 'local' | 'session', def
             console.error('Caro-Kann : The version of the data is the same or newer than the version of the migration strategy. The data will not be migrated.');
             return JSON.stringify({ state, version });
           } else {
-            return JSON.stringify({ state: strategy(state, version, newVersion), version: newVersion });
+            return JSON.stringify({ state: strategy(state, version), version: newVersion });
           }
         }
 

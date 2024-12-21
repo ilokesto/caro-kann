@@ -13,4 +13,4 @@ type StorageConfig = LocalStorageConfig | SessionStorageConfig;
 
 export type Options<T> =
   StorageConfig
-  & { migrate?: { version: number, strategy: (prevState: any, prevVersion: number, newVersion: number) => T }};
+  & { migrate?: { version: number, strategy: (prevState: any, prevVersion: number) => T }};
