@@ -1,11 +1,8 @@
 import { ReactNode } from "react";
-import type { SetStore, StorageConfig } from "./types";
+import type { StorageConfig, UseBoard } from "./types";
 export declare function playTartakower<T>(initialState: T, options?: StorageConfig): {
-    useBoard: {
-        (): readonly [T, SetStore<T>];
-        <S>(selector: (state: T) => S): readonly [S, SetStore<S>, SetStore<T>];
-    };
-    useDerivedBoard: <S_1>(selector: (state: T) => S_1) => S_1;
+    useBoard: UseBoard<T>;
+    useDerivedBoard: <S>(selector: (state: T) => S) => S;
     BoardContext: ({ value, children }: {
         value: T;
         children: ReactNode;
