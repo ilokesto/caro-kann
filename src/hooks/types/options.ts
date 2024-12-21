@@ -1,16 +1,17 @@
 
-type LocalStorageConfig = {
+type LocalStorageConfig<T> = {
   local: string;
   session?: never;
+  migrate?: { version: number, strategy: (prevState: any, prevVersion: number) => T }
 };
 
 type SessionStorageConfig = {
   session: string;
   local?: never;
+  migrate?: never;
 };
 
-type StorageConfig = LocalStorageConfig | SessionStorageConfig;
+type StorageConfig<T> = LocalStorageConfig<T> | SessionStorageConfig;
 
 export type Options<T> =
-  StorageConfig
-  & { migrate?: { version: number, strategy: (prevState: any, prevVersion: number) => T }};
+  StorageConfig<T>

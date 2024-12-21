@@ -1,11 +1,10 @@
 export const setStorage = ({ storageKey, storageType, storageVersion: version, value: state }) => {
     try {
-        const serializedValue = JSON.stringify({ state, version });
         if (storageType === 'local') {
-            localStorage.setItem(storageKey, serializedValue);
+            localStorage.setItem(storageKey, JSON.stringify({ state, version }));
         }
         else if (storageType === 'session') {
-            sessionStorage.setItem(storageKey, serializedValue);
+            sessionStorage.setItem(storageKey, JSON.stringify({ state }));
         }
     }
     catch (e) {
