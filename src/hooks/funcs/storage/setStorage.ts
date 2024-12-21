@@ -8,6 +8,6 @@ export const setStorage: SetStorage = ({storageKey, storageType, storageVersion:
       sessionStorage.setItem(storageKey, JSON.stringify({ state }));
     }
   } catch (e) {
-    console.error('Caro-Kann : Failed to write to storage', e);
+    if (typeof window !== 'undefined') console.error('Caro-Kann : Failed to write to storage', e);
   }
 };

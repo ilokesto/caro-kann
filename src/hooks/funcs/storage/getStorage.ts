@@ -26,7 +26,7 @@ export const getStorage: GetStorage = ({storageKey, storageType, migrate, initSt
     }
 
   } catch (e) {
-    console.error('Caro-Kann : Failed to read from storage', e);
+    if (typeof window !== 'undefined') console.error('Caro-Kann : Failed to read from storage', e);
   }
 
   return { state : initState, version: 0}; // 데이터가 없거나 오류 발생 시 기본값 반환

@@ -8,6 +8,6 @@ export const setStorage = ({ storageKey, storageType, storageVersion: version, v
         }
     }
     catch (e) {
-        console.error('Caro-Kann : Failed to write to storage', e);
+        console.error('Caro-Kann : Failed to write to storage');
     }
 };
