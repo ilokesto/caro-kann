@@ -4,8 +4,8 @@ export const setStorage: SetStorage = ({storageKey, storageType, storageVersion:
   try {
     if (storageType === 'local') {
       localStorage.setItem(storageKey, JSON.stringify({ state, version }));
-    } else if (storageType === 'session') {
-      sessionStorage.setItem(storageKey, JSON.stringify({ state }));
+    } else if (storageType === 'cookie') {
+      document.cookie = `${storageKey}=${JSON.stringify({ state, version })}`
     }
   } catch (e) {
     if (typeof window !== 'undefined') console.error('Caro-Kann : Failed to write to storage', e);

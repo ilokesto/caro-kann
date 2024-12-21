@@ -1,5 +1,5 @@
-import { Context } from "react";
-import { Options } from "./Options";
+import type { Context } from "react";
+import type { Options } from "./Options";
 
 export interface Board<T> {
   getBoard: () => T;

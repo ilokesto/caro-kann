@@ -3,8 +3,8 @@ export const setStorage = ({ storageKey, storageType, storageVersion: version, v
         if (storageType === 'local') {
             localStorage.setItem(storageKey, JSON.stringify({ state, version }));
         }
-        else if (storageType === 'session') {
-            sessionStorage.setItem(storageKey, JSON.stringify({ state }));
+        else if (storageType === 'cookie') {
+            document.cookie = `${storageKey}=${JSON.stringify({ state, version })}`;
         }
     }
     catch (e) {
