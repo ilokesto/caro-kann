@@ -1,1 +1,1 @@
-export { playTartakower } from "./hooks/Caro-Kann";
+export * from "./hooks/Caro-Kann";

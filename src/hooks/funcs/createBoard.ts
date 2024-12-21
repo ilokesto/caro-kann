@@ -26,5 +26,5 @@ export const createBoard: CreateBoard = (initState, options) => {
     return () => callbacks.delete(callback);
   };
 
-  return { getBoard, setBoard, subscribe };
+  return { getBoard, setBoard, subscribe, getInitState: () => initialState };
 };

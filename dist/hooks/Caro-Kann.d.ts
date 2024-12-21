@@ -1,6 +1,6 @@
+import type { Options, UseBoard } from "./types";
 import { ReactNode } from "react";
-import type { StorageConfig, UseBoard } from "./types";
-export declare function playTartakower<T>(initialState: T, options?: StorageConfig): {
+export declare function playTartakower<T>(initState: T, options?: Options): {
     useBoard: UseBoard<T>;
     useDerivedBoard: <S>(selector: (state: T) => S) => S;
     BoardContext: ({ value, children }: {
