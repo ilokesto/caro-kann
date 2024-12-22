@@ -1,10 +1,11 @@
 export const setStorage = ({ storageKey, storageType, storageVersion: version, value: state }) => {
+    const encodedState = JSON.stringify({ state, version });
     try {
         if (storageType === 'local') {
-            localStorage.setItem(storageKey, JSON.stringify({ state, version }));
+            localStorage.setItem(storageKey, encodedState);
         }
         else if (storageType === 'cookie') {
-            document.cookie = `${storageKey}=${JSON.stringify({ state, version })}`;
+            document.cookie = `${storageKey}=${encodedState}`;
         }
     }
     catch (e) {
