@@ -1,4 +1,4 @@
-import { Migrate } from "./Options";
+import { Migrate } from "./";
 type Storage = "local" | "session" | "cookie" | null;
 export type GetStorage = <T>(props: {
     storageKey: string;
