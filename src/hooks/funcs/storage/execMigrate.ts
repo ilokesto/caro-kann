@@ -4,6 +4,8 @@ import { getCookie } from "./getCookie";
 export const execMigrate: ExecMigrate = ({ storageKey, storageType, migrate }) => {
   const { version: newVersion, strategy } = migrate!;
 
+  console.log("a!")
+
   if (storageType === 'local') {
     const { state, version } = JSON.parse(localStorage.getItem(storageKey)!)
   

@@ -6,10 +6,12 @@ export const getStorage: GetStorage = ({storageKey, storageType, migrate, initSt
   try {
     let storedValue: string | null = null;
 
-    migrate && execMigrate({storageKey, storageType, migrate})
+    migrate && storageType && execMigrate({storageKey, storageType, migrate})
 
     if (storageType === 'local') {
       storedValue = localStorage.getItem(storageKey);
+    } else if (storageType === 'session') {
+      storedValue = sessionStorage.getItem(storageKey);
     } else if (storageType === 'cookie') {
       storedValue = getCookie(storageKey)
     }

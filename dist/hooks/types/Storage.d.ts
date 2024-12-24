@@ -1,8 +1,9 @@
-import { Options } from "./Options";
+import { Migrate } from "./Options";
+type Storage = "local" | "session" | "cookie" | null;
 export type GetStorage = <T>(props: {
     storageKey: string;
-    storageType: 'local' | 'cookie' | null;
-    migrate: Options<T>["migrate"];
+    storageType: Storage;
+    migrate?: Migrate<T>;
     initState: T;
 }) => {
     state: T;
@@ -12,6 +13,7 @@ export type SetStorage = <T>(props: {
     storageKey: string;
     storageVersion: number;
     value: T;
-    storageType: 'local' | 'cookie' | null;
+    storageType: Storage;
 }) => void;
 export type ExecMigrate = (props: Omit<Parameters<GetStorage>[0], "initState">) => void;
+export {};

@@ -5,6 +5,8 @@ export const setStorage: SetStorage = ({storageKey, storageType, storageVersion:
   try {
     if (storageType === 'local') {
       localStorage.setItem(storageKey, encodedState);
+    } else if (storageType === 'session') {
+      sessionStorage.setItem(storageKey, encodedState);
     } else if (storageType === 'cookie') {
       document.cookie = `${storageKey}=${encodedState}`
     }

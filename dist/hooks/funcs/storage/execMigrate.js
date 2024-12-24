@@ -1,6 +1,7 @@
 import { getCookie } from "./getCookie";
 export const execMigrate = ({ storageKey, storageType, migrate }) => {
     const { version: newVersion, strategy } = migrate;
+    console.log("a!");
     if (storageType === 'local') {
         const { state, version } = JSON.parse(localStorage.getItem(storageKey));
         // 상태 버전이 신규 버전보다 낮을 경우 마이그레이션 실행
