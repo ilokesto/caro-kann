@@ -1,6 +1,6 @@
 import type { Create, Store, UseStore } from "../types";
 import { createContext, ReactNode } from "react";
-import { createStore } from "./createBoard";
+import { createStore } from "./createStore";
 import { useStoreSync } from "./useStoreSync";
 import { createSetTargetBoard } from "../utils/createSetTargetBoard";
 
