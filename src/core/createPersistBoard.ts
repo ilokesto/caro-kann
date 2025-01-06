@@ -1,4 +1,4 @@
-import type { CreateBoard, ExecMigrate, GetStorage, Options, SetStorage } from "../types";
+import type { CreateStore, ExecMigrate, GetStorage, Options, SetStorage } from "../types";
 
 function getCookie(name: string) {
   const cookies = document.cookie.split("; ");
@@ -74,7 +74,7 @@ const setStorage: SetStorage = ({storageKey, storageType, storageVersion: versio
   }
 };
 
-export const createPersistBoard: CreateBoard = (initState, options) => {
+export const createPersistBoard: CreateStore = (initState, options) => {
   const optionObj = parseOptions(options);
   const initialState = optionObj.storageType ? getStorage({...optionObj, initState }).state : initState;
   const callbacks = new Set<() => void>();

@@ -1,6 +1,6 @@
-import type { CreateBoard } from "../types";
+import type { CreateStore } from "../types";
 
-export const createBoard: CreateBoard = (initState) => {
+export const createBoard: CreateStore = (initState) => {
   const callbacks = new Set<() => void>();
   let board = initState;
 

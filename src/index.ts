@@ -1,1 +1,1 @@
-export * from "./core/playTartakower";
+export * from "./core/createStore";
