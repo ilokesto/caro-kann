@@ -1,3 +1,3 @@
-export * from "./Board";
+export * from "./Store";
 export * from "./Options";
 export * from "./Storage";
