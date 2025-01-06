@@ -1,4 +1,4 @@
-export const createBoard = (initState) => {
+export const createStore = (initState) => {
     const callbacks = new Set();
     let board = initState;
     const setBoard = (nextState) => {

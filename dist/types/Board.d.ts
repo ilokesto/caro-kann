@@ -1,5 +1,19 @@
-import type { Context } from "react";
+import type { Context, ReactNode } from "react";
 import type { Options } from "./";
+export type Create = {
+    <T>(initState: Store<T>): {
+        useStore: UseStore<T>;
+        useDerivedStore: <S>(selector: (state: T) => S) => S;
+    };
+    <T>(initState: T): {
+        useStore: UseStore<T>;
+        useDerivedStore: <S>(selector: (state: T) => S) => S;
+        StoreContext: ({ value, children }: {
+            value: T;
+            children: ReactNode;
+        }) => JSX.Element;
+    };
+};
 export interface Store<T> {
     getBoard: () => T;
     setBoard: SetStore<T>;

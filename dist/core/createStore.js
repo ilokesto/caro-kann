@@ -1,26 +1,25 @@
 import { jsx as _jsx } from "react/jsx-runtime";
 import { createContext } from "react";
-import { createBoard } from "./createBoard";
+import { createStore } from "./createBoard";
 import { useStoreSync } from "./useStoreSync";
 import { createSetTargetBoard } from "../utils/createSetTargetBoard";
-function isBoard(initState) {
+function isStore(initState) {
     return initState.getBoard !== undefined && initState.setBoard !== undefined;
 }
-export function createStore(initState) {
-    const Board = createContext(isBoard(initState) ? initState : createBoard(initState));
+export const create = (initState) => {
+    const Store = createContext(isStore(initState) ? initState : createStore(initState));
     const useStore = (selector) => {
-        const [board, setBoard] = selector ? useStoreSync(Board, selector) : useStoreSync(Board);
+        const [board, setBoard] = selector ? useStoreSync(Store, selector) : useStoreSync(Store);
         if (selector)
             return [board, createSetTargetBoard(setBoard, selector), setBoard];
         else
             return [board, setBoard];
     };
     const useDerivedStore = (selector) => {
-        return useStoreSync(Board, selector)[0];
+        return useStoreSync(Store, selector)[0];
     };
-    const BoardContext = ({ value, children }) => {
-        return _jsx(Board.Provider, { value: createBoard(value), children: children });
+    const StoreContext = ({ value, children }) => {
+        return _jsx(Store.Provider, { value: createStore(value), children: children });
     };
-    return isBoard(initState) ? { useStore, useDerivedStore } : { useStore, useDerivedStore, BoardContext };
-}
-;
+    return isStore(initState) ? { useStore, useDerivedStore } : { useStore, useDerivedStore, StoreContext };
+};

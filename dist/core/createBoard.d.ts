@@ -1,2 +1,2 @@
 import type { CreateStore } from "../types";
-export declare const createBoard: CreateStore;
+export declare const createStore: CreateStore;
