@@ -2,7 +2,7 @@ import { jsx as _jsx } from "react/jsx-runtime";
 import { createContext } from "react";
 import { createBoard } from "./createBoard";
 import { useStore } from "./useStore";
-import { createSetTargetBoard } from "../funcs/createSetTargetBoard";
+import { createSetTargetBoard } from "../utils/createSetTargetBoard";
 function isBoard(initState) {
     return initState.getBoard !== undefined;
 }
@@ -21,6 +21,6 @@ export function playTartakower(initState) {
     const BoardContext = ({ value, children }) => {
         return _jsx(Board.Provider, { value: createBoard(value), children: children });
     };
-    return { useBoard, useDerivedBoard, BoardContext };
+    return isBoard(initState) ? { useBoard, useDerivedBoard } : { useBoard, useDerivedBoard, BoardContext };
 }
 ;

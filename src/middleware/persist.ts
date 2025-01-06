@@ -1,6 +1,6 @@
 import { createPersistBoard } from "../core/createPersistBoard";
-import { Options } from "../types";
+import { Board, Options } from "../types";
 
-export function persist<T>(initialState: T, options: Options<T>) {
+export function persist<T>(initialState: T, options: Options<T>): Board<T> {
   return createPersistBoard(initialState, options);
 }

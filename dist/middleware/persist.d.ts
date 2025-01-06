@@ -1,2 +1,2 @@
-import { Options } from "../types";
-export declare function persist<T>(initialState: T, options: Options<T>): import("../types").Board<T>;
+import { Board, Options } from "../types";
+export declare function persist<T>(initialState: T, options: Options<T>): Board<T>;
