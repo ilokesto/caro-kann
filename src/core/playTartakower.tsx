@@ -1,11 +1,15 @@
-import type { Board, Options, UseBoard } from "./types";
+import type { Board, UseBoard } from "../types";
 import { createContext, ReactNode } from "react";
-import { createBoard } from "./funcs/createBoard";
-import { createSetTargetBoard } from "./funcs/createSetTargetBoard";
-import { useStore } from "./funcs/useStore";
+import { createBoard } from "./createBoard";
+import { useStore } from "./useStore";
+import { createSetTargetBoard } from "../funcs/createSetTargetBoard";
 
-export function playTartakower<T>(initState: T, options?: Options<T>) {
-  const Board = createContext<Board<T>>(createBoard(initState, options));
+function isBoard<T>(initState: T | Board<T>): initState is Board<T> {
+  return (initState as Board<T>).getBoard !== undefined;
+}
+
+export function playTartakower<T>(initState: T | Board<T>) {
+  const Board = createContext<Board<T>>(isBoard(initState) ? initState : createBoard(initState));
 
   const useBoard: UseBoard<T> = <S,>(selector?: (state: T) => S): any => {
     const [board, setBoard] = selector ? useStore(Board, selector) : useStore(Board);

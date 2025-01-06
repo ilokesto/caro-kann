@@ -10,8 +10,17 @@
   },
   "sideEffects": false,
   "types": "dist/index.d.ts",
-  "module": "dist/caro_kann.es.js",
-  "main": "dist/caro_kann.umd.js",
+  "module": "dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./middleware": {
+      "import": "./dist/middleware.js",
+      "types": "./dist/middleware.d.ts"
+    }
+  },
   "files": [
     "dist"
   ],
