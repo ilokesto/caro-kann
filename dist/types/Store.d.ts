@@ -17,6 +17,14 @@ export type Create = {
             <S>(selector: (state: T) => S): S;
         };
     };
+    <T>(initState: [Store<T>, "devtools"]): {
+        useStore: UseStore<T>;
+        useDerivedStore: <S>(selector: (state: T) => S) => S;
+        StoreContext: ({ value, children }: {
+            value: T;
+            children: ReactNode;
+        }) => JSX.Element;
+    };
     <T>(initState: T): {
         useStore: UseStore<T>;
         useDerivedStore: <S>(selector: (state: T) => S) => S;

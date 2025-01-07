@@ -3,7 +3,7 @@ import { createContext, ReactNode } from "react";
 import { createStore } from "./createStore";
 import { useStoreSync } from "./useStoreSync";
 
-export const create: Create = <T,>(initState: T | [Store<T>, "reducer" | "zustand" | "persist"]): any => {
+export const create: Create = <T,>(initState: T | [Store<T>, "reducer" | "zustand" | "persist" | "devtools"]): any => {
   // @ts-expect-error
   const Store = createContext<Store<T>>(initState[0] ?? createStore(initState));
 
