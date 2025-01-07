@@ -2,9 +2,21 @@
 [![Version](https://img.shields.io/npm/v/caro-kann?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/caro-kann)
 [![Downloads](https://img.shields.io/npm/dt/caro-kann.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/caro-kann)
 
-
-
 [Caro-Kann Korean Docs / 한국어 공식 문서](https://lackluster.tistory.com/151)
+
+- [Caro-Kann](#caro-kann)
+- [what's new in caro-kann@3.0.0](#what-s-new-in-caro-kann-300)
+- [install and import](#install-and-import)
+- [create a store](#create-a-store)
+  * [useStore](#usestore)
+  * [useDerivedStore](#usederivedstore)
+  * [StoreContext](#storecontext)
+- [MiddleWare](#middleware)
+  * [persist](#persist)
+  * [zustand](#zustand)
+  * [reducer](#reducer)
+  * [devtools](#devtools)
+
 
 &nbsp;
 
@@ -173,7 +185,7 @@ const [f, setF] = useStore({ b: { d: { f }}} => f) // Error
 
 &nbsp;
 
-# useDerivedStore
+## useDerivedStore
 
 Just like useStore accepts a selector function, **useDerivedStore accepts a derivation function**. However, unlike selector functions, there are no specific restrictions on derivation functions.
 Using a derivation function, you can create **derived states** based on existing states, similar to derived atoms in Jotai. This is useful for enhancing the reusability and composability of states, and helps simplify complex state management logic. Like derived atoms, **derived states are recalculated whenever the referenced state changes**.
