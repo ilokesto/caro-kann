@@ -87,5 +87,5 @@ export const createPersistBoard = (initState, options) => {
         callbacks.add(callback);
         return () => callbacks.delete(callback);
     };
-    return { getBoard, setBoard, subscribe, getInitState: () => initState };
+    return { getBoard, setBoard, subscribe, getInitState: () => initState, storeTag: 'persist' };
 };

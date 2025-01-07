@@ -15,6 +15,7 @@ export type Create = {
     };
 };
 export interface Store<T> {
+    storeTag: string;
     getBoard: () => T;
     setBoard: SetStore<T>;
     subscribe: (callback: () => void) => () => void;
@@ -27,6 +28,8 @@ export type UseStore<T> = {
     <S>(selector: (state: T) => S): readonly [S, SetStore<S>, SetStore<T>];
 };
 export type UseSyncStore = {
-    <T>(Board: Context<Store<T>>): readonly [T, SetStore<T>];
-    <T, S>(Board: Context<Store<T>>, selector: (value: T) => S): readonly [S, SetStore<T>];
+    <T>(Board: Context<Store<T>>): {
+        (): readonly [T, SetStore<T>];
+        <S>(selector: (value: T) => S): readonly [S, SetStore<S>, SetStore<T>];
+    };
 };
