@@ -27,53 +27,55 @@ Caro-Kann is a global state management tool internally built with the useSyncExt
 npm i caro-kann@latest
 ```
 ```ts
-import { playTartakower } from "caro-kann";
+import { create } from "caro-kann";
+import { persist, zustand, reducer, devtools } from "caro-kann/middleware"
 ```
 
 &nbsp;
-# create a store with playTartakower
+# create a store
 
-In Caro-Kann, a **store** is defined as an external space where the global state is stored. To create such a store, Caro-Kann uses the playTartakower function. This function takes an initial value, stores it in the internal store, and returns an object consisting of `useBoard`, `useDerivedBoard`, and `BoardContext`.
+In Caro-Kann, a **store** is defined as an external space where the global state is stored. To create such a store, Caro-Kann uses the `create` function. This function takes an initial value, stores it in the internal store, and returns an object consisting of `useBoard`, `useDerivedBoard`, and `BoardContext`.
 
 ```ts
 const {
-  useBoard,
-  useDerivedBoard,
-  BoardContext,
-} = playTartakower({ a: 0, b: 0, c: 0 });
+  useStore,
+  useDerivedStore,
+  StoreContext,
+} = create({ a: 0, b: 0, c: 0 });
 ```
 
-It is important to remember that the evaluation of the playTartakower function must occur outside of the component. Otherwise, the store may be lost depending on the component's lifecycle.
+It is important to remember that the evaluation of the create function must occur outside of the component. Otherwise, the store may be lost depending on the component's lifecycle.
 
 &nbsp;
-# useBoard
 
-useBoard is a custom hook that return `[board, setBoard]` tuple just like useState in React.js.
+## useStore
+
+useStore is a custom hook that return `[board, setBoard]` tuple just like useState in React.js.
 
 ```tsx
 function CompA() {
-  const [board, setBoard] = useBoard();
+  const [value, setValue] = useStore();
   
   return (
-    <button onClick={() => setBoard(prev => ({...prev, a: prev.a + 1}))}>
-      Now a is { board.a }. Next, a will be { board.a + 1 } 
+    <button onClick={() => setValue(prev => ({...prev, a: prev.a + 1}))}>
+      Now a is { value.a }. Next, a will be { value.a + 1 } 
     </button>
   )
 }
 ```
 When working with nested object states, Caro-Kann offers several ways to update them. The first method is to use the spread operator to copy each level of the object. This allows you to manually merge the new state value into the existing one.
 ```tsx
-const { useBoard } = playTartakower({
+const { useStore } = create({
   deep: {
     nested: {
       obj: { count: 0 }
     }
   }
 })
+ 
+const [value, setValue] = useStore()
 
-const [board, setBoard] = useBoard()
-
-setBoard(store => ({
+setValue(store => ({
   deep: {
     ...state.deep,
     nested: {
@@ -93,15 +95,15 @@ Using the Immer library, which helps with immutable state updates, makes it much
 // With Immer
 import { produce } from 'immer';
  
-const [board, setBoard] = useBoard()
+const [value, setValue] = useStore()
  
-setBoard(produce(store => { ++store.deep.nested.obj.count }))
+setValue(produce(store => { ++store.deep.nested.obj.count }))
 ```
 
 As we’ll explore in more detail under "selector functions," by using a selector function with useBoard, setBoard can recognize nested properties, allowing you to easily update nested object states.
 
 ```tsx
-const [count, setCount] = useBoard(store => store.deep.nested.obj.count)
+const [count, setCount] = useStore(store => store.deep.nested.obj.count)
  
 setCount(prev => prev + 1)
 ```
