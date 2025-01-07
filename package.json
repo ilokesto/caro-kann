@@ -1,6 +1,6 @@
 {
   "name": "caro-kann",
-  "version": "2.2.1",
+  "version": "3.0.0",
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly"
   },
@@ -10,17 +10,24 @@
   },
   "sideEffects": false,
   "types": "dist/index.d.ts",
-  "module": "dist/caro_kann.es.js",
-  "main": "dist/caro_kann.umd.js",
+  "module": "dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./middleware": {
+      "import": "./dist/middleware.js",
+      "types": "./dist/middleware.d.ts"
+    }
+  },
   "files": [
     "dist"
   ],
   "keywords": [
     "react",
-    "state",
-    "manager",
-    "management",
-    "store"
+    "global state management",
+    "caro-kann"
   ],
   "author": "Jeong Jinho <wpfekdml@me.com>",
   "license": "MIT",
