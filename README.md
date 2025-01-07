@@ -110,12 +110,12 @@ setCount(prev => prev + 1)
 
 
 
-## selecter function
+### selecter function
 
-If a component references a global state in the form of an object structure, the component will re-render even if properties that are not being used are changed. To prevent this, useBoard allows retrieving only specific property values from the global state in the form of an object through a selector function. In the example code below, the component will not re-render even when the a property value of the global state is changed. What's more, when a selector function is used, the setter no longer targets the entire set of properties but instead modifies only the specific properties selected by the selector function.
+If a component references a global state in the form of an object structure, the component will re-render even if properties that are not being used are changed. To prevent this, useStore allows retrieving only specific property values from the global state in the form of an object through a selector function. In the example code below, the component will not re-render even when the a property value of the global state is changed. What's more, when a selector function is used, the setter no longer targets the entire set of properties but instead modifies only the specific properties selected by the selector function.
 ```tsx
 function Comp() {
-  const [b, setB] = useBoard(store => store.b);
+  const [b, setB] = useStore(store => store.b);
   
   return (
     <button onClick={() => setB(prev => prev + 1}>
@@ -124,17 +124,17 @@ function Comp() {
   )
 }
 ```
-However, even if a component only uses the value of a, there may be cases where you need to modify the value of b. To handle this situation, when a selector function is provided, useBoard returns setBoard as the third element of the tuple.
+However, even if a component only uses the value of a, there may be cases where you need to modify the value of b. To handle this situation, when a selector function is provided, useStore returns setStore as the third element of the tuple.
 ```tsx
 function Comp() {
-  const [a, setA, setBoard] = useBoard(store => store.a);
+  const [a, setA, setStore] = useStore(store => store.a);
   
   return (
     <>
       <button onClick={() => setA(prev => prev + 1}>
         Now a is { a }. Next, a will be { a + 1 } 
       </button>
-      <button onClick={() => setBoard(prev => ({...prev, b: prev.b + 1})}>
+      <button onClick={() => setStore(prev => ({...prev, b: prev.b + 1})}>
         change b
       </button>
     </>
@@ -144,7 +144,7 @@ function Comp() {
 By using selector functions, you can effectively handle nested object states as shown below. To write selector functions, there are a few rules to follow. First, all selector functions must be written as arrow functions. Also, variables cannot be used to select values from the nested object state within the store. Lastly, the five special characters { ? : & } cannot be used in selector functions. If you don't follow these rules while writing selector functions, you will encounter runtime errors. :)
 
 ```tsx
-const { useBoard } = playTartakower({
+const { useStore } = playTartakower({
   ["a-to-z"]: 0,
   b: {
     c: 0,
@@ -157,29 +157,29 @@ const { useBoard } = playTartakower({
 
 // Selector functions must only be arrow functions
 const getAtoZ = (store) => store["a-to-z"]
-const [atoZ, setAtoZ] = useBoard(getAtoZ) // ok
+const [atoZ, setAtoZ] = useStore(getAtoZ) // ok
 
 // It is fine to mix dot notation and bracket notation
-const [e, setE] = useBoard(store => store["b"].d.e) // ok
+const [e, setE] = useStore(store => store["b"].d.e) // ok
 
 // Variables cannot be used within bracket notation
 const c = "c"
-const [c, setC] = useBoard(store => store.b[c]) // Error
+const [c, setC] = useStore(store => store.b[c]) // Error
 
 // Special characters { ? : & } cannot be used
-const [b, setB] = useBoard(store => typeof store.b !== object ? true : false) // Error
-const [f, setF] = useBoard({ b: { d: { f }}} => f) // Error
+const [b, setB] = useStore(store => typeof store.b !== object ? true : false) // Error
+const [f, setF] = useStore({ b: { d: { f }}} => f) // Error
 ```
 
 &nbsp;
 
-# useDerivedBoard
+# useDerivedStore
 
-Just like useBoard accepts a selector function, **useDerivedBoard accepts a derivation function**. However, unlike selector functions, there are no specific restrictions on derivation functions.
+Just like useStore accepts a selector function, **useDerivedStore accepts a derivation function**. However, unlike selector functions, there are no specific restrictions on derivation functions.
 Using a derivation function, you can create **derived states** based on existing states, similar to derived atoms in Jotai. This is useful for enhancing the reusability and composability of states, and helps simplify complex state management logic. Like derived atoms, **derived states are recalculated whenever the referenced state changes**.
 ```tsx
 function CompB() {
-  const [a, setA] = useBoard(store => store.a)
+  const [a, setA] = useStore(store => store.a)
  
   return (
     <button onClick={() => setA(prev => prev + 1)}>
@@ -189,7 +189,7 @@ function CompB() {
 }
  
 function CompC() {
-  const hasVotingRights = useDerivedBoard(store => store.a >= 18);
+  const hasVotingRights = useDerivedStore(store => store.a >= 18);
  
   return (
     <div>
@@ -206,37 +206,37 @@ function CompC() {
 
 &nbsp;
 
-# BoardContext
+## StoreContext
 
-If needed, you can use the BoardContext component to make a specific node in the DOM tree subscribe to a store that is different from the global state. The BoardContext component takes a value prop, which can only accept values that are compatible with the type of the initial value provided to playTartakower.
+If needed, you can use the StoreContext component to make a specific node in the DOM tree subscribe to a store that is different from the global state. The StoreContext component takes a value prop, which can only accept values that are compatible with the type of the initial value provided to playTartakower.
 
-Looking at the code below, you’ll see that the same CompA component is used twice. However, depending on whether it is inside or outside of the BoardContext, the component will fetch its a value from different stores. The CompA outside of the BoardContext will get its value from the global state, while the CompA inside the BoardContext will get its value from the BoardContext.
+Looking at the code below, you’ll see that the same CompA component is used twice. However, depending on whether it is inside or outside of the StoreContext, the component will fetch its a value from different stores. The CompA outside of the StoreContext will get its value from the global state, while the CompA inside the StoreContext will get its value from the StoreContext.
 
 ```tsx
 const {
-  useBoard,
-  useDerivedBoard,
-  BoardContext,
+  useStore,
+  useDerivedStore,
+  StoreContext,
 } = playTartakower({ a: 0, b: 0, c: 0 });
  
 export default function Page() {
   return (
     <div>
       <CompA />
-      <BoardContext value={{ a: 15, b: 0, c: 0 }}>
+      <StoreContext value={{ a: 15, b: 0, c: 0 }}>
         <CompA />
         <CompC />
-      </BoardContext>
+      </StoreContext>
     </div>
   )
 }
  
 function CompA() {
-  const [board, setBoard] = useBoard();
+  const [value, setValue] = useStore();
   
   return (
-    <button onClick={() => setBoard(prev => ({...prev, a: prev.a + 1}))}>
-      Now a is { board.a }. Next, a will be { board.a + 1 } 
+    <button onClick={() => setValue(prev => ({...prev, a: prev.a + 1}))}>
+      Now a is { value.a }. Next, a will be { value.a + 1 } 
     </button>
   )
 }
