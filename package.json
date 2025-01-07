@@ -1,6 +1,6 @@
 {
   "name": "caro-kann",
-  "version": "2.2.1",
+  "version": "3.0.0",
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly"
   },
@@ -26,10 +26,8 @@
   ],
   "keywords": [
     "react",
-    "state",
-    "manager",
-    "management",
-    "store"
+    "global state management",
+    "caro-kann"
   ],
   "author": "Jeong Jinho <wpfekdml@me.com>",
   "license": "MIT",
