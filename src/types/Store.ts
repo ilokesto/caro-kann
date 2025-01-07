@@ -7,7 +7,6 @@ export type Create = {
 }
 
 export interface Store<T> {
-  storeTag: 'normal' | 'persist' | 'zustand' | 'reducer';
   getStore: () => T;
   setStore: SetStore<T>;
   subscribe: (callback: () => void) => () => void;

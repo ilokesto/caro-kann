@@ -5,7 +5,7 @@ import { createSetTargetBoard } from "../utils/createSetTargetBoard";
 export const useStoreSync: UseSyncStore =
   <T, S>(Board: Context<Store<T>>) =>
   (selector?: (value: T) => S): any => {
-    const { getStore, setStore, subscribe, getInitState, storeTag } =
+    const { getStore, setStore, subscribe, getInitState} =
       useContext(Board);
     const snapshot = (fn: () => T) => () => selector ? selector(fn()) : fn();
     const board = useSyncExternalStore(
@@ -13,8 +13,6 @@ export const useStoreSync: UseSyncStore =
       snapshot(getStore),
       snapshot(getInitState)
     );
-
-    if (["zustand", "reducer"].includes(storeTag)) return board;
 
     if (selector)
       return [

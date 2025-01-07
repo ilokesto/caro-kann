@@ -20,5 +20,5 @@ export function createZustandStore<T>(initFn: (set: (nextState: Partial<T> | ((p
 
   store = initFn(setStore, getStore);
 
-  return { getStore, setStore, subscribe, getInitState: () => store, storeTag: 'zustand' as const };
+  return { getStore, setStore, subscribe, getInitState: () => store };
 };
