@@ -14,9 +14,11 @@ Caro-Kann is a global state management tool internally built with the useSyncExt
 
 &nbsp;
 
-# what's new in caro-kann@2.2.0
-* The new version of Caro-Kann includes a feature commonly referred to as persist, which integrates local storage, session storage, and cookies. This allows the application's state to be continuously saved and easily restored. With persist, the state can be maintained even after a page refresh or session termination.
-* It also supports version management for persist, enabling easy conversion or discarding of data from previous versions when the application's state structure changes.
+# what's new in caro-kann@3.0.0
+* The new version of Caro-Kann has improved its internal code structure and actively implemented techniques such as tree shaking. As a result, the bundle size has been reduced by up to three times compared to version 2.2.0.
+* Semantics are important. Each feature and API is designed with a clear purpose and intent, enabling developers to write state management-related code in a more intuitive and intentional manner. API names and behaviors have been changed to be as intuitive as possible, minimizing ambiguity that could lead to mistakes. These semantic improvements not only enhance the way the code works but also improve the way it is read and understood, contributing to long-term maintainability and collaboration potential.
+* In the previous version, the persist functionality included in create has been separated into a middleware. The middleware-based persist is designed to function independently of global state management, allowing it to be integrated easily without affecting existing state management logic. This separation significantly enhances the application's performance, maintainability, and scalability.
+* The middleware includes persist along with reducer, zustand, and devtools functionality, allowing for flexible application of various state management features. Each function can be used independently or in combination, depending on the application's requirements.
 
 &nbsp;
 
