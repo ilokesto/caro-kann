@@ -42,7 +42,7 @@ export type Dispatcher<T> = (action: {
     [x: string]: any;
     type: string;
 }) => T;
-export type CreateReducerStore = <T>(reducer: (state: T, action: reducerAction) => T, initValue: T) => Store<T, Dispatcher<void>>;
+export type CreateReducerStore = <T>(reducer: (state: T, action: reducerAction) => T, store: Store<T>) => Store<T, Dispatcher<void>>;
 export type CreatePersistStore = <T>(store: Store<T>, options: Options<T>) => Store<T>;
 export type UseStore<T> = {
     (): readonly [T, SetStore<T>];

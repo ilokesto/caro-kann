@@ -1,14 +1,6 @@
-export const createReducerStore = (reducer, initState) => {
-    const callbacks = new Set();
-    let store = initState;
+export const createReducerStore = (reducer, Store) => {
     const setStore = (action) => {
-        store = reducer(store, action);
-        callbacks.forEach((cb) => cb());
+        Store.setStore(prev => reducer(prev, action));
     };
-    const getStore = () => store;
-    const subscribe = (callback) => {
-        callbacks.add(callback);
-        return () => callbacks.delete(callback);
-    };
-    return { getStore, setStore, subscribe, getInitState: () => initState };
+    return { ...Store, setStore };
 };

@@ -86,5 +86,5 @@ export const createPersistBoard: CreatePersistStore = (Store, options) => {
     if (optionObj.storageType) setStorage({ ...optionObj, value: Store.getStore() });
   }
 
-  return { getStore: Store.getStore, setStore, subscribe: Store.subscribe, getInitState: Store.getInitState };
+  return { ...Store, setStore };
 };
