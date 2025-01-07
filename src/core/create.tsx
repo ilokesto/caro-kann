@@ -16,5 +16,18 @@ export const create: Create = <T,>(initState: T | [Store<T>, "reducer" | "zustan
     return <Store.Provider value={createStore(value)}>{children}</Store.Provider>;
   };
 
-  return initState instanceof Array ? { useStore, useDerivedStore } : { useStore, useDerivedStore, StoreContext };
+  if (initState instanceof Array) {
+    switch (initState[1]) {
+      case "reducer":
+        return { useStoreReducer: useStore };
+      case "persist":
+        return { useStore, useDerivedStore };
+      case "zustand":
+        return { useStore };
+      default:
+        return { useStore, useDerivedStore, StoreContext };
+    }
+  }
+
+  return { useStore, useDerivedStore, StoreContext };
 };

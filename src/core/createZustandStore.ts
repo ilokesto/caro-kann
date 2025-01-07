@@ -1,6 +1,6 @@
 import { Store } from "../types";
 
-export function createZustandStore<T>(initFn: (set: (nextState: Partial<T> | ((prev: T) => T)) => void, get: () => T) => T): Store<T> {
+export function createZustandStore<T>(initFn: (set: (nextState: Partial<T> | ((prev: T) => T)) => void, get: () => T, api: Omit<Store<T>, "getInitState">) => T): Store<T> {
   let store: T;
   const callbacks = new Set<() => void>();
   const getStore = () => store;
@@ -18,7 +18,7 @@ export function createZustandStore<T>(initFn: (set: (nextState: Partial<T> | ((p
     };
   };
 
-  store = initFn(setStore, getStore);
+  store = initFn(setStore, getStore, { getStore, setStore, subscribe });
 
   return { getStore, setStore, subscribe, getInitState: () => store };
 };

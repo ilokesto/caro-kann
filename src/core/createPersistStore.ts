@@ -1,4 +1,4 @@
-import type { CreateStore, ExecMigrate, GetStorage, Options, SetStorage } from "../types";
+import type { CreatePersistStore, CreateStore, ExecMigrate, GetStorage, Options, SetStorage } from "../types";
 
 function getCookie(name: string) {
   const cookies = document.cookie.split("; ");
@@ -74,27 +74,17 @@ const setStorage: SetStorage = ({storageKey, storageType, storageVersion: versio
   }
 };
 
-export const createPersistBoard: CreateStore = (initState, options) => {
+export const createPersistBoard: CreatePersistStore = (Store, options) => {
   const optionObj = parseOptions(options);
-  const initialState = optionObj.storageType ? getStorage({...optionObj, initState }).state : initState;
-  const callbacks = new Set<() => void>();
-  let store = initialState;
+  const initialState = optionObj.storageType ? getStorage({...optionObj, initState: Store.getInitState() }).state : Store.getInitState();
+  Store.setStore(initialState);
 
-  type T = typeof initState;
+  type T = typeof initialState;
   const setStore = (nextState: T | ((prev: T) => T)) => {
-    store = typeof nextState === "function" ? (nextState as (prev: T) => T)(store) : nextState;
-    
-    if (optionObj.storageType) setStorage({ ...optionObj, value: store });
+    Store.setStore(nextState)
 
-    callbacks.forEach((cb) => cb());
-  };
+    if (optionObj.storageType) setStorage({ ...optionObj, value: Store.getStore() });
+  }
 
-  const getStore = () => store;
-
-  const subscribe = (callback: () => void) => {
-    callbacks.add(callback);
-    return () => callbacks.delete(callback);
-  };
-
-  return { getStore, setStore, subscribe, getInitState: () => initState, storeTag: 'persist' as const };
+  return { getStore: Store.getStore, setStore, subscribe: Store.subscribe, getInitState: Store.getInitState };
 };

@@ -12,7 +12,7 @@ export function createZustandStore(initFn) {
             callbacks.delete(callback);
         };
     };
-    store = initFn(setStore, getStore);
+    store = initFn(setStore, getStore, { getStore, setStore, subscribe });
     return { getStore, setStore, subscribe, getInitState: () => store };
 }
 ;

@@ -18,5 +18,5 @@ export const createStore: CreateStore = (initState) => {
     return () => callbacks.delete(callback);
   };
 
-  return { getStore, setStore, subscribe, getInitState: () => initState, storeTag: 'normal' };
+  return { getStore, setStore, subscribe, getInitState: () => initState };
 };

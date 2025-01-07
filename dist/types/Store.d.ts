@@ -6,9 +6,15 @@ export type Create = {
         useDerivedStore: <S>(selector: (state: T) => S) => S;
     };
     <T>(initState: [Store<T, Dispatcher<void>>, "reducer"]): {
-        useStore: {
+        useStoreReducer: {
             (): readonly [T, Dispatcher<void>];
             <S>(selector: (state: T) => S): readonly [S, Dispatcher<void>];
+        };
+    };
+    <T>(initState: [Store<T>, "zustand"]): {
+        useStore: {
+            (): T;
+            <S>(selector: (state: T) => S): S;
         };
     };
     <T>(initState: T): {
@@ -37,6 +43,7 @@ export type Dispatcher<T> = (action: {
     type: string;
 }) => T;
 export type CreateReducerStore = <T>(reducer: (state: T, action: reducerAction) => T, initValue: T) => Store<T, Dispatcher<void>>;
+export type CreatePersistStore = <T>(store: Store<T>, options: Options<T>) => Store<T>;
 export type UseStore<T> = {
     (): readonly [T, SetStore<T>];
     <S>(selector: (state: T) => S): readonly [S, SetStore<S>, SetStore<T>];

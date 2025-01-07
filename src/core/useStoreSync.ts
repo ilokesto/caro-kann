@@ -13,13 +13,21 @@ export const useStoreSync: UseSyncStore =
       snapshot(getInitState)
     );
 
-    if (storeTag === "reducer") return [board, setStore] as const;
+    switch (storeTag) {
+      case "reducer":
+        return [board, setStore] as const;
 
-    if (selector)
-      return [
-        board,
-        createSetTargetBoard(setStore, selector),
-        setStore,
-      ] as const;
-    else return [board, setStore] as const;
+      case "zustand":
+        return board;
+
+      default:
+        if (selector)
+          return [
+            board,
+            // 일반적인 상황에서 중첩된 객체를 효율적으로 처리
+            createSetTargetBoard(setStore, selector),
+            setStore,
+          ] as const;
+        else return [board, setStore] as const;
+    }
   };

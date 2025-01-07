@@ -1,2 +1,2 @@
-import type { CreateStore } from "../types";
-export declare const createPersistBoard: CreateStore;
+import type { CreatePersistStore } from "../types";
+export declare const createPersistBoard: CreatePersistStore;

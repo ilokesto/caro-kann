@@ -71,21 +71,14 @@ const setStorage = ({ storageKey, storageType, storageVersion: version, value: s
             console.error('Caro-Kann : Failed to write to storage', e);
     }
 };
-export const createPersistBoard = (initState, options) => {
+export const createPersistBoard = (Store, options) => {
     const optionObj = parseOptions(options);
-    const initialState = optionObj.storageType ? getStorage({ ...optionObj, initState }).state : initState;
-    const callbacks = new Set();
-    let store = initialState;
+    const initialState = optionObj.storageType ? getStorage({ ...optionObj, initState: Store.getInitState() }).state : Store.getInitState();
+    Store.setStore(initialState);
     const setStore = (nextState) => {
-        store = typeof nextState === "function" ? nextState(store) : nextState;
+        Store.setStore(nextState);
         if (optionObj.storageType)
-            setStorage({ ...optionObj, value: store });
-        callbacks.forEach((cb) => cb());
+            setStorage({ ...optionObj, value: Store.getStore() });
     };
-    const getStore = () => store;
-    const subscribe = (callback) => {
-        callbacks.add(callback);
-        return () => callbacks.delete(callback);
-    };
-    return { getStore, setStore, subscribe, getInitState: () => initState, storeTag: 'persist' };
+    return { getStore: Store.getStore, setStore, subscribe: Store.subscribe, getInitState: Store.getInitState };
 };
