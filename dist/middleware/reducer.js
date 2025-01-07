@@ -1,5 +1,8 @@
-import { createReducerStore } from "../core/createReducerStore";
 import { createStore } from "../core/createStore";
 export function reducer(reducer, initialState) {
-    return [createReducerStore(reducer, createStore(initialState)), "reducer"];
+    const Store = createStore(initialState);
+    const setStore = (action) => {
+        Store.setStore(prev => reducer(prev, action));
+    };
+    return [{ ...Store, setStore }, "reducer"];
 }

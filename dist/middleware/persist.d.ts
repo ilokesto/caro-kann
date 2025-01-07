@@ -1,2 +1,2 @@
-import { Store, Options } from "../types";
-export declare function persist<T>(initialState: T, options: Options<T>): [Store<T>, "persist"];
+import type { Options, Store } from "../types";
+export declare function persist<T>(initState: T, options: Options<T>): [Store<T>, "persist"];

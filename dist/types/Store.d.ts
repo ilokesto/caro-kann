@@ -6,7 +6,7 @@ export type Create = {
         useDerivedStore: <S>(selector: (state: T) => S) => S;
     };
     <T>(initState: [Store<T, Dispatcher<void>>, "reducer"]): {
-        useStoreReducer: {
+        useStore: {
             (): readonly [T, Dispatcher<void>];
             <S>(selector: (state: T) => S): readonly [S, Dispatcher<void>];
         };

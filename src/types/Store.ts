@@ -5,7 +5,7 @@ export type Create = {
   // middleware persist
   <T>(initState: [Store<T>, "persist"]): { useStore: UseStore<T>, useDerivedStore: <S>(selector: (state: T) => S) => S },
   // middleware reducer
-  <T>(initState: [Store<T, Dispatcher<void>>, "reducer"]): { useStoreReducer: {
+  <T>(initState: [Store<T, Dispatcher<void>>, "reducer"]): { useStore: {
     (): readonly [T, Dispatcher<void>],
     <S>(selector: (state: T) => S): readonly [S, Dispatcher<void>],
   } },
