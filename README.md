@@ -11,7 +11,7 @@
   * [useStore](#usestore)
   * [useDerivedStore](#usederivedstore)
   * [StoreContext](#storecontext)
-- [MiddleWare](#middleware)
+- [Middleware](#middleware)
   * [persist](#persist)
   * [zustand](#zustand)
   * [reducer](#reducer)
@@ -270,7 +270,7 @@ Looking at the image below, you can see that each component is being handled ind
 
 &nbsp;
 
-# MiddleWare
+# Middleware
 
 Currently, Caro-Kann supports four middleware options: persist, zustand, reducer, and devtools. Through these, the create function can efficiently handle global state management, state persistence, state change logic, and debugging features, allowing for flexible application tailored to the application's structure and requirements.
 
