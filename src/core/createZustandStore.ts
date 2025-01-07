@@ -1,22 +1,24 @@
-import type { CreateStore } from "../types";
+import { Store } from "../types";
 
-export const createStore: CreateStore = (initState) => {
+export function createZustandStore<T>(initFn: (set: (nextState: Partial<T> | ((prev: T) => T)) => void, get: () => T) => T): Store<T> {
+  let store: T;
   const callbacks = new Set<() => void>();
-  let board = initState;
+  const getStore = () => store;
 
-  type T = typeof initState;
-  const setBoard = (nextState: T | ((prev: T) => T)) => {
-    board = typeof nextState === "function" ? (nextState as (prev: T) => T)(board) : nextState;
-
-    callbacks.forEach((cb) => cb());
+  const setStore = (nextState: Partial<T> | ((prev: T) => T)) => {
+    store = typeof nextState === "function" ? (nextState as (prev: T) => T)(store) : {...store, ...nextState};
+    callbacks.forEach((callback) => callback());
   };
-
-  const getBoard = () => board;
 
   const subscribe = (callback: () => void) => {
     callbacks.add(callback);
-    return () => callbacks.delete(callback);
+
+    return () => {
+      callbacks.delete(callback);
+    };
   };
 
-  return { getBoard, setBoard, subscribe, getInitState: () => initState, storeTag: 'normal' };
+  store = initFn(setStore, getStore);
+
+  return { getStore, setStore, subscribe, getInitState: () => store, storeTag: 'zustand' as const };
 };

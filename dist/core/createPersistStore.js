@@ -75,17 +75,17 @@ export const createPersistBoard = (initState, options) => {
     const optionObj = parseOptions(options);
     const initialState = optionObj.storageType ? getStorage({ ...optionObj, initState }).state : initState;
     const callbacks = new Set();
-    let board = initialState;
-    const setBoard = (nextState) => {
-        board = typeof nextState === "function" ? nextState(board) : nextState;
+    let store = initialState;
+    const setStore = (nextState) => {
+        store = typeof nextState === "function" ? nextState(store) : nextState;
         if (optionObj.storageType)
-            setStorage({ ...optionObj, value: board });
+            setStorage({ ...optionObj, value: store });
         callbacks.forEach((cb) => cb());
     };
-    const getBoard = () => board;
+    const getStore = () => store;
     const subscribe = (callback) => {
         callbacks.add(callback);
         return () => callbacks.delete(callback);
     };
-    return { getBoard, setBoard, subscribe, getInitState: () => initState, storeTag: 'persist' };
+    return { getStore, setStore, subscribe, getInitState: () => initState, storeTag: 'persist' };
 };

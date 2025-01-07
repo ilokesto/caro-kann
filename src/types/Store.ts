@@ -8,8 +8,8 @@ export type Create = {
 
 export interface Store<T> {
   storeTag: 'normal' | 'persist' | 'zustand' | 'reducer';
-  getBoard: () => T;
-  setBoard: SetStore<T>;
+  getStore: () => T;
+  setStore: SetStore<T>;
   subscribe: (callback: () => void) => () => void;
   getInitState: () => T;  
 }

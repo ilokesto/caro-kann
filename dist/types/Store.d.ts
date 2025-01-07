@@ -15,9 +15,9 @@ export type Create = {
     };
 };
 export interface Store<T> {
-    storeTag: string;
-    getBoard: () => T;
-    setBoard: SetStore<T>;
+    storeTag: 'normal' | 'persist' | 'zustand' | 'reducer';
+    getStore: () => T;
+    setStore: SetStore<T>;
     subscribe: (callback: () => void) => () => void;
     getInitState: () => T;
 }

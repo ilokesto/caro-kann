@@ -2,21 +2,21 @@ import type { CreateStore } from "../types";
 
 export const createStore: CreateStore = (initState) => {
   const callbacks = new Set<() => void>();
-  let board = initState;
+  let store = initState;
 
   type T = typeof initState;
-  const setBoard = (nextState: T | ((prev: T) => T)) => {
-    board = typeof nextState === "function" ? (nextState as (prev: T) => T)(board) : nextState;
+  const setStore = (nextState: T | ((prev: T) => T)) => {
+    store = typeof nextState === "function" ? (nextState as (prev: T) => T)(store) : nextState;
 
     callbacks.forEach((cb) => cb());
   };
 
-  const getBoard = () => board;
+  const getStore = () => store;
 
   const subscribe = (callback: () => void) => {
     callbacks.add(callback);
     return () => callbacks.delete(callback);
   };
 
-  return { getBoard, setBoard, subscribe, getInitState: () => initState, storeTag: 'normal' };
+  return { getStore, setStore, subscribe, getInitState: () => initState, storeTag: 'normal' };
 };
