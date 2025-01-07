@@ -34,7 +34,7 @@ import { persist, zustand, reducer, devtools } from "caro-kann/middleware"
 &nbsp;
 # create a store
 
-In Caro-Kann, a **store** is defined as an external space where the global state is stored. To create such a store, Caro-Kann uses the `create` function. This function takes an initial value, stores it in the internal store, and returns an object consisting of `useBoard`, `useDerivedBoard`, and `BoardContext`.
+In Caro-Kann, a **store** is defined as an external space where the global state is stored. To create such a store, Caro-Kann uses the `create` function. This function takes an initial value, stores it in the internal store, and returns an object consisting of `useStore`, `useDerivedStore`, and `StoreContext`.
 
 ```ts
 const {
@@ -100,7 +100,7 @@ const [value, setValue] = useStore()
 setValue(produce(store => { ++store.deep.nested.obj.count }))
 ```
 
-As we’ll explore in more detail under "selector functions," by using a selector function with useBoard, setBoard can recognize nested properties, allowing you to easily update nested object states.
+As we’ll explore in more detail under "selector functions," by using a selector function with useStore, setStore can recognize nested properties, allowing you to easily update nested object states.
 
 ```tsx
 const [count, setCount] = useStore(store => store.deep.nested.obj.count)
@@ -242,7 +242,7 @@ function CompA() {
 }
  
 function CompC() {
-  const hasVotingRights = useDerivedBoard(
+  const hasVotingRights = useDerivedStore(
     store => store.a >= 18
       ? "You have voting rights."
       : "You do not have voting rights.";
@@ -258,20 +258,38 @@ Looking at the image below, you can see that each component is being handled ind
 
 &nbsp;
 
-# Persist
+# MiddleWare
+
+Currently, Caro-Kann supports four middleware options: persist, zustand, reducer, and devtools. Through these, the create function can efficiently handle global state management, state persistence, state change logic, and debugging features, allowing for flexible application tailored to the application's structure and requirements.
+
+There are a few points to keep in mind when using middleware. First, when middleware is applied, the create function returns only two functions—useStore and useDerivedStore—excluding the StoreContext component. Additionally, middleware cannot be nested. Although the next minor update aims to address these limitations, for now, these aspects must be carefully considered when using middleware.
+
+&nbsp;
+
+## persist
 
 Caro-Kann allows global state to be stored in local storage, session storage, and cookies. This feature is especially important for improving user experience and is suitable for values that need to persist even after a page refresh or session termination, such as the theme settings of a webpage.
 
 ```tsx
+const { useStore, useDerivedStore } = create<TStore>(
+  persist(initialState, persistOptions)
+)
+```
+
+When storing global state in Caro-Kann, the state is stored alongside a version. This allows the application to easily transform or disregard data from previous versions if the state structure changes. For example, if the theme needs to include font size in addition to background color, Caro-Kann handles this using the migrate object.
+
+```tsx
 type Theme = "light" | "dark";
  
-const { useBoard: useThemeBoard } = playTartakower<Theme>(
-  "light",
-  {
-    local: "theme",
- // session: "theme",
- // cookie: "theme",
-  }
+const { useStore: useThemeStore } = create<Theme>(
+  persist(
+    "light",
+    {
+      local: "theme",
+   // session: "theme",
+   // cookie: "theme",
+    }
+  )
 );
 ```
 
@@ -279,27 +297,24 @@ const { useBoard: useThemeBoard } = playTartakower<Theme>(
 |-------|--------------------------------|
 | theme | {"state":"light","version":0}  |
 
-
-## migrate
-
-When storing global state in Caro-Kann, the state is stored alongside a version. This allows the application to easily transform or disregard data from previous versions if the state structure changes. For example, if the theme needs to include font size in addition to background color, Caro-Kann handles this using the migrate object.
-
 If the migrate object exists, Caro-Kann automatically checks for version differences when the client connects to the service. If the client’s state is not the latest version, it calls the migrate.strategy function to update the state to the latest version. The strategy method takes the existing state and version from the client as arguments and returns the updated state based on them.
 
 ```tsx
 type Theme = { color: "light" | "dark", fontSize: number };
  
-const { useBoard: useThemeBoard } = playTartakower<Theme>(
-  { color: "light", fontSize: 16 },
-  {
-    local: "theme",
-    migrate: {
-      version: 1,
-      strategy: (prevState, prevVersion) => {
-        return { color: prevState, fontSize: 16 };
+const { useBoard: useThemeBoard } = create<Theme>(
+  persist(
+    { color: "light", fontSize: 16 },
+    {
+      local: "theme",
+      migrate: {
+        version: 1,
+        strategy: (prevState, prevVersion) => {
+          return { color: prevState, fontSize: 16 };
+        },
       },
-    },
-  }
+    }
+  )
 );
 ```
 | Key   | Value                                                |
@@ -325,15 +340,17 @@ const strategy = (prevState: any, prevVersion: number) => {
   }
 }
  
-const { useBoard: useThemeBoard } = playTartakower<Theme>(
-  { color: "light", ["font-size"]: 16 },
-  {
-    local: "theme",
-    migrate: {
-      version: 2,
-      strategy,
-    },
-  }
+const { useBoard: useThemeBoard } = create<Theme>(
+  persist(
+    { color: "light", ["font-size"]: 16 },
+    {
+      local: "theme",
+      migrate: {
+        version: 2,
+        strategy,
+      },
+    }
+  )
 );
 ```
 | Key   | Value                                                 |
@@ -342,3 +359,120 @@ const { useBoard: useThemeBoard } = playTartakower<Theme>(
 
 
 If there are multiple previous versions, it becomes practically impossible to specify the type of prevState. This leads to the use of any, which prevents Caro-Kann from correctly inferring the state. Therefore, if you are using migrate for version management, you must provide a generic type to playTartakower to ensure that Caro-Kann can correctly infer the state type.
+
+
+&nbsp;
+
+
+## zustand
+
+Caro-Kann's useStore function, by default, returns a tuple [value, setValue] similar to the useState API. This provides a straightforward and intuitive way to read and update state. However, when using the zustand middleware, the useStore function operates in a manner similar to the API provided by zustand. This allows developers to flexibly choose the state management approach as needed, even within the same project.
+
+```tsx
+const { useStore, useDerivedStore } = create<TStore>(
+  zustand((set, get, api) => initialState)
+)
+```
+
+When the zustand middleware is used, Caro-Kann fails to infer the store's type automatically. Therefore, it is necessary to explicitly define the store's type when calling the create function.
+
+
+```tsx
+type TStore = { count: number, increment: () => void, decrement: () => void }
+ 
+const { useStore } = create<TStore>(
+  zustand((set, get, api) => ({
+    count: 0,
+    increment: () => set({count: get().count + 1}),
+    decrement: () => set(store => ({...store, count: store.count - 1})),
+  }))
+);
+ 
+export default function Page() {
+  const { count, increment, decrement } = useStore()
+ 
+  return (
+    <div>
+      <h1>{count}</h1>
+      <button onClick={increment}>Increment</button>
+      <button onClick={decrement}>Decrement</button>
+    </div>
+  )
+}
+```
+
+&nbsp;
+
+
+## reducer
+
+The reducer middleware in Caro-Kann handles centralized state transformations, making state changes predictable and consistent. This pattern, commonly used in Redux, is designed to update state while maintaining immutability. The reducer middleware primarily changes state through actions, centralizing state update logic.
+```tsx
+const { useStore, useDerivedStore } = create(
+  reducer(reduceFn, initialState)
+)
+```
+When the reducer middleware is used, useStore returns a tuple [value, dispatch] instead of [value, setValue]. The dispatch function takes an action object as its argument, triggering the logic defined in the reduceFn to update the state. The reduceFn is responsible for updating the state based on the type of each action, using the type and payload properties of the action object to define the update logic.
+```tsx
+const { useStore } = create(reducer((store, { type, payload: number }) => {
+  switch (type) {
+    case "INCREMENT":
+      return { count: store.count + (payload ?? 1) };
+    case "DECREMENT":
+      return { count: store.count - (payload ?? 1)};
+    default:
+      return store;
+  }
+}, { count: 0 }));
+ 
+export default function Page() {
+  const [count, dispatch] = useStore(store => store.count)
+ 
+  return (
+    <div>
+      <h1>{count}</h1>
+      <button onClick={() => dispatch({ type: "INCREMENT", payload: 2 })}>Increment</button>
+      <button onClick={() => dispatch({ type: "DECREMENT" })}>Decrement</button>
+    </div>
+  )
+}
+```
+
+&nbsp;
+
+
+## devtools
+
+The devtools middleware in Caro-Kann makes state management more intuitive and efficient. This middleware enables real-time tracking of state changes through the Redux DevTools extension. Developers gain clear visibility into how the state evolves, making debugging and optimization easier.
+```tsx
+const { useStore, useDerivedStore } = create(
+  devtools(initialState, storeLabel)
+)
+```
+For example, managing a count state with the devtools middleware allows real-time observation of state changes. Each button click, whether incrementing or decrementing the state, is recorded in Redux DevTools. This simplifies complex state management and debugging, significantly enhancing developer productivity.
+```tsx
+const { useStore } = create(
+  devtools({ count: 0 }, "devtoolsTestStore")
+);
+ 
+export default function Page() {
+  const [count, setCount] = useStore(store => store.count)
+ 
+  return (
+    <div>
+      <h1>{count}</h1>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <button onClick={() => setCount(count - 1)}>Decrement</button>
+    </div>
+  )
+}
+```
+
+
+<img width="1374" alt="스크린샷 2024-08-25 오후 7 58 02" src="https://img1.daumcdn.net/thumb/R1600x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FW1Bg0%2FbtsLFcnV3hh%2FVsMA9H4B98lPMIWmt4Mqr0%2Fimg.png">
+
+
+
+
+
+
