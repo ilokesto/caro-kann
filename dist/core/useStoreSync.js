@@ -1,11 +1,11 @@
 import { useContext, useSyncExternalStore } from "react";
 import { createSetTargetBoard } from "../utils/createSetTargetBoard";
-export const useStoreSync = (Board) => (selector) => {
-    const { getStore, setStore, subscribe, getInitState, storeTag } = useContext(Board);
+export const useStoreSync = ({ Store, storeTag }) => (selector) => {
+    const { getStore, setStore, subscribe, getInitState } = useContext(Store);
     const snapshot = (fn) => () => selector ? selector(fn()) : fn();
     const board = useSyncExternalStore(subscribe, snapshot(getStore), snapshot(getInitState));
-    if (["zustand", "reducer"].includes(storeTag))
-        return board;
+    if (storeTag === "reducer")
+        return [board, setStore];
     if (selector)
         return [
             board,

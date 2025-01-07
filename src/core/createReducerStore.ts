@@ -1,12 +1,11 @@
-import type { CreateStore } from "../types";
+import type { CreateReducerStore } from "../types";
 
-export const createStore: CreateStore = (initState) => {
+export const createReducerStore: CreateReducerStore = (reducer, initState) => {
   const callbacks = new Set<() => void>();
   let store = initState;
 
-  type T = typeof initState;
-  const setStore = (nextState: T | ((prev: T) => T)) => {
-    store = typeof nextState === "function" ? (nextState as (prev: T) => T)(store) : nextState;
+  const setStore = (action: { [x: string]: any, type: string }) => {
+    store = reducer(store, action)
 
     callbacks.forEach((cb) => cb());
   };

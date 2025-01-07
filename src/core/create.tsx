@@ -3,14 +3,10 @@ import { createContext, ReactNode } from "react";
 import { createStore } from "./createStore";
 import { useStoreSync } from "./useStoreSync";
 
-function isStore<T>(initState: T | Store<T>): initState is Store<T> {
-  return (initState as Store<T>).storeTag !== undefined;
-}
+export const create: Create = <T,>(initState: T | [Store<T>, "reducer" | "zustand" | "persist"]): any => {
+  const Store = createContext<Store<T>>(initState instanceof Array ? initState[0] : createStore(initState));
 
-export const create: Create = <T,>(initState: T): any => {
-  const Store = createContext<Store<T>>(isStore(initState) ? initState : createStore(initState));
-
-  const useStore = useStoreSync(Store);
+  const useStore = useStoreSync({ Store, storeTag: initState instanceof Array ? initState[1] : undefined });
 
   const useDerivedStore = <S,>(selector: (state: T) => S) => {
     return useStore(selector)[0];
@@ -20,5 +16,5 @@ export const create: Create = <T,>(initState: T): any => {
     return <Store.Provider value={createStore(value)}>{children}</Store.Provider>;
   };
 
-  return isStore(initState) ? { useStore, useDerivedStore } : { useStore, useDerivedStore, StoreContext };
+  return initState instanceof Array ? { useStore, useDerivedStore } : { useStore, useDerivedStore, StoreContext };
 };

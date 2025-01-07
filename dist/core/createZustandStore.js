@@ -1,4 +1,4 @@
-export function createZustandBoard(initFn) {
+export function createZustandStore(initFn) {
     let store;
     const callbacks = new Set();
     const getStore = () => store;
@@ -13,6 +13,6 @@ export function createZustandBoard(initFn) {
         };
     };
     store = initFn(setStore, getStore);
-    return { getStore, setStore, subscribe, getInitState: () => store, storeTag: 'zustand' };
+    return { getStore, setStore, subscribe, getInitState: () => store };
 }
 ;

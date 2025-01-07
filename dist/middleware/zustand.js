@@ -1,4 +1,4 @@
-import { createZustandBoard } from "../core/createZustandStore";
+import { createZustandStore } from "../core/createZustandStore";
 export function zustand(initFn) {
-    return createZustandBoard(initFn);
+    return createZustandStore(initFn);
 }
