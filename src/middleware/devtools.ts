@@ -35,5 +35,5 @@ export function devtools<T>(initState: T, name: string): [Store<T>, "devtools"] 
     devTools?.send(`${name}:SET_STORE`, Store.getStore());
   }
 
-  return [{ ...Store, setStore}, "devtools" as const];
+  return [{ ...Store, setStore }, "devtools" as const];
 }

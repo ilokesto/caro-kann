@@ -1,7 +1,7 @@
 import type { Context, ReactNode } from "react";
 import type { Options } from ".";
 export type Create = {
-    <T>(initState: [Store<T>, "persist"]): {
+    <T>(initState: [Store<T>, "persist" | "devtools"]): {
         useStore: UseStore<T>;
         useDerivedStore: <S>(selector: (state: T) => S) => S;
     };
@@ -10,20 +10,14 @@ export type Create = {
             (): readonly [T, Dispatcher<void>];
             <S>(selector: (state: T) => S): readonly [S, Dispatcher<void>];
         };
+        useDerivedStore: <S>(selector: (state: T) => S) => S;
     };
     <T>(initState: [Store<T>, "zustand"]): {
         useStore: {
             (): T;
             <S>(selector: (state: T) => S): S;
         };
-    };
-    <T>(initState: [Store<T>, "devtools"]): {
-        useStore: UseStore<T>;
         useDerivedStore: <S>(selector: (state: T) => S) => S;
-        StoreContext: ({ value, children }: {
-            value: T;
-            children: ReactNode;
-        }) => JSX.Element;
     };
     <T>(initState: T): {
         useStore: UseStore<T>;

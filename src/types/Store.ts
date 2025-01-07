@@ -2,26 +2,36 @@ import type { Context, ReactNode } from "react";
 import type { Options } from ".";
 
 export type Create = {
-  // middleware persist
-  <T>(initState: [Store<T>, "persist"]): { useStore: UseStore<T>, useDerivedStore: <S>(selector: (state: T) => S) => S },
-
+  // middleware persist & devtools
+  <T>(initState: [Store<T>, "persist" | "devtools"]): {
+    useStore: UseStore<T>,
+    useDerivedStore: <S>(selector: (state: T) => S) => S
+  },
+  
   // middleware reducer
-  <T>(initState: [Store<T, Dispatcher<void>>, "reducer"]): { useStore: {
-    (): readonly [T, Dispatcher<void>],
-    <S>(selector: (state: T) => S): readonly [S, Dispatcher<void>],
-  } },
+  <T>(initState: [Store<T, Dispatcher<void>>, "reducer"]): {
+    useStore: {
+      (): readonly [T, Dispatcher<void>],
+      <S>(selector: (state: T) => S): readonly [S, Dispatcher<void>],
+    },
+    useDerivedStore: <S>(selector: (state: T) => S) => S;
+  },
 
   // middleware zustand
-  <T>(initState: [Store<T>, "zustand"]): { useStore: {
-    (): T,
-    <S>(selector: (state: T) => S): S,
-  } },
-
-  // middleware devtools
-  <T>(initState: [Store<T>, "devtools"]): { useStore: UseStore<T>, useDerivedStore: <S>(selector: (state: T) => S) => S, StoreContext: ({ value, children }: { value: T; children: ReactNode }) => JSX.Element }, 
+  <T>(initState: [Store<T>, "zustand"]): {
+    useStore: {
+      (): T,
+      <S>(selector: (state: T) => S): S,
+    },
+    useDerivedStore: <S>(selector: (state: T) => S) => S;
+  },
   
   // create
-  <T>(initState: T): { useStore: UseStore<T>, useDerivedStore: <S>(selector: (state: T) => S) => S, StoreContext: ({ value, children }: { value: T; children: ReactNode }) => JSX.Element }
+  <T>(initState: T): {
+    useStore: UseStore<T>,
+    useDerivedStore: <S>(selector: (state: T) => S) => S,
+    StoreContext: ({ value, children }: { value: T; children: ReactNode }) => JSX.Element
+  }
 }
 
 export interface Store<T, S = SetStore<T>> {
