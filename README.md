@@ -62,7 +62,7 @@ It is important to remember that the evaluation of the create function must occu
 
 ## useStore
 
-useStore is a custom hook that return `[board, setBoard]` tuple just like useState in React.js.
+useStore is a custom hook that return `[store setStore]` tuple just like useState in React.js.
 
 ```tsx
 function CompA() {
@@ -314,7 +314,7 @@ If the migrate object exists, Caro-Kann automatically checks for version differe
 ```tsx
 type Theme = { color: "light" | "dark", fontSize: number };
  
-const { useBoard: useThemeBoard } = create<Theme>(
+const { useStore: useThemeStore } = create<Theme>(
   persist(
     { color: "light", fontSize: 16 },
     {
@@ -352,7 +352,7 @@ const strategy = (prevState: any, prevVersion: number) => {
   }
 }
  
-const { useBoard: useThemeBoard } = create<Theme>(
+const { useStore: useThemeStore } = create<Theme>(
   persist(
     { color: "light", ["font-size"]: 16 },
     {
