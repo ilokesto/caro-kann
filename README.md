@@ -426,7 +426,7 @@ const { useStore, useDerivedStore } = create(
 ```
 When the reducer middleware is used, useStore returns a tuple [value, dispatch] instead of [value, setValue]. The dispatch function takes an action object as its argument, triggering the logic defined in the reduceFn to update the state. The reduceFn is responsible for updating the state based on the type of each action, using the type and payload properties of the action object to define the update logic.
 ```tsx
-const { useStore } = create(reducer((store, { type, payload: number }) => {
+const { useStore } = create(reducer((store, { type, payload }: { type: string, paload: number }) => {
   switch (type) {
     case "INCREMENT":
       return { count: store.count + (payload ?? 1) };
