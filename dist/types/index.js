@@ -1,3 +1,4 @@
 export * from "./Store";
-export * from "./Options";
-export * from "./Storage";
+export * from "./StorageConfig";
+export * from "./Middleware";
+export * from "./Create";

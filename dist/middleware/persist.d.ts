@@ -1,2 +1,2 @@
-import type { Options, Store } from "../types";
-export declare function persist<T>(initState: T, options: Options<T>): [Store<T>, "persist"];
+import { Middleware } from "../types";
+export declare const persist: Middleware["Persist"];

@@ -1,5 +1,5 @@
 import { createStore } from "../core/createStore";
-export function devtools(initState, name) {
+export const devtools = (initState, name) => {
     const Store = createStore(initState);
     const devTools = typeof window !== "undefined" &&
         window.__REDUX_DEVTOOLS_EXTENSION__?.connect({ name: "a" });
@@ -15,7 +15,7 @@ export function devtools(initState, name) {
                     case "COMMIT":
                         devTools.init(Store.getStore());
                         break;
-                    case "ROLLBACK": // revert
+                    case "ROLLBACK":
                         Store.setStore(JSON.parse(message.state));
                         break;
                     default:
@@ -29,4 +29,4 @@ export function devtools(initState, name) {
         devTools?.send(`${name}:SET_STORE`, Store.getStore());
     };
     return [{ ...Store, setStore }, "devtools"];
-}
+};

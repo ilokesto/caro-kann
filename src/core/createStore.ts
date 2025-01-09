@@ -1,10 +1,9 @@
-import type { CreateStore } from "../types";
+import type { Store } from "../types";
 
-export const createStore: CreateStore = (initState) => {
+export const createStore = <T>(initState: T): Store<T> => {
   const callbacks = new Set<() => void>();
   let store = initState;
 
-  type T = typeof initState;
   const setStore = (nextState: T | ((prev: T) => T)) => {
     store = typeof nextState === "function" ? (nextState as (prev: T) => T)(store) : nextState;
 

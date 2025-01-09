@@ -1,2 +1,2 @@
-import { Store } from "../types";
-export declare function devtools<T>(initState: T, name: string): [Store<T>, "devtools"];
+import { Middleware } from "../types";
+export declare const devtools: Middleware["Devtools"];
