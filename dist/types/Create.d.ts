@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Dispatcher, Roll, Store, UseStore } from "./";
-type OmitStoreContext<T> = Roll<Omit<T, "StoreContext">>;
+type OmitStoreContextFromReturnTypeCreate<T, Z extends "basic" | "reducer" | "zustand" = "basic"> = Roll<Omit<ReturnTypeCreate<T, Z>, "StoreContext">>;
 export type ReturnTypeCreate<T, Z extends "basic" | "reducer" | "zustand" = "basic"> = {
     useStore: UseStore<T>[Z];
     useDerivedStore: <S>(selector: (state: T) => S) => S;
@@ -10,9 +10,9 @@ export type ReturnTypeCreate<T, Z extends "basic" | "reducer" | "zustand" = "bas
     }) => ReactNode;
 };
 export type Create = {
-    <T>(initState: [Store<T>, "persist" | "devtools"]): OmitStoreContext<ReturnTypeCreate<T>>;
-    <T>(initState: [Store<T, Dispatcher>, "reducer"]): OmitStoreContext<ReturnTypeCreate<T, "reducer">>;
-    <T>(initState: [Store<T>, "zustand"]): OmitStoreContext<ReturnTypeCreate<T, "zustand">>;
+    <T>(initState: [Store<T>, "persist" | "devtools"]): OmitStoreContextFromReturnTypeCreate<T>;
+    <T>(initState: [Store<T, Dispatcher>, "reducer"]): OmitStoreContextFromReturnTypeCreate<T, "reducer">;
+    <T>(initState: [Store<T>, "zustand"]): OmitStoreContextFromReturnTypeCreate<T, "zustand">;
     <T>(initState: T): ReturnTypeCreate<T>;
 };
 export {};
