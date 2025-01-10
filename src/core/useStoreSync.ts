@@ -1,6 +1,6 @@
 import { useContext, Context, useSyncExternalStore } from "react";
 import type { Store, UseSyncStore } from "../types";
-import { setNestedBoard } from "../utils/setNestedBoard";
+import { setNestedStore } from "../utils/setNestedStoreUtils";
 
 export const useStoreSync: UseSyncStore =
   <T, S>({
@@ -24,7 +24,7 @@ export const useStoreSync: UseSyncStore =
     if (selector && storeTag !== "reducer")
       return [
         board,
-        setNestedBoard(setStore, selector),
+        setNestedStore(setStore, selector),
         setStore,
       ] as const;
     else return [board, setStore] as const;

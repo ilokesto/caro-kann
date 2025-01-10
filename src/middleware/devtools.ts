@@ -1,7 +1,7 @@
 import { createStore } from "../core/createStore";
 import { Middleware } from "../types";
 
-export const devtools: Middleware["Devtools"] = (initState, name) => {
+export const devtools: Middleware["devtools"] = (initState, name) => {
   type T = typeof initState;
   const Store = createStore(initState)
 

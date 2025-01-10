@@ -1,7 +1,7 @@
 import { createStore } from "../core/createStore";
 import { Middleware } from "../types";
 
-export const zustand: Middleware["Zustand"] = (initFn) => {
+export const zustand: Middleware["zustand"] = (initFn) => {
   type T = ReturnType<typeof initFn>;
   const Store = createStore({} as T);
 
