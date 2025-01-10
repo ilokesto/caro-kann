@@ -1,6 +1,7 @@
 import { Context } from "react";
 
 export type Dispatcher = (action: { [x: string]: any; type: string }) => void;
+
 export type Store<T, S = (action: T | ((prev: T) => T)) => void> = {
   setStore: S;
   getStore: () => T;
