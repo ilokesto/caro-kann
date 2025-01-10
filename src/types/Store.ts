@@ -1,4 +1,4 @@
-import { Context, ReactNode } from "react";
+import { Context } from "react";
 
 export type Dispatcher = (action: { [x: string]: any; type: string }) => void;
 export type Store<T, S = (action: T | ((prev: T) => T)) => void> = {
@@ -8,8 +8,6 @@ export type Store<T, S = (action: T | ((prev: T) => T)) => void> = {
   getInitState: () => T;
 }
 
-export type UseDerivedStore<T> = <S>(selector: (state: T) => S) => S;
-export type StoreContext<T> = (props: { value: T, children: ReactNode }) => JSX.Element;
 export type UseStore<T> = {
   basic: {
     (): readonly [T, Store<T>["setStore"]];
