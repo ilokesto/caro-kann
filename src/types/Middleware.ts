@@ -1,4 +1,4 @@
-import { PersistConfig } from "./StorageConfig";
+import { PersistConfig } from "./PersistConfig";
 import { Dispatcher, Store } from "./Store";
 
 export type Middleware = {
@@ -11,7 +11,7 @@ export type Middleware = {
 type Devtools = <T>(initState: T, name: string)
   => [Store<T>, "devtools"]
 
-type Persist = <T>(initState: T, options: PersistConfig<T>)
+type Persist = <T>(initState: T, persistConfig: PersistConfig<T>)
   => [Store<T>, "persist"]
 
 type Reducer = <T>(reducer: (state: T, action: Parameters<Dispatcher>[0]) => T, initState: T)

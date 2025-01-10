@@ -1,4 +1,4 @@
 export * from "./Store";
-export * from "./StorageConfig";
+export * from "./PersistConfig";
 export * from "./Middleware";
 export * from "./Create";

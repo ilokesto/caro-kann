@@ -1,6 +1,6 @@
 import { useContext, Context, useSyncExternalStore } from "react";
 import type { Store, UseSyncStore } from "../types";
-import { createSetTargetBoard } from "../utils/createSetTargetBoard";
+import { setNestedBoard } from "../utils/setNestedBoard";
 
 export const useStoreSync: UseSyncStore =
   <T, S>({
@@ -10,15 +10,13 @@ export const useStoreSync: UseSyncStore =
     Store: Context<Store<T>>;
     storeTag?: string;
   }) =>
-  (selector?: (value: T) => S): any => {
+  (selector: (state: T) => S = (state: T) => state as unknown as S): any => {
     const { getStore, setStore, subscribe, getInitState } = useContext(Store);
-
-    const snapshot = (fn: () => T) => () => selector ? selector(fn()) : fn();
 
     const board = useSyncExternalStore(
       subscribe,
-      snapshot(getStore),
-      snapshot(getInitState)
+      () => selector(getStore()),
+      () => selector(getInitState()),
     );
 
     if (storeTag === "zustand") return board;
@@ -26,7 +24,7 @@ export const useStoreSync: UseSyncStore =
     if (selector && storeTag !== "reducer")
       return [
         board,
-        createSetTargetBoard(setStore, selector),
+        setNestedBoard(setStore, selector),
         setStore,
       ] as const;
     else return [board, setStore] as const;

@@ -1,15 +1,32 @@
-import { Context } from "react";
-import { UseStore } from "./";
+import { Context, ReactNode } from "react";
 export type Dispatcher = (action: {
     [x: string]: any;
     type: string;
 }) => void;
-export type SetStore<T> = Store<T>["setStore"];
 export type Store<T, S = (action: T | ((prev: T) => T)) => void> = {
-    getStore: () => T;
     setStore: S;
+    getStore: () => T;
     subscribe: (callback: () => void) => () => void;
     getInitState: () => T;
+};
+export type UseDerivedStore<T> = <S>(selector: (state: T) => S) => S;
+export type StoreContext<T> = (props: {
+    value: T;
+    children: ReactNode;
+}) => JSX.Element;
+export type UseStore<T> = {
+    basic: {
+        (): readonly [T, Store<T>["setStore"]];
+        <S>(selector: (state: T) => S): readonly [S, Store<S>["setStore"], Store<T>["setStore"]];
+    };
+    reducer: {
+        (): readonly [T, Dispatcher];
+        <S>(selector: (state: T) => S): readonly [S, Dispatcher];
+    };
+    zustand: {
+        (): T;
+        <S>(selector: (state: T) => S): S;
+    };
 };
 export type UseSyncStore = {
     <T>(props: {
@@ -25,3 +42,4 @@ export type UseSyncStore = {
         storeTag?: string;
     }): UseStore<T>["basic"];
 };
+export type SetNestedBoard = <T, S>(setBoard: Store<T>["setStore"], selector: (value: T) => S) => (value: S | ((prev: S) => S)) => void;

@@ -1,6 +1,5 @@
 import { parseObjectPath } from "./parseObjectPath";
-import { updateNestedValue } from "./updateNestedValue";
-export const createSetTargetBoard = (setBoard, selector) => (value) => {
+export const setNestedBoard = (setBoard, selector) => (value) => {
     setBoard((prev) => {
         const path = parseObjectPath(selector.toString());
         const newBoard = { ...prev };
@@ -10,3 +9,14 @@ export const createSetTargetBoard = (setBoard, selector) => (value) => {
         return newBoard;
     });
 };
+function updateNestedValue(obj, path, value) {
+    if (path.length === 1) {
+        obj[path[0]] = value;
+    }
+    else {
+        if (!obj[path[0]])
+            obj[path[0]] = {};
+        updateNestedValue(obj[path[0]], path.slice(1), value);
+    }
+}
+;
