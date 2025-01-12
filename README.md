@@ -60,7 +60,7 @@ const useStore = create({
 });
 ```
 
-useStore is a custom hook that return `[store setStore]` tuple just like useState in React.js.
+useStore is a custom hook that return `[value, setValue]` tuple just like useState in React.js.
 
 ```tsx
 function Comp() {
@@ -116,7 +116,7 @@ const [value, setValue] = useStore()
 setValue(produce(store => { ++store.deep.nested.obj.count }))
 ```
 
-As we’ll explore in more detail under "selector functions," by using a selector function with useStore, setStore can recognize nested properties, allowing you to easily update nested object states.
+As we’ll explore in more detail under "selector functions," by using a selector function with useStore, setValue can recognize nested properties, allowing you to easily update nested object states.
 
 ```tsx
 const [count, setCount] = useStore(store => store.deep.nested.obj.count)
@@ -153,7 +153,7 @@ function Comp() {
       <button onClick={() => setAge(prev => prev + 1)}>
         Now age is { age }. Next, age will be { age + 1 } 
       </button>
-      <button onClick={() => setStore(prev => ({ ...prev, isMarried: true })}>
+      <button onClick={() => setValue(prev => ({ ...prev, isMarried: true })}>
         Get Married
       </button>
     </>
