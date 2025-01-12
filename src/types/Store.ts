@@ -1,5 +1,3 @@
-import { Context } from "react";
-
 export type Dispatcher = (action: { [x: string]: any; type: string }) => void;
 
 export type Store<T, S = (action: T | ((prev: T) => T)) => void> = {
@@ -26,13 +24,13 @@ export type UseStore<T> = {
 
 export type UseSyncStore = {
   // middleware reducer
-  <T>(props: { Store: Context<Store<T>>; storeTag: "reducer" }): UseStore<T>["reducer"];
+  <T>(props: { Store: Store<T>; storeTag: "reducer" }): UseStore<T>["reducer"];
 
   // middleware zustand
-  <T>(props: { Store: Context<Store<T>>; storeTag: "zustand" }): UseStore<T>["zustand"];
+  <T>(props: { Store: Store<T>; storeTag: "zustand" }): UseStore<T>["zustand"];
 
   // create & middleware persist & devtools
-  <T>(props: { Store: Context<Store<T>>; storeTag?: string }): UseStore<T>["basic"];
+  <T>(props: { Store: Store<T>; storeTag?: string }): UseStore<T>["basic"];
 };
 
 export type SetNestedBoard = <T, S>(setBoard: Store<T>["setStore"], selector: (value: T) => S) => (value: S | ((prev: S) => S)) => void;

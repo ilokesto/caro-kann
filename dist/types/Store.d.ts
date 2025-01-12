@@ -1,4 +1,3 @@
-import { Context } from "react";
 export type Dispatcher = (action: {
     [x: string]: any;
     type: string;
@@ -25,15 +24,15 @@ export type UseStore<T> = {
 };
 export type UseSyncStore = {
     <T>(props: {
-        Store: Context<Store<T>>;
+        Store: Store<T>;
         storeTag: "reducer";
     }): UseStore<T>["reducer"];
     <T>(props: {
-        Store: Context<Store<T>>;
+        Store: Store<T>;
         storeTag: "zustand";
     }): UseStore<T>["zustand"];
     <T>(props: {
-        Store: Context<Store<T>>;
+        Store: Store<T>;
         storeTag?: string;
     }): UseStore<T>["basic"];
 };

@@ -1,9 +1,7 @@
-import { ReactNode } from "react";
-import { Dispatcher, Roll, Store, UseStore } from "./";
+import { Dispatcher, Store, UseStore } from "./";
 
-export type ReturnTypeCreate<T, Z extends "basic" | "reducer" | "zustand" = "basic"> = {
-  useStore: UseStore<T>[Z];
-  useDerivedStore: <S>(selector: (state: T) => S) => S;
+export type ReturnTypeCreate<T, Z extends "basic" | "reducer" | "zustand" = "basic"> = UseStore<T>[Z] & {
+  derived: <S>(selector: (state: T) => S) => S;
 }
 
 export type Create = {
@@ -14,8 +12,8 @@ export type Create = {
   <T>(initState: [Store<T, Dispatcher>, "reducer"]): ReturnTypeCreate<T, "reducer">;
 
   // middleware zustand
-  <T>(initState: [Store<T>, "zustand"]): ReturnTypeCreate<T, "zustand">;
+  <T>(initState: [Store<T>, "zustand"]):ReturnTypeCreate<T, "zustand">;
 
   // create
-  <T>(initState: T): ReturnTypeCreate<T> & { StoreContext: (props: { value: T, children: ReactNode }) => ReactNode; };
+  <T>(initState: T): ReturnTypeCreate<T>;
 };
