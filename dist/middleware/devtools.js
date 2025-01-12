@@ -24,10 +24,10 @@ export const devtools = (initState, name) => {
             }
         });
     }
-    const setStore = (nextState) => {
-        Store.setStore(nextState);
+    const setStore = (nextState, actionName = "setStore") => {
+        Store.setStore(nextState, actionName);
         try {
-            devTools?.send(`${name}:SET_STORE`, Store.getStore());
+            devTools?.send(`${name}:${actionName}`, Store.getStore());
         }
         catch (error) {
             console.error("Error sending state to devtools", error);

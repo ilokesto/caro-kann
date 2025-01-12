@@ -31,14 +31,16 @@ export const devtools: Middleware["devtools"] = <T,>(initState: T | [Store<T>, s
     });
   }
   
-  const setStore = (nextState: T | ((prev: T) => T)) => {
-    Store.setStore(nextState);
+  const setStore = (nextState: T | ((prev: T) => T), actionName: string = "setStore") => {
+    // @ts-ignore
+    Store.setStore(nextState, actionName);
+
     try {
-      devTools?.send(`${name}:SET_STORE`, Store.getStore());
+      devTools?.send(`${name}:${actionName}`, Store.getStore());
     } catch (error) {
       console.error("Error sending state to devtools", error);
     }
   }
 
-  return [{ ...Store, setStore }, "devtools" as const];
+  return [{ ...Store, setStore } as Store<T>, "devtools" as const];
 }

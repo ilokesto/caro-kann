@@ -10,12 +10,13 @@ export const persist: Middleware["persist"] = <T,>(initState: T | [Store<T>, str
     : Store.getInitState();
   Store.setStore(initialState);
 
-  const setStore = (nextState: T | ((prev: T) => T)) => {
-    Store.setStore(nextState);
+  const setStore = (nextState: T | ((prev: T) => T), actionName: string = "setStore") => {
+    // @ts-ignore
+    Store.setStore(nextState, actionName);
 
     if (optionObj.storageType)
       setStorage({ ...optionObj, value: Store.getStore() });
   };
 
-  return [{ ...Store, setStore }, "persist" as const];
+  return [{ ...Store, setStore } as Store<T>, "persist" as const];
 };
