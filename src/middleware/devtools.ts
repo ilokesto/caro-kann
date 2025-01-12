@@ -7,7 +7,7 @@ export const devtools: Middleware["devtools"] = (initState, name) => {
 
   const devTools =
     typeof window !== "undefined" &&
-    (window as any).__REDUX_DEVTOOLS_EXTENSION__?.connect({ name: "a" });
+    (window as any).__REDUX_DEVTOOLS_EXTENSION__?.connect({ name });
 
   if (devTools) {
     devTools.init(Store.getInitState());
