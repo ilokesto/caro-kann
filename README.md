@@ -35,9 +35,11 @@ Caro-Kann is a global state management tool internally built with the useSyncExt
 &nbsp;
 
 # install and import
+
 ```ts
 npm i caro-kann@latest
 ```
+
 ```ts
 import { create } from "caro-kann";
 import { persist, zustand, reducer, devtools } from "caro-kann/middleware"
@@ -74,7 +76,9 @@ function Comp() {
 &nbsp;
 
 ## nested objects
+
 When working with nested object states, Caro-Kann offers several ways to update them. The first method is to use the spread operator to copy each level of the object. This allows you to manually merge the new state value into the existing one.
+
 ```tsx
 const useStore = create({
   deep: {
@@ -278,7 +282,6 @@ const useStore = create<Theme>(
 |-------|------------------------------------------------------|
 | theme | {"state":{"color":"dark","fontSize":16},"version":1} |
 
-
 You successfully updated version 0 to version 1 using migrate. However, a few weeks later, a senior developer comes and asks to change the font state name to font-size. Since migrate only operates when the client connects to the service, clients who haven’t yet connected will still be on version 0. Therefore, you need to handle both version 0 and version 1.
 
 But don't worry! By using a switch statement, you can effectively handle both versions.
@@ -360,12 +363,15 @@ export default function Page() {
 ## reducer
 
 The reducer middleware in Caro-Kann handles centralized state transformations, making state changes predictable and consistent. This pattern, commonly used in Redux, is designed to update state while maintaining immutability. The reducer middleware primarily changes state through actions, centralizing state update logic.
+
 ```tsx
 const useStore = create(
   reducer(reduceFn, initialState)
 )
 ```
+
 When the reducer middleware is used, useStore returns a tuple [value, dispatch] instead of [value, setValue]. The dispatch function takes an action object as its argument, triggering the logic defined in the reduceFn to update the state. The reduceFn is responsible for updating the state based on the type of each action, using the type and payload properties of the action object to define the update logic.
+
 ```tsx
 const useStore = create(
   reducer((store, { type, payload = 1 }: { type: string, payload?: number }) => {
@@ -400,14 +406,17 @@ export default function Page() {
 ## devtools
 
 The devtools middleware in Caro-Kann makes state management more intuitive and efficient. This middleware enables real-time tracking of state changes through the Redux DevTools extension. Developers gain clear visibility into how the state evolves, making debugging and optimization easier.
+
 ```tsx
 const useStore = create(
   devtools(initialState, storeName)
 )
+
 ```
 For example, managing a count state with the devtools middleware allows real-time observation of state changes. Each button click, whether incrementing or decrementing the state, is recorded in Redux DevTools. This simplifies complex state management and debugging, significantly enhancing developer productivity.
+
 ```tsx
-const { useStore } = create(
+const useStore = create(
   devtools({ count: 0 }, "devtoolsTestStore")
 );
  
@@ -423,11 +432,10 @@ export default function Page() {
   )
 }
 ```
+
   <img width="840" alt="스크린샷 2024-08-25 오후 7 58 02" src="https://img1.daumcdn.net/thumb/R1600x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FW1Bg0%2FbtsLFcnV3hh%2FVsMA9H4B98lPMIWmt4Mqr0%2Fimg.png">
 
 &nbsp;
-
-
 
 ## Middleware Composition
 
