@@ -44,6 +44,7 @@ import { persist, zustand, reducer, devtools } from "caro-kann/middleware"
 ```
 
 &nbsp;
+
 # create a store
 
 In Caro-Kann, a **store** is defined as an external space where the global state is stored. To create such a store, Caro-Kann uses the `create` function. This function takes an initial value, stores it in the internal store, and returns `useStore`. It is important to remember that the evaluation of the create function must occur outside of the component. Otherwise, the store may be lost depending on the component's lifecycle.
@@ -69,6 +70,8 @@ function Comp() {
   )
 }
 ```
+
+&nbsp;
 
 ## nested objects
 When working with nested object states, Caro-Kann offers several ways to update them. The first method is to use the spread operator to copy each level of the object. This allows you to manually merge the new state value into the existing one.
@@ -116,6 +119,8 @@ const [count, setCount] = useStore(store => store.deep.nested.obj.count)
 setCount(prev => prev + 1)
 ```
 
+&nbsp;
+
 ## selecter function
 
 If a component references a global state in the form of an object structure, the component will re-render even if properties that are not being used are changed. To prevent this, useStore allows retrieving only specific property values from the global state in the form of an object through a selector function. In the example code below, the component will not re-render even when the a property value of the global state is changed. What's more, when a selector function is used, the setter no longer targets the entire set of properties but instead modifies only the specific properties selected by the selector function.
@@ -125,7 +130,7 @@ function Comp() {
   const [age, setAge] = useStore(store => store.age);
   
   return (
-    <button onClick={() => setB(prev => prev + 1}>
+    <button onClick={() => setAge(prev => prev + 1)}>
       Now age is { age }. Next, age will be { age + 1 } 
     </button>
   )
@@ -140,7 +145,7 @@ function Comp() {
   
   return (
     <>
-      <button onClick={() => setB(prev => prev + 1}>
+      <button onClick={() => setAge(prev => prev + 1)}>
         Now age is { age }. Next, age will be { age + 1 } 
       </button>
       <button onClick={() => setStore(prev => ({ ...prev, isMarried: true })}>
@@ -188,33 +193,243 @@ const [f, setF] = useStore({ b: { d: { f }}} => f) // Error
 In JavaScript, functions are first-class objects, meaning they can have properties and methods. useStore is both a function that returns a tuple and an object that has a method called derived. Similar to the selector function discussed earlier, the derived method takes a derived function as an argument. This method allows you to create a derived state based on the existing state. It is useful for improving the reusability and composability of state, simplifying complex state management logic. Derived state is recalculated whenever the referenced state changes.
 
 ```tsx
-function CompB() {
-  const [a, setA] = useStore(store => store.a)
- 
+function Comp() {
+  const [age, setAge] = useStore(store => store.age)
+
   return (
-    <button onClick={() => setA(prev => prev + 1)}>
-      Now a is { a }. Next, a will be { a + 1 } 
+    <button onClick={() => setAge(prev => prev + 1)}>
+      Now age is { age }. Next, age will be { age + 1 } 
     </button>
   )
 }
+
+function VotingRightsIndicator() {
+  const hasVotingRights = useStore.derived(
+    store => store.age >= 18
+      ? "You have voting rights."
+      : "You do not have voting rights.";
+  );
+
+  return <div>{hasVotingRights}</div>;
+};
+```
+
+&nbsp;
+
+
+# Middleware
+
+Currently, Caro-Kann supports four middleware options: persist, zustand, reducer, and devtools. Through these, the create function can efficiently handle global state management, state persistence, state change logic, and debugging features, allowing for flexible application tailored to the application's structure and requirements.
+
+&nbsp;
+
+## persist
+
+Caro-Kann allows global state to be stored in local storage, session storage, and cookies. This feature is especially important for improving user experience and is suitable for values that need to persist even after a page refresh or session termination, such as the theme settings of a webpage.
+
+```tsx
+const useStore = create<TStore>(
+  persist(initialState, persistOptions)
+)
+```
+
+When storing global state in Caro-Kann, the state is stored alongside a version. This allows the application to easily transform or disregard data from previous versions if the state structure changes. For example, if the theme needs to include font size in addition to background color, Caro-Kann handles this using the migrate object.
+
+```tsx
+type Theme = "light" | "dark";
  
-function CompC() {
-  const hasVotingRights = useDerivedStore(store => store.a >= 18);
+const useStore = create<Theme>(
+  persist(
+    "light",
+    {
+      local: "theme",
+   // session: "theme",
+   // cookie: "theme",
+    }
+  )
+);
+```
+
+| Key   | Value                          |
+|-------|--------------------------------|
+| theme | {"state":"light","version":0}  |
+
+If the migrate object exists, Caro-Kann automatically checks for version differences when the client connects to the service. If the client’s state is not the latest version, it calls the migrate.strategy function to update the state to the latest version. The strategy method takes the existing state and version from the client as arguments and returns the updated state based on them.
+
+```tsx
+type Theme = { color: "light" | "dark", fontSize: number };
+ 
+const useStore = create<Theme>(
+  persist(
+    { color: "light", fontSize: 16 },
+    {
+      local: "theme",
+      migrate: {
+        version: 1,
+        strategy: (prevState, prevVersion) => {
+          return { color: prevState, fontSize: 16 };
+        },
+      },
+    }
+  )
+);
+```
+| Key   | Value                                                |
+|-------|------------------------------------------------------|
+| theme | {"state":{"color":"dark","fontSize":16},"version":1} |
+
+
+You successfully updated version 0 to version 1 using migrate. However, a few weeks later, a senior developer comes and asks to change the font state name to font-size. Since migrate only operates when the client connects to the service, clients who haven’t yet connected will still be on version 0. Therefore, you need to handle both version 0 and version 1.
+
+But don't worry! By using a switch statement, you can effectively handle both versions.
+
+```tsx
+type Theme = { color: "light" | "dark", ["font-size"]: number };
+ 
+const strategy = (prevState: any, prevVersion: number) => {
+  switch (prevVersion) {
+    case 0:
+      return { color: prevState, ["font-size"]: 16 };
+    case 1:
+      return { color: prevState.color, ["font-size"]: prevState.fontSize };
+    default:
+      return prevState;
+  }
+}
+
+const useStore = create<Theme>(
+  persist(
+    { color: "light", ["font-size"]: 16 },
+    {
+      local: "theme",
+      migrate: {
+        version: 2,
+        strategy,
+      },
+    }
+  )
+);
+```
+| Key   | Value                                                 |
+|-------|-------------------------------------------------------|
+| theme | {"state":{"color":"dark","font-size":16},"version":2} |
+
+
+If there are multiple previous versions, it becomes practically impossible to specify the type of prevState. This leads to the use of any, which prevents Caro-Kann from correctly inferring the state. Therefore, if you are using migrate for version management, you must provide a generic type to playTartakower to ensure that Caro-Kann can correctly infer the state type.
+
+&nbsp;
+
+## zustand
+
+Caro-Kann's useStore function, by default, returns a tuple [value, setValue] similar to the useState API. This provides a straightforward and intuitive way to read and update state. However, when using the zustand middleware, the useStore function operates in a manner similar to the API provided by zustand. This allows developers to flexibly choose the state management approach as needed, even within the same project.
+
+```tsx
+const useStore = create<TStore>(
+  zustand((set, get, api) => initialState)
+)
+```
+
+When the zustand middleware is used, Caro-Kann fails to infer the store's type automatically. Therefore, it is necessary to explicitly define the store's type when calling the create function.
+
+```tsx
+type TStore = { count: number, increment: () => void, decrement: () => void }
+ 
+const useStore = create<TStore>(
+  zustand((set, get, api) => ({
+    count: 0,
+    increment: () => set({count: get().count + 1}),
+    decrement: () => set(store => ({...store, count: store.count - 1})),
+  }))
+);
+ 
+export default function Page() {
+  const { count, increment, decrement } = useStore()
  
   return (
     <div>
-      {
-        hasVotingRights
-          ? "You have voting rights."
-          : "You do not have voting rights.";
-      }
-    </div>;
-  );
-};
+      <h1>{count}</h1>
+      <button onClick={increment}>Increment</button>
+      <button onClick={decrement}>Decrement</button>
+    </div>
+  )
+}
 ```
-<img width="1374" alt="스크린샷 2024-08-25 오후 7 58 02" src="https://img1.daumcdn.net/thumb/R1600x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FEeQEP%2FbtsLpa2XhCx%2FbmxMgUChLBdaDIkFU4lqyK%2Fimg.webp">
 
 &nbsp;
+
+## reducer
+
+The reducer middleware in Caro-Kann handles centralized state transformations, making state changes predictable and consistent. This pattern, commonly used in Redux, is designed to update state while maintaining immutability. The reducer middleware primarily changes state through actions, centralizing state update logic.
+```tsx
+const useStore = create(
+  reducer(reduceFn, initialState)
+)
+```
+When the reducer middleware is used, useStore returns a tuple [value, dispatch] instead of [value, setValue]. The dispatch function takes an action object as its argument, triggering the logic defined in the reduceFn to update the state. The reduceFn is responsible for updating the state based on the type of each action, using the type and payload properties of the action object to define the update logic.
+```tsx
+const useStore = create(
+  reducer((store, { type, payload = 1 }: { type: string, payload?: number }) => {
+    switch (type) {
+      case "INCREMENT":
+        return { count: store.count + payload };
+      case "DECREMENT":
+        return { count: store.count - payload };
+      default:
+        return store;
+    }
+  },
+  { count: 0 })
+);
+ 
+export default function Page() {
+  const [count, dispatch] = useStore(store => store.count)
+ 
+  return (
+    <div>
+      <h1>{count}</h1>
+      <button onClick={() => dispatch({ type: "INCREMENT", payload: 2 })}>Increment</button>
+      <button onClick={() => dispatch({ type: "DECREMENT" })}>Decrement</button>
+    </div>
+  )
+}
+```
+
+&nbsp;
+
+
+## devtools
+
+The devtools middleware in Caro-Kann makes state management more intuitive and efficient. This middleware enables real-time tracking of state changes through the Redux DevTools extension. Developers gain clear visibility into how the state evolves, making debugging and optimization easier.
+```tsx
+const useStore = create(
+  devtools(initialState, storeName)
+)
+```
+For example, managing a count state with the devtools middleware allows real-time observation of state changes. Each button click, whether incrementing or decrementing the state, is recorded in Redux DevTools. This simplifies complex state management and debugging, significantly enhancing developer productivity.
+```tsx
+const { useStore } = create(
+  devtools({ count: 0 }, "devtoolsTestStore")
+);
+ 
+export default function Page() {
+  const [count, setCount] = useStore(store => store.count)
+ 
+  return (
+    <div>
+      <h1>{count}</h1>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <button onClick={() => setCount(count - 1)}>Decrement</button>
+    </div>
+  )
+}
+```
+  <img width="840" alt="스크린샷 2024-08-25 오후 7 58 02" src="https://img1.daumcdn.net/thumb/R1600x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FW1Bg0%2FbtsLFcnV3hh%2FVsMA9H4B98lPMIWmt4Mqr0%2Fimg.png">
+
+
+
+
+
+
 
 ## StoreContext
 
@@ -267,214 +482,3 @@ Looking at the image below, you can see that each component is being handled ind
 <img width="1374" alt="스크린샷 2024-08-25 오후 7 58 02" src="https://img1.daumcdn.net/thumb/R1600x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FoCs3K%2FbtsLmsrboSC%2FKnsN9OfiigvlIeNK4mcHd1%2Fimg.webp">
 
 &nbsp;
-
-# Middleware
-
-Currently, Caro-Kann supports four middleware options: persist, zustand, reducer, and devtools. Through these, the create function can efficiently handle global state management, state persistence, state change logic, and debugging features, allowing for flexible application tailored to the application's structure and requirements.
-
-There are a few points to keep in mind when using middleware. First, when middleware is applied, the create function returns only two functions—useStore and useDerivedStore—excluding the StoreContext component. Additionally, middleware cannot be nested. Although the next minor update aims to address these limitations, for now, these aspects must be carefully considered when using middleware.
-
-&nbsp;
-
-## persist
-
-Caro-Kann allows global state to be stored in local storage, session storage, and cookies. This feature is especially important for improving user experience and is suitable for values that need to persist even after a page refresh or session termination, such as the theme settings of a webpage.
-
-```tsx
-const { useStore, useDerivedStore } = create<TStore>(
-  persist(initialState, persistOptions)
-)
-```
-
-When storing global state in Caro-Kann, the state is stored alongside a version. This allows the application to easily transform or disregard data from previous versions if the state structure changes. For example, if the theme needs to include font size in addition to background color, Caro-Kann handles this using the migrate object.
-
-```tsx
-type Theme = "light" | "dark";
- 
-const { useStore: useThemeStore } = create<Theme>(
-  persist(
-    "light",
-    {
-      local: "theme",
-   // session: "theme",
-   // cookie: "theme",
-    }
-  )
-);
-```
-
-| Key   | Value                          |
-|-------|--------------------------------|
-| theme | {"state":"light","version":0}  |
-
-If the migrate object exists, Caro-Kann automatically checks for version differences when the client connects to the service. If the client’s state is not the latest version, it calls the migrate.strategy function to update the state to the latest version. The strategy method takes the existing state and version from the client as arguments and returns the updated state based on them.
-
-```tsx
-type Theme = { color: "light" | "dark", fontSize: number };
- 
-const { useStore: useThemeStore } = create<Theme>(
-  persist(
-    { color: "light", fontSize: 16 },
-    {
-      local: "theme",
-      migrate: {
-        version: 1,
-        strategy: (prevState, prevVersion) => {
-          return { color: prevState, fontSize: 16 };
-        },
-      },
-    }
-  )
-);
-```
-| Key   | Value                                                |
-|-------|------------------------------------------------------|
-| theme | {"state":{"color":"dark","fontSize":16},"version":1} |
-
-
-You successfully updated version 0 to version 1 using migrate. However, a few weeks later, a senior developer comes and asks to change the font state name to font-size. Since migrate only operates when the client connects to the service, clients who haven’t yet connected will still be on version 0. Therefore, you need to handle both version 0 and version 1.
-
-But don't worry! By using a switch statement, you can effectively handle both versions.
-
-```tsx
-type Theme = { color: "light" | "dark", ["font-size"]: number };
- 
-const strategy = (prevState: any, prevVersion: number) => {
-  switch (prevVersion) {
-    case 0:
-      return { color: prevState, ["font-size"]: 16 };
-    case 1:
-      return { color: prevState.color, ["font-size"]: prevState.fontSize };
-    default:
-      return prevState;
-  }
-}
- 
-const { useStore: useThemeStore } = create<Theme>(
-  persist(
-    { color: "light", ["font-size"]: 16 },
-    {
-      local: "theme",
-      migrate: {
-        version: 2,
-        strategy,
-      },
-    }
-  )
-);
-```
-| Key   | Value                                                 |
-|-------|-------------------------------------------------------|
-| theme | {"state":{"color":"dark","font-size":16},"version":2} |
-
-
-If there are multiple previous versions, it becomes practically impossible to specify the type of prevState. This leads to the use of any, which prevents Caro-Kann from correctly inferring the state. Therefore, if you are using migrate for version management, you must provide a generic type to playTartakower to ensure that Caro-Kann can correctly infer the state type.
-
-
-&nbsp;
-
-
-## zustand
-
-Caro-Kann's useStore function, by default, returns a tuple [value, setValue] similar to the useState API. This provides a straightforward and intuitive way to read and update state. However, when using the zustand middleware, the useStore function operates in a manner similar to the API provided by zustand. This allows developers to flexibly choose the state management approach as needed, even within the same project.
-
-```tsx
-const { useStore, useDerivedStore } = create<TStore>(
-  zustand((set, get, api) => initialState)
-)
-```
-
-When the zustand middleware is used, Caro-Kann fails to infer the store's type automatically. Therefore, it is necessary to explicitly define the store's type when calling the create function.
-
-
-```tsx
-type TStore = { count: number, increment: () => void, decrement: () => void }
- 
-const { useStore } = create<TStore>(
-  zustand((set, get, api) => ({
-    count: 0,
-    increment: () => set({count: get().count + 1}),
-    decrement: () => set(store => ({...store, count: store.count - 1})),
-  }))
-);
- 
-export default function Page() {
-  const { count, increment, decrement } = useStore()
- 
-  return (
-    <div>
-      <h1>{count}</h1>
-      <button onClick={increment}>Increment</button>
-      <button onClick={decrement}>Decrement</button>
-    </div>
-  )
-}
-```
-
-&nbsp;
-
-
-## reducer
-
-The reducer middleware in Caro-Kann handles centralized state transformations, making state changes predictable and consistent. This pattern, commonly used in Redux, is designed to update state while maintaining immutability. The reducer middleware primarily changes state through actions, centralizing state update logic.
-```tsx
-const { useStore, useDerivedStore } = create(
-  reducer(reduceFn, initialState)
-)
-```
-When the reducer middleware is used, useStore returns a tuple [value, dispatch] instead of [value, setValue]. The dispatch function takes an action object as its argument, triggering the logic defined in the reduceFn to update the state. The reduceFn is responsible for updating the state based on the type of each action, using the type and payload properties of the action object to define the update logic.
-```tsx
-const { useStore } = create(reducer((store, { type, number = 1 }: { type: string, number?: number }) => {
-  switch (type) {
-    case "INCREMENT":
-      return { count: store.count + number };
-    case "DECREMENT":
-      return { count: store.count - number };
-    default:
-      return store;
-  }
-}, { count: 0 }));
- 
-export default function Page() {
-  const [count, dispatch] = useStore(store => store.count)
- 
-  return (
-    <div>
-      <h1>{count}</h1>
-      <button onClick={() => dispatch({ type: "INCREMENT", number: 2 })}>Increment</button>
-      <button onClick={() => dispatch({ type: "DECREMENT" })}>Decrement</button>
-    </div>
-  )
-}
-```
-
-&nbsp;
-
-
-## devtools
-
-The devtools middleware in Caro-Kann makes state management more intuitive and efficient. This middleware enables real-time tracking of state changes through the Redux DevTools extension. Developers gain clear visibility into how the state evolves, making debugging and optimization easier.
-```tsx
-const { useStore, useDerivedStore } = create(
-  devtools(initialState, storeLabel)
-)
-```
-For example, managing a count state with the devtools middleware allows real-time observation of state changes. Each button click, whether incrementing or decrementing the state, is recorded in Redux DevTools. This simplifies complex state management and debugging, significantly enhancing developer productivity.
-```tsx
-const { useStore } = create(
-  devtools({ count: 0 }, "devtoolsTestStore")
-);
- 
-export default function Page() {
-  const [count, setCount] = useStore(store => store.count)
- 
-  return (
-    <div>
-      <h1>{count}</h1>
-      <button onClick={() => setCount(count + 1)}>Increment</button>
-      <button onClick={() => setCount(count - 1)}>Decrement</button>
-    </div>
-  )
-}
-```
-  <img width="840" alt="스크린샷 2024-08-25 오후 7 58 02" src="https://img1.daumcdn.net/thumb/R1600x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FW1Bg0%2FbtsLFcnV3hh%2FVsMA9H4B98lPMIWmt4Mqr0%2Fimg.png">
