@@ -3,14 +3,10 @@ import { createContext } from "react";
 import { createStore } from "./createStore";
 import { useStoreSync } from "./useStoreSync";
 
-export const create: Create = (initState): any => {
-  type T = typeof initState extends [Store<infer R>, string] ? R : typeof initState;
-  
-  // @ts-expect-error
-  const Store = createContext<Store<T>>(initState[0] ?? createStore(initState));
+export const create: Create = <T,>(initState: T | [Store<T>, string]): any => {
+  const Store = createContext<Store<T>>(initState instanceof Array ? initState[0] : createStore(initState));
 
-  // @ts-expect-error
-  const useStore = useStoreSync({ Store, storeTag: initState[1] });
+  const useStore = useStoreSync({ Store, storeTag: initState instanceof Array ? initState[1] : "basic" });
 
   const useDerivedStore: ReturnTypeCreate<T>["useDerivedStore"] = (selector) =>
     useStore(selector)[0];

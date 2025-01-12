@@ -1,10 +1,9 @@
 import { createStore } from "../core/createStore";
-import { Middleware } from "../types";
+import { Middleware, PersistConfig, Store } from "../types";
 import { getStorage, parseOptions, setStorage } from "../utils/persistUtils";
 
-export const persist: Middleware["persist"] = (initState, options) => {
-  type T = typeof initState;
-  const Store = createStore(initState);
+export const persist: Middleware["persist"] = <T,>(initState: T | [Store<T>, string], options: PersistConfig<T>) => {
+  const Store = initState instanceof Array ? initState[0] : createStore(initState);
   const optionObj = parseOptions(options);
   const initialState = optionObj.storageType
     ? getStorage({ ...optionObj, initState: Store.getInitState() }).state

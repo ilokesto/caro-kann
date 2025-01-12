@@ -1,15 +1,15 @@
 import { createStore } from "../core/createStore";
 export const devtools = (initState, name) => {
-    const Store = createStore(initState);
+    const Store = initState instanceof Array ? initState[0] : createStore(initState);
     const devTools = typeof window !== "undefined" &&
-        window.__REDUX_DEVTOOLS_EXTENSION__?.connect({ name: "a" });
+        window.__REDUX_DEVTOOLS_EXTENSION__?.connect({ name });
     if (devTools) {
         devTools.init(Store.getInitState());
         devTools.subscribe((message) => {
             if (message.type === "DISPATCH") {
                 switch (message.payload.type) {
                     case "RESET":
-                        Store.setStore(initState);
+                        Store.setStore(initState instanceof Array ? initState[0].getInitState() : initState);
                         devTools.init(Store.getStore());
                         break;
                     case "COMMIT":
@@ -26,7 +26,12 @@ export const devtools = (initState, name) => {
     }
     const setStore = (nextState) => {
         Store.setStore(nextState);
-        devTools?.send(`${name}:SET_STORE`, Store.getStore());
+        try {
+            devTools?.send(`${name}:SET_STORE`, Store.getStore());
+        }
+        catch (error) {
+            console.error("Error sending state to devtools", error);
+        }
     };
     return [{ ...Store, setStore }, "devtools"];
 };
