@@ -27,7 +27,7 @@ Caro-Kann is a global state management tool internally built with the useSyncExt
 &nbsp;
 
 # what's new in caro-kann@3.0.0
-* The new version of Caro-Kann has improved its internal code structure and actively implemented techniques such as tree shaking. As a result, the bundle size has been reduced by up to three times compared to version 2.2.0.
+* The new version of Caro-Kann has improved its internal code structure and actively implemented techniques such as tree shaking. As a result, the bundle size has been reduced by up to six times compared to version 2.2.0.
 * Semantics are important. Each feature and API is designed with a clear purpose and intent, enabling developers to write state management-related code in a more intuitive and intentional manner. API names and behaviors have been changed to be as intuitive as possible, minimizing ambiguity that could lead to mistakes. These semantic improvements not only enhance the way the code works but also improve the way it is read and understood, contributing to long-term maintainability and collaboration potential.
 * In the previous version, the persist functionality included in create has been separated into a middleware. The middleware-based persist is designed to function independently of global state management, allowing it to be integrated easily without affecting existing state management logic. This separation significantly enhances the application's performance, maintainability, and scalability.
 * The middleware includes persist along with reducer, zustand, and devtools functionality, allowing for flexible application of various state management features. Each function can be used independently or in combination, depending on the application's requirements.
@@ -46,35 +46,31 @@ import { persist, zustand, reducer, devtools } from "caro-kann/middleware"
 &nbsp;
 # create a store
 
-In Caro-Kann, a **store** is defined as an external space where the global state is stored. To create such a store, Caro-Kann uses the `create` function. This function takes an initial value, stores it in the internal store, and returns an object consisting of `useStore`, `useDerivedStore`, and `StoreContext`.
+In Caro-Kann, a **store** is defined as an external space where the global state is stored. To create such a store, Caro-Kann uses the `create` function. This function takes an initial value, stores it in the internal store, and returns `useStore`. It is important to remember that the evaluation of the create function must occur outside of the component. Otherwise, the store may be lost depending on the component's lifecycle.
 
 ```ts
-const {
-  useStore,
-  useDerivedStore,
-  StoreContext,
-} = create({ a: 0, b: 0, c: 0 });
+const useStore = create({
+  name: "Ayden Blair",
+  age: 30,
+  isMarried: false,
+});
 ```
-
-It is important to remember that the evaluation of the create function must occur outside of the component. Otherwise, the store may be lost depending on the component's lifecycle.
-
-&nbsp;
-
-## useStore
 
 useStore is a custom hook that return `[store setStore]` tuple just like useState in React.js.
 
 ```tsx
-function CompA() {
+function Comp() {
   const [value, setValue] = useStore();
   
   return (
-    <button onClick={() => setValue(prev => ({...prev, a: prev.a + 1}))}>
-      Now a is { value.a }. Next, a will be { value.a + 1 } 
+    <button onClick={() => setValue(prev => ({...prev, age: prev.age + 1}))}>
+      Now a is { value.age }. Next, a will be { value.age + 1 } 
     </button>
   )
 }
 ```
+
+## nested objects
 When working with nested object states, Caro-Kann offers several ways to update them. The first method is to use the spread operator to copy each level of the object. This allows you to manually merge the new state value into the existing one.
 ```tsx
 const { useStore } = create({
@@ -120,9 +116,7 @@ const [count, setCount] = useStore(store => store.deep.nested.obj.count)
 setCount(prev => prev + 1)
 ```
 
-
-
-### selecter function
+## selecter function
 
 If a component references a global state in the form of an object structure, the component will re-render even if properties that are not being used are changed. To prevent this, useStore allows retrieving only specific property values from the global state in the form of an object through a selector function. In the example code below, the component will not re-render even when the a property value of the global state is changed. What's more, when a selector function is used, the setter no longer targets the entire set of properties but instead modifies only the specific properties selected by the selector function.
 ```tsx
@@ -185,10 +179,10 @@ const [f, setF] = useStore({ b: { d: { f }}} => f) // Error
 
 &nbsp;
 
-## useDerivedStore
+## derived state
 
-Just like useStore accepts a selector function, **useDerivedStore accepts a derivation function**. However, unlike selector functions, there are no specific restrictions on derivation functions.
-Using a derivation function, you can create **derived states** based on existing states, similar to derived atoms in Jotai. This is useful for enhancing the reusability and composability of states, and helps simplify complex state management logic. Like derived atoms, **derived states are recalculated whenever the referenced state changes**.
+In JavaScript, functions are first-class objects, meaning they can have properties and methods. useStore is both a function that returns a tuple and an object that has a method called derived. Similar to the selector function discussed earlier, the derived method takes a derived function as an argument. This method allows you to create a derived state based on the existing state. It is useful for improving the reusability and composability of state, simplifying complex state management logic. Derived state is recalculated whenever the referenced state changes.
+
 ```tsx
 function CompB() {
   const [a, setA] = useStore(store => store.a)
