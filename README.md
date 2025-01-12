@@ -425,13 +425,19 @@ export default function Page() {
 ```
   <img width="840" alt="스크린샷 2024-08-25 오후 7 58 02" src="https://img1.daumcdn.net/thumb/R1600x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FW1Bg0%2FbtsLFcnV3hh%2FVsMA9H4B98lPMIWmt4Mqr0%2Fimg.png">
 
+&nbsp;
+
+
+
+## Middleware Composition
+
+
+&nbsp;
 
 
 
 
-
-
-## StoreContext
+# StoreContext
 
 If needed, you can use the StoreContext component to make a specific node in the DOM tree subscribe to a store that is different from the global state. The StoreContext component takes a value prop, which can only accept values that are compatible with the type of the initial value provided to playTartakower.
 
@@ -476,9 +482,3 @@ function CompC() {
   return <div>{hasVotingRights}</div>;
 };
 ```
-
-Looking at the image below, you can see that each component is being handled independently.
-
-<img width="1374" alt="스크린샷 2024-08-25 오후 7 58 02" src="https://img1.daumcdn.net/thumb/R1600x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FoCs3K%2FbtsLmsrboSC%2FKnsN9OfiigvlIeNK4mcHd1%2Fimg.webp">
-
-&nbsp;
