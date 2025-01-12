@@ -73,7 +73,7 @@ function Comp() {
 ## nested objects
 When working with nested object states, Caro-Kann offers several ways to update them. The first method is to use the spread operator to copy each level of the object. This allows you to manually merge the new state value into the existing one.
 ```tsx
-const { useStore } = create({
+const useStore = create({
   deep: {
     nested: {
       obj: { count: 0 }
@@ -119,34 +119,38 @@ setCount(prev => prev + 1)
 ## selecter function
 
 If a component references a global state in the form of an object structure, the component will re-render even if properties that are not being used are changed. To prevent this, useStore allows retrieving only specific property values from the global state in the form of an object through a selector function. In the example code below, the component will not re-render even when the a property value of the global state is changed. What's more, when a selector function is used, the setter no longer targets the entire set of properties but instead modifies only the specific properties selected by the selector function.
+
 ```tsx
 function Comp() {
-  const [b, setB] = useStore(store => store.b);
+  const [age, setAge] = useStore(store => store.age);
   
   return (
     <button onClick={() => setB(prev => prev + 1}>
-      Now b is { b }. Next, b will be { b + 1 } 
+      Now age is { age }. Next, age will be { age + 1 } 
     </button>
   )
 }
 ```
-However, even if a component only uses the value of a, there may be cases where you need to modify the value of b. To handle this situation, when a selector function is provided, useStore returns setStore as the third element of the tuple.
+
+However, even if a component only uses the value of a, there may be cases where you need to modify the value of b. To handle this situation, when a selector function is provided, useStore returns setValue as the third element of the tuple.
+
 ```tsx
 function Comp() {
-  const [a, setA, setStore] = useStore(store => store.a);
+  const [age, setAge, setValue] = useStore(store => store.age);
   
   return (
     <>
-      <button onClick={() => setA(prev => prev + 1}>
-        Now a is { a }. Next, a will be { a + 1 } 
+      <button onClick={() => setB(prev => prev + 1}>
+        Now age is { age }. Next, age will be { age + 1 } 
       </button>
-      <button onClick={() => setStore(prev => ({...prev, b: prev.b + 1})}>
-        change b
+      <button onClick={() => setStore(prev => ({ ...prev, isMarried: true })}>
+        Get Married
       </button>
     </>
   )
 }
 ```
+
 By using selector functions, you can effectively handle nested object states as shown below. To write selector functions, there are a few rules to follow. First, all selector functions must be written as arrow functions. Also, variables cannot be used to select values from the nested object state within the store. Lastly, the five special characters { ? : & } cannot be used in selector functions. If you don't follow these rules while writing selector functions, you will encounter runtime errors. :)
 
 ```tsx
