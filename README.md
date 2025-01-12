@@ -8,14 +8,15 @@
 - [what's new in caro-kann@3.0.0](#what-s-new-in-caro-kann-300)
 - [install and import](#install-and-import)
 - [create a store](#create-a-store)
-  * [useStore](#usestore)
-  * [useDerivedStore](#usederivedstore)
-  * [StoreContext](#storecontext)
+  * [nested objects](#nested-objects)
+  * [selector function](#selector-function)
+  * [derived state](#derived-state)
 - [Middleware](#middleware)
   * [persist](#persist)
   * [zustand](#zustand)
   * [reducer](#reducer)
   * [devtools](#devtools)
+  * [Middleware Composition](#Middleware-Composition)
 
 
 &nbsp;
