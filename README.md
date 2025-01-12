@@ -451,7 +451,7 @@ const useStore = create(
         case "INCREMENT":
           return { count: store.count + payload };
         case "DECREMENT":
-          return { count: store.count - payload};
+          return { count: store.count - payload };
         default:
           return store;
       }
