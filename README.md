@@ -232,7 +232,7 @@ Currently, Caro-Kann supports four middleware options: persist, zustand, reducer
 Caro-Kann allows global state to be stored in local storage, session storage, and cookies. This feature is especially important for improving user experience and is suitable for values that need to persist even after a page refresh or session termination, such as the theme settings of a webpage.
 
 ```tsx
-const useStore = create<TStore>(
+const useStore = create(
   persist(initialState, persistOptions)
 )
 ```
@@ -439,6 +439,45 @@ export default function Page() {
 
 ## Middleware Composition
 
+The various middleware in Caro-Kann can be combined and used based on specific conditions. If a middleware alters the behavior of setValue from the tuple returned by useStore, it cannot be used inside other middleware. Additionally, the middleware to be combined must be called at the initialState position. Therefore, Zustand middleware that does not return a tuple and instead takes initialFn instead of initialState cannot be combined with other middleware.
+
+The reducer middleware takes initialState, but returns a dispatcher instead of setValue. As a result, it cannot be called at the initialState position of other middleware, but it can be combined by calling other middleware at the reducer's initialState position. On the other hand, the persist and devtools middleware have no such restrictions and can be freely combined with other middleware.
+
+```tsx
+const useStore = create(
+  reducer(
+    (store, { type, payload = 1 }: { type: string, payload?: number }) => {
+      switch (type) {
+        case "INCREMENT":
+          return { count: store.count + payload };
+        case "DECREMENT":
+          return { count: store.count - payload};
+        default:
+          return store;
+      }
+    },
+    persist(
+      devtools(
+        { count: 0 },
+        "devtoolsTestStore"
+      ),
+      { local: "count" }
+    )
+  )
+);
+
+export default function Page() {
+  const [count, dispatch] = useStore(store => store.count)
+ 
+  return (
+    <div>
+      <h1>{count}</h1>
+      <button onClick={() => dispatch({ type: "INCREMENT", payload: 2 })}>Increment</button>
+      <button onClick={() => dispatch({ type: "DECREMENT" })}>Decrement</button>
+    </div>
+  )
+}
+```
 
 &nbsp;
 
