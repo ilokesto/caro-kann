@@ -1,11 +1,11 @@
-export type Dispatcher<A> = (action: A) => void;
+export type Dispatcher<TAction> = (action: TAction) => void;
 export type Store<T, S = (action: T | ((prev: T) => T)) => void> = {
     setStore: S;
     getStore: () => T;
     subscribe: (callback: () => void) => () => void;
     getInitState: () => T;
 };
-export type UseStore<T, A> = {
+export type UseStore<T, TAction = unknown> = {
     basic: {
         (): readonly [T, Store<T>["setStore"]];
         <S>(selector: (state: T) => S): readonly [
@@ -16,8 +16,8 @@ export type UseStore<T, A> = {
         derived: <S>(selector: (state: T) => S) => S;
     };
     reducer: {
-        (): readonly [T, Dispatcher<A>];
-        <S>(selector: (state: T) => S): readonly [S, Dispatcher<A>];
+        (): readonly [T, Dispatcher<TAction>];
+        <S>(selector: (state: T) => S): readonly [S, Dispatcher<TAction>];
         derived: <S>(selector: (state: T) => S) => S;
     };
     zustand: {
@@ -26,18 +26,3 @@ export type UseStore<T, A> = {
         derived: <S>(selector: (state: T) => S) => S;
     };
 };
-export type UseSyncStore = {
-    <T, A>(props: {
-        Store: Store<T>;
-        storeTag: "reducer";
-    }): UseStore<T, A>["reducer"];
-    <T, A>(props: {
-        Store: Store<T>;
-        storeTag: "zustand";
-    }): UseStore<T, A>["zustand"];
-    <T, A>(props: {
-        Store: Store<T>;
-        storeTag?: string;
-    }): UseStore<T, A>["basic"];
-};
-export type SetNestedBoard = <T, S>(setBoard: Store<T>["setStore"], selector: (value: T) => S) => (value: S | ((prev: S) => S)) => void;

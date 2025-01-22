@@ -1,4 +1,9 @@
-import { SetNestedBoard } from "../types";
+import type { Store } from "../types";
+
+type SetNestedBoard = <T, S>(
+  setBoard: Store<T>["setStore"],
+  selector: (value: T) => S
+) => (value: S | ((prev: S) => S)) => void;
 
 export const setNestedStore: SetNestedBoard = (setBoard, selector) =>
     (value) => {
