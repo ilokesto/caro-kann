@@ -1,29 +1,21 @@
 import { Dispatcher, MiddlewareStore, UseStore } from "./";
 
 export type ReturnTypeCreate<
-  T,
-  A,
-  Z extends "basic" | "reducer" | "zustand" = "basic",
-> = UseStore<T, A>[Z] & {
-  derived: <S>(selector: (state: T) => S) => S;
-};
+  TInitState,
+  TStoreType extends "basic" | "reducer" | "zustand" = "basic",
+  TAction = unknown,
+> = UseStore<TInitState, TAction>[TStoreType];
 
 export type Create = {
-  // middleware persist & devtools
-  <T, A>(
-    initState: MiddlewareStore<T, "persist" | "devtools">
-  ): ReturnTypeCreate<T, A>;
-
   // middleware reducer
-  <T, A>(initState: MiddlewareStore<T, "reducer", Dispatcher<A>>): ReturnTypeCreate<
-    T,
-    A,
-    "reducer"
-  >;
+  <T, A>(initState: MiddlewareStore<T, "reducer", Dispatcher<A>>): ReturnTypeCreate<T, "reducer", A>;
 
   // middleware zustand
   <T>(initState: MiddlewareStore<T, "zustand">): ReturnTypeCreate<T, "zustand">;
+  
+  // middleware persist & devtools
+  <T>(initState: MiddlewareStore<T, "persist" | "devtools"> | T): ReturnTypeCreate<T>;
 
   // create
-  <T, A>(initState: T): ReturnTypeCreate<T, A>;
+  <T>(initState: T): ReturnTypeCreate<T>;
 };

@@ -13,14 +13,17 @@ export type UseStore<T, A> = {
             Store<S>["setStore"],
             Store<T>["setStore"]
         ];
+        derived: <S>(selector: (state: T) => S) => S;
     };
     reducer: {
         (): readonly [T, Dispatcher<A>];
         <S>(selector: (state: T) => S): readonly [S, Dispatcher<A>];
+        derived: <S>(selector: (state: T) => S) => S;
     };
     zustand: {
         (): T;
         <S>(selector: (state: T) => S): S;
+        derived: <S>(selector: (state: T) => S) => S;
     };
 };
 export type UseSyncStore = {

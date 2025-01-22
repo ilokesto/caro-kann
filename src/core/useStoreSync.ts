@@ -9,8 +9,8 @@ export const useStoreSync: UseSyncStore =
   }: {
     Store: Store<T>;
     storeTag?: string;
-  }) =>
-    (selector: (state: T) => S = (state: T) => state as unknown as S): any => {
+  }) => {
+    function useStore(selector: (state: T) => S = (state: T) => state as unknown as S): any {
       const { getStore, setStore, subscribe, getInitState } = Store;
 
       const board = useSyncExternalStore(
@@ -29,3 +29,8 @@ export const useStoreSync: UseSyncStore =
         ] as const;
       else return [board, setStore] as const;
     };
+
+    useStore.derived = (selector: (state: T) => S): S => useStore(selector)[0];
+
+    return useStore
+  }
