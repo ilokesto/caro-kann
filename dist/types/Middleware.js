@@ -1,1 +1,1 @@
-export {};
+export const storeTypeTag = Symbol("storeTypeTag");

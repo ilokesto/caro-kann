@@ -1,13 +1,20 @@
 import { PersistConfig } from "./PersistConfig";
-import { ReplacePropertyValue, Roll, Dispatcher, Store } from "./";
+import { Dispatcher, Store } from "./";
+
+export const storeTypeTag: unique symbol = Symbol("storeTypeTag")
+
+export type MiddlewareStore<T, STORE_TYPE = string, S = (action: T | ((prev: T) => T)) => void> = {
+  store: Store<T, S>,
+  [storeTypeTag]: STORE_TYPE
+}
 
 export type Middleware = {
-  devtools: <T>(initState: T | [Store<T>, string], name: string)
-    => [Store<T>, "devtools"];
-  persist: <T>(initState: T | [Store<T>, string], persistConfig: PersistConfig<T>)
-    => [Store<T>, "persist"];
-  reducer: <T>(reducer: (state: T, action: Roll<Parameters<Dispatcher>[0]>) => T, initState: T | [Store<T>, string])
-    => [ReplacePropertyValue<Store<T>, { setStore: Dispatcher }>, "reducer"];
+  devtools: <T>(initState: T | MiddlewareStore<T>, name: string)
+    => MiddlewareStore<T, "devtools">
+  persist: <T>(initState: T | MiddlewareStore<T>, persistConfig: PersistConfig<T>)
+    => MiddlewareStore<T, "persist">
+  reducer: <T, A extends object>(reducer: (state: T, action: A) => T, initState: T | MiddlewareStore<T>)
+    => MiddlewareStore<T, "reducer", Dispatcher<A>>;
   zustand: <T>(initFn: (set: (nextState: Partial<T> | ((prev: T) => T)) => void, get: () => T, api: Store<T>) => T)
-    => [Store<T>, "zustand"];
+    => MiddlewareStore<T, "zustand">;
 }

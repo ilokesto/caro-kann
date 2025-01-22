@@ -1,9 +1,10 @@
 import { createStore } from "../core/createStore";
-import { Middleware, PersistConfig, Store } from "../types";
+import { Middleware, MiddlewareStore, PersistConfig, Store, storeTypeTag } from "../types";
+import { isMiddlewareStore } from "../utils/isMiddlewareStore";
 import { getStorage, parseOptions, setStorage } from "../utils/persistUtils";
 
-export const persist: Middleware["persist"] = <T,>(initState: T | [Store<T>, string], options: PersistConfig<T>) => {
-  const Store = initState instanceof Array ? initState[0] : createStore(initState);
+export const persist: Middleware["persist"] = <T,>(initState: T | MiddlewareStore<T>, options: PersistConfig<T>) => {
+  const Store = isMiddlewareStore(initState) ? initState.store : createStore(initState);
   const optionObj = parseOptions(options);
   const initialState = optionObj.storageType
     ? getStorage({ ...optionObj, initState: Store.getInitState() }).state
@@ -18,5 +19,8 @@ export const persist: Middleware["persist"] = <T,>(initState: T | [Store<T>, str
       setStorage({ ...optionObj, value: Store.getStore() });
   };
 
-  return [{ ...Store, setStore } as Store<T>, "persist" as const];
+  return {
+    store: {...Store, setStore},
+    [storeTypeTag]: "persist"
+  }
 };

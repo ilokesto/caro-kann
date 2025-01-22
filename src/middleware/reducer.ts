@@ -1,13 +1,17 @@
 import { createStore } from "../core/createStore";
-import { Dispatcher, Middleware, Roll, Store } from "../types";
+import { Middleware, MiddlewareStore, Store, storeTypeTag } from "../types";
+import { isMiddlewareStore } from "../utils/isMiddlewareStore";
 
-export const reducer: Middleware["reducer"] = <T,>(reducer: (state: T, action: Roll<Parameters<Dispatcher>[0]>) => T, initState: T | [Store<T>, string]) => {
-  const Store = initState instanceof Array ? initState[0] : createStore(initState);
+export const reducer: Middleware["reducer"] = <T, A extends object>(reducer: (state: T, action: A) => T, initState: T | MiddlewareStore<T>) => {
+  const Store = isMiddlewareStore(initState) ? initState.store : createStore(initState);
 
-  const setStore = (action: { [x: string]: any, type: string }) => {
+  const setStore = (action: A) => {
     // @ts-ignore
     Store.setStore(prev => reducer(prev, action), action.type);
   };
 
-  return [{ ...Store, setStore }, "reducer" as const];
+  return {
+    store: { ...Store, setStore },
+    [storeTypeTag]: "reducer"
+  }
 }

@@ -1,6 +1,8 @@
 import { createStore } from "../core/createStore";
+import { storeTypeTag } from "../types";
+import { isMiddlewareStore } from "../utils/isMiddlewareStore";
 export const devtools = (initState, name) => {
-    const Store = initState instanceof Array ? initState[0] : createStore(initState);
+    const Store = isMiddlewareStore(initState) ? initState.store : createStore(initState);
     const devTools = typeof window !== "undefined" &&
         window.__REDUX_DEVTOOLS_EXTENSION__?.connect({ name });
     if (devTools) {
@@ -33,5 +35,8 @@ export const devtools = (initState, name) => {
             console.error("Error sending state to devtools", error);
         }
     };
-    return [{ ...Store, setStore }, "devtools"];
+    return {
+        store: { ...Store, setStore },
+        [storeTypeTag]: "devtools"
+    };
 };

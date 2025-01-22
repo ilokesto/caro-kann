@@ -1,5 +1,5 @@
 import { createStore } from "../core/createStore";
-import { Middleware } from "../types";
+import { Middleware, storeTypeTag } from "../types";
 
 export const zustand: Middleware["zustand"] = (initFn) => {
   type T = ReturnType<typeof initFn>;
@@ -10,5 +10,8 @@ export const zustand: Middleware["zustand"] = (initFn) => {
 
   Store.setStore(initFn(setStore, Store.getStore, { ...Store, setStore }));
 
-  return [{ ...Store, setStore }, "zustand" as const];
+  return {
+    store: {...Store, setStore},
+    [storeTypeTag]: "zustand"
+  }
 }

@@ -1,8 +1,9 @@
 import { createStore } from "../core/createStore";
-import { Middleware, Store } from "../types";
+import { Middleware, MiddlewareStore, storeTypeTag } from "../types";
+import { isMiddlewareStore } from "../utils/isMiddlewareStore";
 
-export const devtools: Middleware["devtools"] = <T,>(initState: T | [Store<T>, string], name: string) => {
-  const Store = initState instanceof Array ? initState[0] : createStore(initState)
+export const devtools: Middleware["devtools"] = <T,>(initState: T | MiddlewareStore<T>, name: string) => {
+  const Store = isMiddlewareStore(initState) ? initState.store : createStore(initState);
 
   const devTools =
     typeof window !== "undefined" &&
@@ -42,5 +43,8 @@ export const devtools: Middleware["devtools"] = <T,>(initState: T | [Store<T>, s
     }
   }
 
-  return [{ ...Store, setStore } as Store<T>, "devtools" as const];
+  return {
+    store: { ...Store, setStore },
+    [storeTypeTag]: "devtools"
+  }
 }
