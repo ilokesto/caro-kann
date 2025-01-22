@@ -5,7 +5,7 @@ export const storeTypeTag: unique symbol = Symbol("storeTypeTag")
 
 export type MiddlewareStore<
   TInitState,
-  TStoreType = string,
+  TStoreType = "devtools" | "persist" | "reducer" | "zustand",
   TSetStore = (action: TInitState | ((prev: TInitState) => TInitState)) => void
 > = {
   store: Store<TInitState, TSetStore>,

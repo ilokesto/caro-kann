@@ -1,5 +1,5 @@
 import { createStore } from "../core/createStore";
-import { Middleware, MiddlewareStore, PersistConfig, Store, storeTypeTag } from "../types";
+import { Middleware, MiddlewareStore, PersistConfig, storeTypeTag } from "../types";
 import { isMiddlewareStore } from "../utils/isMiddlewareStore";
 import { getStorage, parseOptions, setStorage } from "../utils/persistUtils";
 

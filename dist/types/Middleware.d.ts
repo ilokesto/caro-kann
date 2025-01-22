@@ -1,7 +1,7 @@
 import { PersistConfig } from "./PersistConfig";
 import { Dispatcher, Store } from "./";
 export declare const storeTypeTag: unique symbol;
-export type MiddlewareStore<TInitState, TStoreType = string, TSetStore = (action: TInitState | ((prev: TInitState) => TInitState)) => void> = {
+export type MiddlewareStore<TInitState, TStoreType = "devtools" | "persist" | "reducer" | "zustand", TSetStore = (action: TInitState | ((prev: TInitState) => TInitState)) => void> = {
     store: Store<TInitState, TSetStore>;
     [storeTypeTag]: TStoreType;
 };
