@@ -1,13 +1,12 @@
 import { useSyncExternalStore } from "react";
 import { createStore } from "./createStore";
-import { isMiddlewareStore } from "../utils/isMiddlewareStore";
 import { setNestedStore } from "../utils/setNestedStoreUtils";
 import { storeTypeTag, type Create, type MiddlewareStore } from "../types";
 
 export const create: Create = (initState: any) => {
   type T = typeof initState extends MiddlewareStore<infer R> ? R : typeof initState
-  const store = isMiddlewareStore(initState) ? initState.store : createStore(initState)
-  const storeTag = isMiddlewareStore(initState) ? initState[storeTypeTag] : "basic"
+  const store = initState[storeTypeTag] ? initState.store : createStore(initState)
+  const storeTag = initState[storeTypeTag] ? initState[storeTypeTag] : "basic"
 
   function useStore<S>(selector?: (state: T) => S) {
     const board = useSyncExternalStore(
