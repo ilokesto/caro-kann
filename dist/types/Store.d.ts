@@ -1,6 +1,7 @@
-export type Dispatcher<TAction> = (action: TAction) => void;
-export type Store<T, S = (action: T | ((prev: T) => T)) => void> = {
-    setStore: S;
+import { Dispatch, SetStateAction } from "react";
+import { MiddlewareStore } from "./Middleware";
+export type Store<T, S = SetStateAction<T>> = {
+    setStore: Dispatch<S>;
     getStore: () => T;
     subscribe: (callback: () => void) => () => void;
     getInitState: () => T;
@@ -16,8 +17,8 @@ export type UseStore<T, TAction = unknown> = {
         derived: <S>(selector: (state: T) => S) => S;
     };
     reducer: {
-        (): readonly [T, Dispatcher<TAction>];
-        <S>(selector: (state: T) => S): readonly [S, Dispatcher<TAction>];
+        (): readonly [T, Dispatch<TAction>];
+        <S>(selector: (state: T) => S): readonly [S, Dispatch<TAction>];
         derived: <S>(selector: (state: T) => S) => S;
     };
     zustand: {
@@ -25,4 +26,10 @@ export type UseStore<T, TAction = unknown> = {
         <S>(selector: (state: T) => S): S;
         derived: <S>(selector: (state: T) => S) => S;
     };
+};
+export type Create = {
+    <T, A>(initState: MiddlewareStore<T, "reducer", A>): UseStore<T, A>["reducer"];
+    <T>(initState: MiddlewareStore<T, "zustand">): UseStore<T>["zustand"];
+    <T>(initState: MiddlewareStore<T, "persist" | "devtools"> | T): UseStore<T>["basic"];
+    <T>(initState: T): UseStore<T>["basic"];
 };
