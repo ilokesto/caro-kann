@@ -1,21 +1,17 @@
 import { useSyncExternalStore } from "react";
-import { storeTypeTag } from "../types";
-import { isMiddlewareStore } from "../utils/isMiddlewareStore";
 import { createStore } from "./createStore";
+import { isMiddlewareStore } from "../utils/isMiddlewareStore";
 import { setNestedStore } from "../utils/setNestedStoreUtils";
+import { storeTypeTag } from "../types";
 export const create = (initState) => {
     const store = isMiddlewareStore(initState) ? initState.store : createStore(initState);
     const storeTag = isMiddlewareStore(initState) ? initState[storeTypeTag] : "basic";
-    function useStore(selector = (state) => state) {
-        const board = useSyncExternalStore(store.subscribe, () => selector(store.getStore()), () => selector(store.getInitState()));
+    function useStore(selector) {
+        const board = useSyncExternalStore(store.subscribe, () => selector ? selector(store.getStore()) : store.getStore(), () => selector ? selector(store.getInitState()) : store.getInitState());
         if (storeTag === "zustand")
             return board;
         if (selector && storeTag !== "reducer")
-            return [
-                board,
-                setNestedStore(store.setStore, selector),
-                store.setStore,
-            ];
+            return [board, setNestedStore(store.setStore, selector), store.setStore];
         else
             return [board, store.setStore];
     }

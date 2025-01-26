@@ -1,4 +1,9 @@
 import { storeTypeTag } from "../types";
 export const isMiddlewareStore = (initState) => {
-    return storeTypeTag in initState;
+    try {
+        return storeTypeTag in initState;
+    }
+    catch {
+        return false;
+    }
 };
