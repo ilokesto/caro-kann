@@ -1,6 +1,6 @@
 {
   "name": "caro-kann",
-  "version": "3.0.7",
+  "version": "3.0.8",
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly"
   },
