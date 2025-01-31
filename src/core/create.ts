@@ -1,7 +1,6 @@
-import { useSyncExternalStore } from "react";
 import { createStore } from "./createStore";
-import { setNestedStore } from "../utils/setNestedStoreUtils";
 import { storeTypeTag, type Create, type MiddlewareStore } from "../types";
+import { useSyncExternalStore } from "react";
 
 export const create: Create = (initState: any) => {
   type T = typeof initState extends MiddlewareStore<infer R> ? R : typeof initState
@@ -15,7 +14,10 @@ export const create: Create = (initState: any) => {
       () => selector ? selector(store.getInitState()) : store.getInitState());
 
     if (storeTag === "zustand") return board;
-    if (selector && storeTag !== "reducer") return [board, setNestedStore(store.setStore, selector), store.setStore] as const;
+    if (selector && storeTag !== "reducer") {
+      const { setNestedStore } = require("../utils/setNestedStoreUtils")
+      return [board, setNestedStore(store.setStore, selector), store.setStore] as const
+    }
     else return [board, store.setStore] as const;
   };
 
