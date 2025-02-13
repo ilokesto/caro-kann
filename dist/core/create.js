@@ -1,8 +1,8 @@
-import { createStore } from "./createStore";
+import { CreateStore } from "./createStore";
 import { storeTypeTag } from "../types";
 import { useSyncExternalStore } from "react";
 export const create = (initState) => {
-    const store = initState[storeTypeTag] ? initState.store : createStore(initState);
+    const store = initState[storeTypeTag] ? initState.store : new CreateStore(initState);
     const storeTag = initState[storeTypeTag] ? initState[storeTypeTag] : "basic";
     function useStore(selector) {
         const board = useSyncExternalStore(store.subscribe, () => selector ? selector(store.getStore()) : store.getStore(), () => selector ? selector(store.getInitState()) : store.getInitState());

@@ -58,7 +58,7 @@ export const getStorage: PersistUtils["getStorage"] = ({
     if (typeof window !== "undefined")
       console.error("Caro-Kann : Failed to read from storage");
   }
-
+  
   return { state: initState, version: 0 };
 };
 

@@ -1,11 +1,11 @@
 import { Dispatch, SetStateAction } from "react";
 import { MiddlewareStore } from "./Middleware";
-export type Store<T, S = SetStateAction<T>> = {
+export interface Store<T, S = SetStateAction<T>> {
     setStore: Dispatch<S>;
     getStore: () => T;
     subscribe: (callback: () => void) => () => void;
     getInitState: () => T;
-};
+}
 export type UseStore<T, TAction = unknown> = {
     basic: {
         (): readonly [T, Store<T>["setStore"]];
