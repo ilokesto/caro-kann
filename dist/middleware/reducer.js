@@ -3,20 +3,11 @@ import { storeTypeTag } from "../types";
 import { isMiddlewareStore } from "../utils/isMiddlewareStore";
 export const reducer = (reducer, initState) => {
     const Store = isMiddlewareStore(initState) ? initState.store : createStore(initState);
-    const reducerProxy = new Proxy(Store, reducerProxyHandler(reducer));
+    const setStore = (action) => {
+        Store.setStore(prev => reducer(prev, action), action.type);
+    };
     return {
-        store: reducerProxy,
+        store: { ...Store, setStore },
         [storeTypeTag]: "reducer"
     };
 };
-const reducerProxyHandler = (reducer) => ({
-    get: (target, prop) => {
-        if (prop === "setStore") {
-            const setStore = (action) => {
-                Store.setStore(prev => reducer(prev, action), action.type);
-            };
-            return setStore;
-        }
-        return Reflect.get(target, prop);
-    },
-});

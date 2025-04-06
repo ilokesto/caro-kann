@@ -1,4 +1,4 @@
-import { PersistConfig } from "./PersistConfig";
+import { MigrationFn, PersistConfig } from "./PersistConfig";
 import { Store } from "./";
 import { SetStateAction } from "react";
 
@@ -16,7 +16,7 @@ export type MiddlewareStore<
 export type Middleware = {
   devtools: <T>(initState: T | MiddlewareStore<T>, name: string)
     => MiddlewareStore<T, "devtools">
-  persist: <T>(initState: T | MiddlewareStore<T>, persistConfig: PersistConfig<T>)
+  persist: <T, P extends Array<MigrationFn>>(initState: T | MiddlewareStore<T>, persistConfig: PersistConfig<T, P>)
     => MiddlewareStore<T, "persist">
   reducer: <T, A extends object>(reducer: (state: T, action: A) => T, initState: T | MiddlewareStore<T>)
     => MiddlewareStore<T, "reducer", A>;

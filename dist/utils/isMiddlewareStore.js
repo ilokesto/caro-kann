@@ -1,4 +1,4 @@
 import { storeTypeTag } from "../types";
 export const isMiddlewareStore = (initState) => {
-    return Reflect.has(initState, storeTypeTag);
+    return typeof initState === 'object' ? Reflect.has(initState, storeTypeTag) : false;
 };
