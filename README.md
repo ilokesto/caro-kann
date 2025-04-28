@@ -1,12 +1,16 @@
+![caro 복사본](https://github.com/user-attachments/assets/1fa53294-205c-45a3-b6f8-b1be585ce11e)
+
 [![Build Size](https://img.shields.io/bundlephobia/minzip/caro-kann?label=bundle%20size&style=flat&colorA=000000&colorB=000000)](https://bundlephobia.com/result?p=caro-kann)
 [![Version](https://img.shields.io/npm/v/caro-kann?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/caro-kann)
 [![Downloads](https://img.shields.io/npm/dt/caro-kann.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/caro-kann)
 
-&nbsp;
 
-# Caro-Kann
+
 
 Caro-Kann is a global state management tool internally built with the useSyncExternalStore hook. It supports TypeScript and is compatible with both Next.js and React.js. With a syntax similar to useState, Caro-Kann is intuitive for developers familiar with React.js.
+
+&nbsp;
+official documents : https://caro-kann.vercel.com
 
 &nbsp;
 
@@ -29,5 +33,3 @@ import { create } from "caro-kann";
 import { persist, zustand, reducer, devtools } from "caro-kann/middleware"
 ```
 
-
-![caro 복사본](https://github.com/user-attachments/assets/1fa53294-205c-45a3-b6f8-b1be585ce11e)
