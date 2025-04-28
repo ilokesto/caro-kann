@@ -5,9 +5,7 @@
 [![Downloads](https://img.shields.io/npm/dt/caro-kann.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/caro-kann)
 
 
-
-official documents : https://caro-kann.vercel.com
-
+[Official documents](https://caro-kann.vercel.com/en)
 
 &nbsp;
 
