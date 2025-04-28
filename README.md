@@ -14,7 +14,7 @@ official documents : https://caro-kann.vercel.com
 
 &nbsp;
 
-# what's new in caro-kann@3.0.0
+## what's new in caro-kann@3.0.0
 * The new version of Caro-Kann has improved its internal code structure and actively implemented techniques such as tree shaking. As a result, the bundle size has been reduced by up to six times compared to version 2.2.0. In this process, StoreContext was removed, and useDerivedStore was integrated into the derived method of useStore.
 * Semantics are important. Each feature and API is designed with a clear purpose and intent, enabling developers to write state management-related code in a more intuitive and intentional manner. API names and behaviors have been changed to be as intuitive as possible, minimizing ambiguity that could lead to mistakes. These semantic improvements not only enhance the way the code works but also improve the way it is read and understood, contributing to long-term maintainability and collaboration potential.
 * In the previous version, the persist functionality included in create has been separated into a middleware. The middleware-based persist is designed to function independently of global state management, allowing it to be integrated easily without affecting existing state management logic. This separation significantly enhances the application's performance, maintainability, and scalability.
@@ -22,7 +22,7 @@ official documents : https://caro-kann.vercel.com
 
 &nbsp;
 
-# install and import
+## install and import
 
 ```ts
 npm i caro-kann@latest
