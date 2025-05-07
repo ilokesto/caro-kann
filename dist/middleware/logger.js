@@ -1,25 +1,32 @@
 import { storeTypeTag } from "../types";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
-export const logger = (initState, options = { collapsed: false, diff: false }) => {
+export const logger = (initState, options = { collapsed: false, diff: false, timestamp: true }) => {
     const Store = getStoreFromInitState(initState);
-    const setStore = (nextState, actionName = "unknown") => {
+    const setStore = (nextState, actionName = "setState") => {
         const prevState = Store.getStore();
+        const time = new Date().toISOString();
+        const logTitle = options.timestamp
+            ? `State update: ${actionName} [${time}]`
+            : `State update: ${actionName}`;
         if (options.collapsed) {
-            console.groupCollapsed(`상태 업데이트: ${actionName}`);
+            console.groupCollapsed(logTitle);
         }
         else {
-            console.group(`상태 업데이트: ${actionName}`);
+            console.group(logTitle);
         }
-        console.log("이전 상태:", prevState);
+        if (options.timestamp) {
+            console.log("Time:", time);
+        }
+        console.log("Previous state:", prevState);
         Store.setStore(nextState);
         const newState = Store.getStore();
-        console.log("다음 상태:", newState);
+        console.log("Next state:", newState);
         if (options.diff) {
             try {
-                console.log("변경사항:");
+                console.log("Changes:");
                 const changes = getObjectDiff(prevState, newState);
                 if ("value" in changes) {
-                    console.log(`  값 변경: ${JSON.stringify(prevState)} → ${JSON.stringify(newState)}`);
+                    console.log(`  Value changed: ${JSON.stringify(prevState)} → ${JSON.stringify(newState)}`);
                 }
                 else {
                     Object.keys(changes).forEach(key => {
@@ -32,7 +39,7 @@ export const logger = (initState, options = { collapsed: false, diff: false }) =
                 }
             }
             catch (e) {
-                console.log("변경사항을 계산할 수 없습니다");
+                console.log("Could not calculate changes");
             }
         }
         console.groupEnd();
