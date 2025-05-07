@@ -22,12 +22,10 @@ export const logger: Middleware["logger"] = <T>(
     }
     
     const prevState = Store.getStore();
-    const time = new Date().toISOString();
+    const time = new Date().toLocaleTimeString();
     
     // 이하 기존 로깅 코드...
-    const logTitle = options.timestamp 
-      ? `State update: ${actionName} [${time}]` 
-      : `State update: ${actionName}`;
+    const logTitle = `State update: ${actionName}`;
     
     if (options.collapsed) {
       console.groupCollapsed(logTitle);

@@ -9,10 +9,8 @@ export const logger = (initState, options = { collapsed: false, diff: false, tim
             return;
         }
         const prevState = Store.getStore();
-        const time = new Date().toISOString();
-        const logTitle = options.timestamp
-            ? `State update: ${actionName} [${time}]`
-            : `State update: ${actionName}`;
+        const time = new Date().toLocaleTimeString();
+        const logTitle = `State update: ${actionName}`;
         if (options.collapsed) {
             console.groupCollapsed(logTitle);
         }
