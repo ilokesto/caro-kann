@@ -10,6 +10,11 @@ export type Validator<T> = {
     validate: (state: T) => boolean;
     formatError?: (state: T) => unknown;
 };
+export type ValidateSchema<T> = {
+    zod: import("zod").ZodSchema<T>;
+    yup: import("yup").Schema<T>;
+    superstruct: import("superstruct").Struct<T, any>;
+};
 export type Middleware = {
     devtools: <T>(initState: T | MiddlewareStore<T>, name: string) => MiddlewareStore<T, "devtools">;
     persist: <T, P extends Array<MigrationFn>>(initState: T | MiddlewareStore<T>, persistConfig: PersistConfig<T, P>) => MiddlewareStore<T, "persist">;
@@ -19,10 +24,7 @@ export type Middleware = {
     logger: <T>(initState: T | MiddlewareStore<T>, options?: {
         collapsed?: boolean;
         diff?: boolean;
+        timestamp?: boolean;
     }) => MiddlewareStore<T, "logger">;
-    validate: (<T>(initState: T | MiddlewareStore<T>, validator: Validator<T>) => MiddlewareStore<T, "validate">) & {
-        zod: <T>(schema: import("zod").ZodSchema<T>) => Validator<T>;
-        yup: <T>(schema: import("yup").Schema<T>) => Validator<T>;
-        superstruct: <T>(schema: import("superstruct").Struct<T, any>) => Validator<T>;
-    };
+    validate: <T>(initState: T | MiddlewareStore<T>, validator: ValidateSchema<T>[keyof ValidateSchema<T>]) => MiddlewareStore<T, "validate">;
 };
