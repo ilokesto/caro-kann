@@ -1,8 +1,7 @@
-import { createStore } from "../core/createStore";
 import { storeTypeTag } from "../types";
-import { isMiddlewareStore } from "../utils/isMiddlewareStore";
+import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 export const devtools = (initState, name) => {
-    const Store = isMiddlewareStore(initState) ? initState.store : createStore(initState);
+    const Store = getStoreFromInitState(initState);
     const devTools = typeof window !== "undefined" &&
         window.__REDUX_DEVTOOLS_EXTENSION__?.connect({ name });
     if (devTools) {

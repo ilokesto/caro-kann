@@ -1,9 +1,8 @@
-import { createStore } from "../core/createStore";
-import { isMiddlewareStore } from "../utils/isMiddlewareStore";
 import { storeTypeTag } from "../types";
 import { getStorage, parseOptions, setStorage } from "../utils/persistUtils";
+import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 export const persist = (initState, options) => {
-    const Store = isMiddlewareStore(initState) ? initState.store : createStore(initState);
+    const Store = getStoreFromInitState(initState);
     const optionObj = parseOptions(options);
     const initialState = optionObj.storageType
         ? getStorage({ ...optionObj, initState: Store.getInitState() }).state

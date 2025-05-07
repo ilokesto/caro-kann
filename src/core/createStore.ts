@@ -10,12 +10,15 @@ export const createStore = <T>(initState: T): Store<T> => {
     callbacks.forEach((cb) => cb());
   };
 
-  const getStore = () => store;
-
   const subscribe = (callback: () => void) => {
     callbacks.add(callback);
     return () => callbacks.delete(callback);
   };
 
-  return { getStore, setStore, subscribe, getInitState: () => initState };
+  return {
+    setStore,
+    subscribe,
+    getStore: () => store,
+    getInitState: () => initState
+  };
 };

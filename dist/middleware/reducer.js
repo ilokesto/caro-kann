@@ -1,8 +1,7 @@
-import { createStore } from "../core/createStore";
 import { storeTypeTag } from "../types";
-import { isMiddlewareStore } from "../utils/isMiddlewareStore";
+import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 export const reducer = (reducer, initState) => {
-    const Store = isMiddlewareStore(initState) ? initState.store : createStore(initState);
+    const Store = getStoreFromInitState(initState);
     const setStore = (action) => {
         Store.setStore(prev => reducer(prev, action), action.type);
     };

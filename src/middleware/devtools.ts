@@ -1,9 +1,8 @@
-import { createStore } from "../core/createStore";
 import { Middleware, MiddlewareStore, storeTypeTag } from "../types";
-import { isMiddlewareStore } from "../utils/isMiddlewareStore";
+import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 
 export const devtools: Middleware["devtools"] = <T,>(initState: T | MiddlewareStore<T>, name: string) => {
-  const Store = isMiddlewareStore(initState) ? initState.store : createStore(initState);
+  const Store = getStoreFromInitState(initState);
 
   const devTools =
     typeof window !== "undefined" &&

@@ -5,10 +5,14 @@ export const createStore = (initState) => {
         store = typeof nextState === "function" ? nextState(store) : nextState;
         callbacks.forEach((cb) => cb());
     };
-    const getStore = () => store;
     const subscribe = (callback) => {
         callbacks.add(callback);
         return () => callbacks.delete(callback);
     };
-    return { getStore, setStore, subscribe, getInitState: () => initState };
+    return {
+        setStore,
+        subscribe,
+        getStore: () => store,
+        getInitState: () => initState
+    };
 };
