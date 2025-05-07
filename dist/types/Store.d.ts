@@ -30,6 +30,6 @@ export type UseStore<T, TAction = unknown> = {
 export type Create = {
     <T, A>(initState: MiddlewareStore<T, "reducer", A>): UseStore<T, A>["reducer"];
     <T>(initState: MiddlewareStore<T, "zustand">): UseStore<T>["zustand"];
-    <T>(initState: MiddlewareStore<T, "persist" | "devtools"> | T): UseStore<T>["basic"];
+    <T>(initState: MiddlewareStore<T, "persist" | "devtools" | "validate" | "debounce" | "logger"> | T): UseStore<T>["basic"];
     <T>(initState: T): UseStore<T>["basic"];
 };

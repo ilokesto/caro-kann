@@ -1,4 +1,4 @@
-import { PersistConfig, PersistUtils } from "../types";
+import { MigrationFn, PersistConfig, PersistUtils } from "../types";
 
 export function getCookie(name: string) {
   const cookies = document.cookie.split("; ");
@@ -7,28 +7,42 @@ export function getCookie(name: string) {
 }
 
 export const execMigrate: PersistUtils["execMigration"] = ({ storageKey, storageType, migrate }) => {
-  const { version: newVersion, strategy } = migrate!;
+  if (!migrate) return;
+  let flag = true;
 
   if (storageType === "local") {
-    const { state, version } = JSON.parse(localStorage.getItem(storageKey)!);
+    while (flag) {
+      const { state, version }: { state: any; version: number } = JSON.parse(localStorage.getItem(storageKey)!);
 
-    // 상태 버전이 신규 버전보다 낮을 경우 마이그레이션 실행
-    if (newVersion > version)
-      localStorage.setItem(
-        storageKey,
-        JSON.stringify({
-          state: strategy(state, version),
-          version: newVersion,
-        })
-      );
+      // 상태 버전이 신규 버전보다 낮을 경우 마이그레이션 실행
+      if (version < migrate.length) {
+        localStorage.setItem(
+          storageKey,
+          JSON.stringify({
+            // @ts-expect-error
+            state: migrate[version](state),
+            version: version + 1,
+          })
+        );
+      }
+      else {
+        flag = false;
+        break;
+      }
+    }
   } else if (storageType === "cookie") {
-    const { state, version } = JSON.parse(getCookie(storageKey)!);
+    while (flag) {
+      const { state, version }: { state: any; version: number } = JSON.parse(getCookie(storageKey)!);
 
-    if (newVersion > version)
-      document.cookie = `${storageKey}=${JSON.stringify({
-        state: strategy(state, version),
-        version: newVersion,
-      })}`;
+      // 상태 버전이 신규 버전보다 낮을 경우 마이그레이션 실행
+      if (version < migrate.length) {
+        document.cookie = `${storageKey}=${JSON.stringify({
+          // @ts-expect-error
+          state: migrate[version](state),
+          version: version + 1,
+        })}`;
+      }
+    }
   }
 };
 
@@ -62,7 +76,7 @@ export const getStorage: PersistUtils["getStorage"] = ({
   return { state: initState, version: 0 };
 };
 
-export const parseOptions = <T>(StorageConfig?: PersistConfig<T>) => {
+export const parseOptions = <T, P extends Array<MigrationFn>>(StorageConfig?: PersistConfig<T, P>) => {
   const storageKey =
     StorageConfig?.local ??
     StorageConfig?.cookie ??
@@ -75,7 +89,7 @@ export const parseOptions = <T>(StorageConfig?: PersistConfig<T>) => {
     : StorageConfig?.session
     ? "session"
     : null;
-  const storageVersion = StorageConfig?.migrate?.version ?? 0;
+  const storageVersion = StorageConfig?.migrate?.length ?? 0;
   const migrate = StorageConfig?.migrate;
 
   return { storageKey, storageType, storageVersion, migrate } as const;

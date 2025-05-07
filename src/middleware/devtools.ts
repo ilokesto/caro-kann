@@ -1,14 +1,18 @@
-import { createStore } from "../core/createStore";
 import { Middleware, MiddlewareStore, storeTypeTag } from "../types";
-import { isMiddlewareStore } from "../utils/isMiddlewareStore";
+import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 
 export const devtools: Middleware["devtools"] = <T,>(initState: T | MiddlewareStore<T>, name: string) => {
-  const Store = isMiddlewareStore(initState) ? initState.store : createStore(initState);
+  const Store = getStoreFromInitState(initState);
 
-  const devTools =
+  // 현재 환경이 production인지 확인
+  const isProduction = typeof process !== 'undefined' && process.env.NODE_ENV === 'production';
+
+  // 프로덕션 모드에서는 DevTools 연결 시도하지 않음
+  const devTools = !isProduction && 
     typeof window !== "undefined" &&
     (window as any).__REDUX_DEVTOOLS_EXTENSION__?.connect({ name });
 
+  // DevTools가 존재하고(프로덕션 모드가 아니고) 초기화할 수 있는 경우에만 실행
   if (devTools) {
     devTools.init(Store.getInitState());
 
@@ -36,10 +40,13 @@ export const devtools: Middleware["devtools"] = <T,>(initState: T | MiddlewareSt
     // @ts-ignore
     Store.setStore(nextState, actionName);
 
-    try {
-      devTools?.send(`${name}:${actionName}`, Store.getStore());
-    } catch (error) {
-      console.error("Error sending state to devtools", error);
+    // 프로덕션이 아닌 환경에서만 DevTools에 상태 전송
+    if (!isProduction && devTools) {
+      try {
+        devTools.send(`${name}:${actionName}`, Store.getStore());
+      } catch (error) {
+        console.error("Error sending state to devtools", error);
+      }
     }
   }
 

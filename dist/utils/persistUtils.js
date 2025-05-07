@@ -4,22 +4,34 @@ export function getCookie(name) {
     return cookie ? cookie.split("=")[1] : null;
 }
 export const execMigrate = ({ storageKey, storageType, migrate }) => {
-    const { version: newVersion, strategy } = migrate;
+    if (!migrate)
+        return;
+    let flag = true;
     if (storageType === "local") {
-        const { state, version } = JSON.parse(localStorage.getItem(storageKey));
-        if (newVersion > version)
-            localStorage.setItem(storageKey, JSON.stringify({
-                state: strategy(state, version),
-                version: newVersion,
-            }));
+        while (flag) {
+            const { state, version } = JSON.parse(localStorage.getItem(storageKey));
+            if (version < migrate.length) {
+                localStorage.setItem(storageKey, JSON.stringify({
+                    state: migrate[version](state),
+                    version: version + 1,
+                }));
+            }
+            else {
+                flag = false;
+                break;
+            }
+        }
     }
     else if (storageType === "cookie") {
-        const { state, version } = JSON.parse(getCookie(storageKey));
-        if (newVersion > version)
-            document.cookie = `${storageKey}=${JSON.stringify({
-                state: strategy(state, version),
-                version: newVersion,
-            })}`;
+        while (flag) {
+            const { state, version } = JSON.parse(getCookie(storageKey));
+            if (version < migrate.length) {
+                document.cookie = `${storageKey}=${JSON.stringify({
+                    state: migrate[version](state),
+                    version: version + 1,
+                })}`;
+            }
+        }
     }
 };
 export const getStorage = ({ storageKey, storageType, migrate, initState, }) => {
@@ -57,7 +69,7 @@ export const parseOptions = (StorageConfig) => {
             : StorageConfig?.session
                 ? "session"
                 : null;
-    const storageVersion = StorageConfig?.migrate?.version ?? 0;
+    const storageVersion = StorageConfig?.migrate?.length ?? 0;
     const migrate = StorageConfig?.migrate;
     return { storageKey, storageType, storageVersion, migrate };
 };

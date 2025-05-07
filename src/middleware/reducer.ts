@@ -1,28 +1,16 @@
-import { createStore } from "../core/createStore";
-import { Middleware, MiddlewareStore, Store, storeTypeTag } from "../types";
-import { isMiddlewareStore } from "../utils/isMiddlewareStore";
+import { Middleware, MiddlewareStore, storeTypeTag } from "../types";
+import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 
 export const reducer: Middleware["reducer"] = <T, A extends object>(reducer: (state: T, action: A) => T, initState: T | MiddlewareStore<T>) => {
-  const Store = isMiddlewareStore(initState) ? initState.store : createStore(initState);
+  const Store = getStoreFromInitState(initState);
 
-  const reducerProxy = new Proxy(Store, reducerProxyHandler(reducer));
+  const setStore = (action: A) => {
+    // @ts-ignore
+    Store.setStore(prev => reducer(prev, action), action.type);
+  };
 
   return {
-    store: reducerProxy,
+    store: { ...Store, setStore },
     [storeTypeTag]: "reducer"
   }
 }
-
-const reducerProxyHandler = <T, A extends object>(reducer: (state: T, action: A) => T): ProxyHandler<Store<T, A>> => ({
-  get: (target, prop) => {
-    if (prop === "setStore") {
-      const setStore = (action: A) => {
-        // @ts-ignore
-        Store.setStore(prev => reducer(prev, action), action.type);
-      };
-
-      return setStore;
-    }
-    return Reflect.get(target, prop);
-  },
-})

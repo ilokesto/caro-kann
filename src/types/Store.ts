@@ -38,7 +38,7 @@ export type Create = {
   <T>(initState: MiddlewareStore<T, "zustand">): UseStore<T>["zustand"]
   
   // middleware persist & devtools
-  <T>(initState: MiddlewareStore<T, "persist" | "devtools"> | T): UseStore<T>["basic"]
+  <T>(initState: MiddlewareStore<T, "persist" | "devtools" | "validate" | "debounce" | "logger"> | T): UseStore<T>["basic"]
 
   // create
   <T>(initState: T): UseStore<T>["basic"]
