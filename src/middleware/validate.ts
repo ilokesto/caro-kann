@@ -23,19 +23,31 @@ export const validate: Middleware["validate"] = <T>(initState: T | MiddlewareSto
   };
 };
 
-function getValidatorType<T>(validator: ValidateSchema<T>[keyof ValidateSchema<T>]) {
-  switch (true) {
-    case validator instanceof (require("zod").ZodSchema):
-      return zodValidator(validator as import("zod").ZodSchema<T>);
-    case validator instanceof (require("yup").Schema):
-      return yupValidator(validator as import("yup").Schema<T>);
-    case validator instanceof (require("superstruct").Struct):
-      return superstructValidator(validator as import("superstruct").Struct<T, any>);
-    default:
-      throw new Error("Unsupported validation library");  
-  }
+// 타입 가드 함수 추가
+function isZodSchema<T>(validator: any): validator is import("zod").ZodSchema<T> {
+  return validator && typeof validator.parse === 'function' && typeof validator.safeParse === 'function';
 }
 
+function isYupSchema<T>(validator: any): validator is import("yup").Schema<T> {
+  return validator instanceof (require("yup").Schema);
+}
+
+function isSuperstructSchema<T>(validator: any): validator is import("superstruct").Struct<T, any> {
+  return validator instanceof (require("superstruct").Struct);
+}
+
+// 수정된 함수
+function getValidatorType<T>(validator: ValidateSchema<T>[keyof ValidateSchema<T>]) {
+  if (isZodSchema<T>(validator)) {
+    return zodValidator(validator);
+  } else if (isYupSchema<T>(validator)) {
+    return yupValidator(validator);
+  } else if (isSuperstructSchema<T>(validator)) {
+    return superstructValidator(validator);
+  } else {
+    throw new Error("Unsupported validation library");  
+  }
+}
 
 // zod 스키마 래퍼
 function zodValidator<T>(schema: ValidateSchema<T>["zod"]): Validator<T> {
