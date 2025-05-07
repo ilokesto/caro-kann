@@ -6,7 +6,7 @@ export const storeTypeTag: unique symbol = Symbol("storeTypeTag")
 
 export type MiddlewareStore<
   TInitState,
-  TStoreType = "devtools" | "persist" | "reducer" | "zustand" | "validate" | "debounce",
+  TStoreType = "devtools" | "persist" | "reducer" | "zustand" | "validate" | "debounce" | "logger",
   TSetStore = SetStateAction<TInitState>
 > = {
   store: Store<TInitState, TSetStore>,
@@ -33,6 +33,9 @@ export type Middleware = {
 
   debounce: <T>(initState: T | MiddlewareStore<T>, wait?: number)
   => MiddlewareStore<T, "debounce">;
+
+  logger: <T>(initState: T | MiddlewareStore<T>, options?: { collapsed?: boolean, diff?: boolean })
+    => MiddlewareStore<T, "logger">;
 
   validate: (<T>(initState: T | MiddlewareStore<T>, validator: Validator<T>)
     => MiddlewareStore<T, "validate">) & {
