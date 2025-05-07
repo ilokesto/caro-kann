@@ -1,4 +1,3 @@
-import { SetStateAction } from "react";
 import type { Store } from "../types";
 
 export const createStore = <T>(initState: T): Store<T> => {
@@ -20,29 +19,3 @@ export const createStore = <T>(initState: T): Store<T> => {
 
   return { getStore, setStore, subscribe, getInitState: () => initState };
 };
-
-export class CreateStore<T> implements Store<T> {
-  private _callbacks = new Set<() => void>();
-  private _store: T
-  private _initStore: T
-
-  constructor(initStore: T) {
-    this._store = initStore;
-    this._initStore = initStore;
-  }
-
-  public getInitState = () => this._initStore;
-
-  public getStore = () => this._store;
-
-  public setStore = (nextState: SetStateAction<T>) => {
-    this._store = typeof nextState === "function" ? (nextState as (prev: T) => T)(this._store) : nextState;
-
-    this._callbacks.forEach((cb) => cb());
-  }
-
-  public subscribe = (callback: () => void) => {
-    this._callbacks.add(callback);
-    return () => this._callbacks.delete(callback);
-  };
-}

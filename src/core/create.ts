@@ -1,10 +1,10 @@
-import { CreateStore } from "./createStore";
+import { createStore } from "./createStore";
 import { Store, storeTypeTag, type Create, type MiddlewareStore } from "../types";
 import { useSyncExternalStore } from "react";
 
 export const create: Create = (initState: any) => {
   type T = typeof initState extends MiddlewareStore<infer R> ? R : typeof initState
-  const store: Store<T> = initState[storeTypeTag] ? initState.store : new CreateStore(initState)
+  const store: Store<T> = initState[storeTypeTag] ? initState.store : createStore(initState)
   const storeTag = initState[storeTypeTag] ? initState[storeTypeTag] : "basic"
 
   function useStore<S>(selector?: (state: T) => S) {
