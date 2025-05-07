@@ -2,7 +2,9 @@ import { storeTypeTag } from "../types";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 export const devtools = (initState, name) => {
     const Store = getStoreFromInitState(initState);
-    const devTools = typeof window !== "undefined" &&
+    const isProduction = typeof process !== 'undefined' && process.env.NODE_ENV === 'production';
+    const devTools = !isProduction &&
+        typeof window !== "undefined" &&
         window.__REDUX_DEVTOOLS_EXTENSION__?.connect({ name });
     if (devTools) {
         devTools.init(Store.getInitState());
@@ -27,11 +29,13 @@ export const devtools = (initState, name) => {
     }
     const setStore = (nextState, actionName = "setStore") => {
         Store.setStore(nextState, actionName);
-        try {
-            devTools?.send(`${name}:${actionName}`, Store.getStore());
-        }
-        catch (error) {
-            console.error("Error sending state to devtools", error);
+        if (!isProduction && devTools) {
+            try {
+                devTools.send(`${name}:${actionName}`, Store.getStore());
+            }
+            catch (error) {
+                console.error("Error sending state to devtools", error);
+            }
         }
     };
     return {

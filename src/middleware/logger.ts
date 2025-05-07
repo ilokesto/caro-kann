@@ -6,42 +6,48 @@ export const logger: Middleware["logger"] = <T>(
   options: { 
     collapsed?: boolean, 
     diff?: boolean,
-    timestamp?: boolean
+    timestamp?: boolean,
   } = { collapsed: false, diff: false, timestamp: true }
 ) => {
   const Store = getStoreFromInitState(initState);
   
+  // 현재 환경이 production인지 확인
+  const isProduction = typeof process !== 'undefined' && process.env.NODE_ENV === 'production';
+  
   const setStore = (nextState: T | ((prev: T) => T), actionName = "setState") => {
+    // 프로덕션 모드에서는 로깅 없이 상태만 업데이트
+    if (isProduction) {
+      Store.setStore(nextState);
+      return;
+    }
+    
     const prevState = Store.getStore();
     const time = new Date().toISOString();
     
-    // 로그 그룹 타이틀에 타임스탬프 추가
+    // 이하 기존 로깅 코드...
     const logTitle = options.timestamp 
       ? `State update: ${actionName} [${time}]` 
       : `State update: ${actionName}`;
     
-    // collapsed 옵션에 따라 그룹 로그 방식 선택
     if (options.collapsed) {
       console.groupCollapsed(logTitle);
     } else {
       console.group(logTitle);
     }
     
-    // 타임스탬프 정보 별도로 표시
     if (options.timestamp) {
       console.log("Time:", time);
     }
     
     console.log("Previous state:", prevState);
     
-    // 상태 업데이트
     Store.setStore(nextState);
     const newState = Store.getStore();
     
     console.log("Next state:", newState);
     
-    // diff 옵션이 true인 경우 차이점 표시
     if (options.diff) {
+      // 기존 diff 코드 유지
       try {
         console.log("Changes:");
         const changes = getObjectDiff(prevState, newState);
