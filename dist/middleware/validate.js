@@ -16,16 +16,27 @@ export const validate = (initState, validator) => {
         [storeTypeTag]: "validate"
     };
 };
+function isZodSchema(validator) {
+    return validator && typeof validator.parse === 'function' && typeof validator.safeParse === 'function';
+}
+function isYupSchema(validator) {
+    return validator instanceof (require("yup").Schema);
+}
+function isSuperstructSchema(validator) {
+    return validator instanceof (require("superstruct").Struct);
+}
 function getValidatorType(validator) {
-    switch (true) {
-        case validator instanceof (require("zod").ZodSchema):
-            return zodValidator(validator);
-        case validator instanceof (require("yup").Schema):
-            return yupValidator(validator);
-        case validator instanceof (require("superstruct").Struct):
-            return superstructValidator(validator);
-        default:
-            throw new Error("Unsupported validation library");
+    if (isZodSchema(validator)) {
+        return zodValidator(validator);
+    }
+    else if (isYupSchema(validator)) {
+        return yupValidator(validator);
+    }
+    else if (isSuperstructSchema(validator)) {
+        return superstructValidator(validator);
+    }
+    else {
+        throw new Error("Unsupported validation library");
     }
 }
 function zodValidator(schema) {
