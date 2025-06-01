@@ -19,14 +19,20 @@ export const setNestedStore: SetNestedBoard = (setBoard, selector) =>
     })
   };
 
-function updateNestedValue (obj: any, path: string[], value: any) {
-  if (path.length === 1) {
+function updateNestedValue(obj: any, path: string[], value: any) {
+  if (path.length === 0) {
+    Object.keys(obj).forEach(key => delete obj[key]);
+    if (typeof value === 'object' && value !== null) {
+      Object.assign(obj, value);
+    }
+    return;
+  } else if (path.length === 1) {
     obj[path[0]] = value;
   } else {
     if (!obj[path[0]]) obj[path[0]] = {};
     updateNestedValue(obj[path[0]], path.slice(1), value);
   }
-};
+}
 
 function parseObjectPath(input: string) {
   // 화살표 함수로 작성되었는지 확인

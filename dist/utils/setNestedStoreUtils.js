@@ -9,7 +9,14 @@ export const setNestedStore = (setBoard, selector) => (value) => {
     });
 };
 function updateNestedValue(obj, path, value) {
-    if (path.length === 1) {
+    if (path.length === 0) {
+        Object.keys(obj).forEach(key => delete obj[key]);
+        if (typeof value === 'object' && value !== null) {
+            Object.assign(obj, value);
+        }
+        return;
+    }
+    else if (path.length === 1) {
         obj[path[0]] = value;
     }
     else {
@@ -18,7 +25,6 @@ function updateNestedValue(obj, path, value) {
         updateNestedValue(obj[path[0]], path.slice(1), value);
     }
 }
-;
 function parseObjectPath(input) {
     if (!/=>/.test(input))
         throw new Error('Invalid caro-kann selector format: missing " => "');
