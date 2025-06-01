@@ -2,7 +2,7 @@ import { MigrationFn, PersistConfig, PersistUtils } from "../types";
 export declare function getCookie(name: string): string | null;
 export declare const execMigrate: PersistUtils["execMigration"];
 export declare const getStorage: PersistUtils["getStorage"];
-export declare const parseOptions: <T, P extends MigrationFn[]>(StorageConfig?: PersistConfig<T, P>) => {
+export declare const parseOptions: <T, P extends Array<MigrationFn>>(StorageConfig?: PersistConfig<T, P>) => {
     readonly storageKey: string;
     readonly storageType: "session" | "local" | "cookie" | null;
     readonly storageVersion: 0;
