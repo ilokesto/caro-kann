@@ -1,6 +1,7 @@
 import { MigrationFn, PersistConfig } from "./PersistConfig";
 import { Store } from "./";
 import { SetStateAction } from "react";
+import { ValidateSchema } from "common-resolver/types";
 
 export const storeTypeTag: unique symbol = Symbol("storeTypeTag")
 
@@ -11,17 +12,6 @@ export type MiddlewareStore<
 > = {
   store: Store<TInitState, TSetStore>,
   [storeTypeTag]: TStoreType
-}
-
-export type Validator<T> = {
-  validate: (state: T) => boolean;
-  formatError?: (state: T) => unknown;
-};
-
-export type ValidateSchema<T> = {
-  zod: import("zod").ZodSchema<T>;
-  yup: import("yup").Schema<T>;
-  superstruct: import("superstruct").Struct<T, any>;
 }
 
 export type Middleware = {

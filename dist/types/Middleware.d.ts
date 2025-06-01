@@ -1,19 +1,11 @@
 import { MigrationFn, PersistConfig } from "./PersistConfig";
 import { Store } from "./";
 import { SetStateAction } from "react";
+import { ValidateSchema } from "common-resolver/types";
 export declare const storeTypeTag: unique symbol;
 export type MiddlewareStore<TInitState, TStoreType = "devtools" | "persist" | "reducer" | "zustand" | "validate" | "debounce" | "logger", TSetStore = SetStateAction<TInitState>> = {
     store: Store<TInitState, TSetStore>;
     [storeTypeTag]: TStoreType;
-};
-export type Validator<T> = {
-    validate: (state: T) => boolean;
-    formatError?: (state: T) => unknown;
-};
-export type ValidateSchema<T> = {
-    zod: import("zod").ZodSchema<T>;
-    yup: import("yup").Schema<T>;
-    superstruct: import("superstruct").Struct<T, any>;
 };
 export type Middleware = {
     devtools: <T>(initState: T | MiddlewareStore<T>, name: string) => MiddlewareStore<T, "devtools">;
