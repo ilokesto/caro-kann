@@ -18,5 +18,5 @@ export type Middleware = {
         diff?: boolean;
         timestamp?: boolean;
     }) => MiddlewareStore<T, ["logger", ...K]>;
-    validate: <T, K extends Array<StoreType> = []>(initState: T | MiddlewareStore<T, K>, validator: ValidateSchema<T>[keyof ValidateSchema<T>]) => MiddlewareStore<T, ["validate", ...K]>;
+    validate: <T, K extends Array<StoreType>>(initState: T | MiddlewareStore<T, K>, validator: ValidateSchema<T>[keyof ValidateSchema<T>]) => MiddlewareStore<T, ["validate", ...K]>;
 };

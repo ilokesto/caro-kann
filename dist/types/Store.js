@@ -1,2 +1,2 @@
+import { storeTypeTag } from "./Middleware";
 ;
-export {};

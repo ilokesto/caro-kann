@@ -1,13 +1,16 @@
 import { storeTypeTag } from "../types";
-import { useSyncExternalStore } from "react";
+import { createContext, useContext, useSyncExternalStore } from "react";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 export const create = (initState) => {
     const { store, [storeTypeTag]: storeTag } = getStoreFromInitState(initState);
+    const ContextStore = createContext(store);
     function useStore(selector) {
-        const board = useSyncExternalStore(store.subscribe, () => selector ? selector(store.getStore()) : store.getStore(), () => selector ? selector(store.getInitState()) : store.getInitState());
-        return [board, store.setStore];
+        const { getStore, setStore, getInitState, subscribe } = useContext(ContextStore);
+        const board = useSyncExternalStore(subscribe, () => selector ? selector(getStore()) : getStore(), () => selector ? selector(getInitState()) : getInitState());
+        return [board, setStore];
     }
     ;
     useStore.derived = (selector) => useStore(selector)[0];
+    useStore[storeTypeTag] = storeTag;
     return useStore;
 };

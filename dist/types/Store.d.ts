@@ -1,13 +1,14 @@
 import { Dispatch, SetStateAction } from "react";
-import { MiddlewareStore, StoreType } from "./Middleware";
+import { MiddlewareStore, StoreType, storeTypeTag } from "./Middleware";
 export interface Store<T, S = SetStateAction<T>> {
     setStore: Dispatch<S>;
     getStore: () => T;
     subscribe: (callback: () => void) => () => void;
     getInitState: () => T;
 }
-export type UseStore<T, TAction = unknown> = {
+export type UseStore<T, K extends Array<StoreType> = [], TAction = unknown> = {
     basic: {
+        [storeTypeTag]: K;
         (): readonly [T, Store<T>["setStore"]];
         <S>(selector: (state: T) => S): readonly [
             S,
@@ -16,13 +17,14 @@ export type UseStore<T, TAction = unknown> = {
         derived: <S>(selector: (state: T) => S) => S;
     };
     reducer: {
+        [storeTypeTag]: K;
         (): readonly [T, Dispatch<TAction>];
         <S>(selector: (state: T) => S): readonly [S, Dispatch<TAction>];
         derived: <S>(selector: (state: T) => S) => S;
     };
 };
 export type Create = {
-    <T, K extends Array<StoreType> = [], A = never>(initState: MiddlewareStore<T, K, A>): UseStore<T, A>["reducer"];
-    <T, K extends Array<StoreType> = []>(initState: MiddlewareStore<T, K> | T): UseStore<T>["basic"];
+    <T, K extends Array<StoreType> = [], A = never>(initState: MiddlewareStore<T, K, A>): UseStore<T, K, A>["reducer"];
+    <T, K extends Array<StoreType> = []>(initState: MiddlewareStore<T, K> | T): UseStore<T, K>["basic"];
     <T>(initState: T): UseStore<T>["basic"];
 };
