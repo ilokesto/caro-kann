@@ -1,10 +1,10 @@
 import { ValidateSchema } from "common-resolver/types";
-import { Middleware, MiddlewareStore, storeTypeTag } from "../types";
+import { Middleware, MiddlewareStore, StoreType, storeTypeTag } from "../types";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 import { getResolver } from "common-resolver/getResolver";
 
-export const validate: Middleware["validate"] = <T>(initState: T | MiddlewareStore<T>, validator: ValidateSchema<T>[keyof ValidateSchema<T>]) => {
-  const Store = getStoreFromInitState(initState);
+export const validate: Middleware["validate"] = <T, K extends Array<StoreType>>(initState: T | MiddlewareStore<T, K>, validator: ValidateSchema<T>[keyof ValidateSchema<T>]) => {
+  const {store: Store, [storeTypeTag]: storeTypeTagArray } = getStoreFromInitState(initState);
   const validateScheme = getResolver(validator);
 
   const setStore = (nextState: T | ((prev: T) => T), actionName: string = "validate") => {
@@ -23,6 +23,6 @@ export const validate: Middleware["validate"] = <T>(initState: T | MiddlewareSto
 
   return {
     store: { ...Store, setStore },
-    [storeTypeTag]: "validate"
+    [storeTypeTag]: ["validate", ...storeTypeTagArray]
   };
 };

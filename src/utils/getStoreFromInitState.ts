@@ -1,8 +1,10 @@
 import { createStore } from "../core/createStore";
-import { MiddlewareStore, storeTypeTag } from "../types";
+import { MiddlewareStore, StoreType, storeTypeTag } from "../types";
 
-const isMiddlewareStore = <T>(initState: T | MiddlewareStore<T, string>): initState is MiddlewareStore<T, string> => {
+const isMiddlewareStore = <T, K extends Array<StoreType>>(initState: T | MiddlewareStore<T, K>): initState is MiddlewareStore<T, K> => {
   return typeof initState === 'object' ? Reflect.has((initState as object), storeTypeTag) : false
 }
 
-export const getStoreFromInitState = <T>(initState: T | MiddlewareStore<T, string>) => isMiddlewareStore(initState) ? initState.store : createStore(initState);
+export const getStoreFromInitState = <T, K extends Array<StoreType>>(initState: T | MiddlewareStore<T, K>) => isMiddlewareStore(initState)
+  ? { store: initState.store, [storeTypeTag]: initState[storeTypeTag] }
+  : { store: createStore(initState), [storeTypeTag]: [] as unknown as K };

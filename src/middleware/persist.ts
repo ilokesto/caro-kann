@@ -1,9 +1,9 @@
-import { Middleware, MiddlewareStore, MigrationFn, PersistConfig, storeTypeTag } from "../types";
+import { Middleware, MiddlewareStore, MigrationFn, PersistConfig, StoreType, storeTypeTag } from "../types";
 import { getStorage, parseOptions, setStorage } from "../utils/persistUtils";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 
-export const persist: Middleware["persist"] = <T, P extends Array<MigrationFn>>(initState: T | MiddlewareStore<T>, options: PersistConfig<T, P>) => {
-  const Store = getStoreFromInitState(initState);
+export const persist: Middleware["persist"] = <T, K extends Array<StoreType>, P extends Array<MigrationFn>>(initState: T | MiddlewareStore<T, K>, options: PersistConfig<T, P>) => {
+  const {store: Store, [storeTypeTag]: storeTypeTagArray } = getStoreFromInitState(initState);
   const optionObj = parseOptions(options);
 
   const initialState = optionObj.storageType
@@ -21,6 +21,6 @@ export const persist: Middleware["persist"] = <T, P extends Array<MigrationFn>>(
 
   return {
     store: {...Store, setStore },
-    [storeTypeTag]: "persist"
+    [storeTypeTag]: ["persist", ...storeTypeTagArray]
   }
 };

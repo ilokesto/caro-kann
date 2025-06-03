@@ -1,9 +1,9 @@
 import { SetStateAction } from "react";
-import { Middleware, MiddlewareStore, storeTypeTag } from "../types";
+import { Middleware, MiddlewareStore, StoreType, storeTypeTag } from "../types";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 
-export const debounce: Middleware["debounce"] = <T>(initState: T | MiddlewareStore<T>, wait = 300) => {
-  const Store = getStoreFromInitState(initState);
+export const debounce: Middleware["debounce"] = <T, K extends Array<StoreType>>(initState: T | MiddlewareStore<T, K>, wait = 300) => {
+  const {store: Store, [storeTypeTag]: storeTypeTagArray } = getStoreFromInitState<T, K>(initState);
   let timeout: NodeJS.Timeout | null = null;
   let updates: Array<SetStateAction<T>> = [];
 
@@ -38,6 +38,6 @@ export const debounce: Middleware["debounce"] = <T>(initState: T | MiddlewareSto
 
   return {
     store: { ...Store, setStore },
-    [storeTypeTag]: "debounce"
+    [storeTypeTag]: ["debounce", ...storeTypeTagArray]
   }
 }

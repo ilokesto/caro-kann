@@ -1,7 +1,7 @@
 import { storeTypeTag } from "../types";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 export const devtools = (initState, name) => {
-    const Store = getStoreFromInitState(initState);
+    const { store: Store, [storeTypeTag]: storeTypeTagArray } = getStoreFromInitState(initState);
     const isProduction = typeof process !== 'undefined' && process.env.NODE_ENV === 'production';
     const devTools = !isProduction &&
         typeof window !== "undefined" &&
@@ -40,6 +40,6 @@ export const devtools = (initState, name) => {
     };
     return {
         store: { ...Store, setStore },
-        [storeTypeTag]: "devtools"
+        [storeTypeTag]: ["devtools", ...storeTypeTagArray]
     };
 };

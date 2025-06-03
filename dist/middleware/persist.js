@@ -2,7 +2,7 @@ import { storeTypeTag } from "../types";
 import { getStorage, parseOptions, setStorage } from "../utils/persistUtils";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 export const persist = (initState, options) => {
-    const Store = getStoreFromInitState(initState);
+    const { store: Store, [storeTypeTag]: storeTypeTagArray } = getStoreFromInitState(initState);
     const optionObj = parseOptions(options);
     const initialState = optionObj.storageType
         ? getStorage({ ...optionObj, initState: Store.getInitState() }).state
@@ -15,6 +15,6 @@ export const persist = (initState, options) => {
     };
     return {
         store: { ...Store, setStore },
-        [storeTypeTag]: "persist"
+        [storeTypeTag]: ["persist", ...storeTypeTagArray]
     };
 };

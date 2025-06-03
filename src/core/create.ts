@@ -1,27 +1,21 @@
-import { createStore } from "./createStore";
-import { Store, storeTypeTag, type Create, type MiddlewareStore } from "../types";
+import { StoreType, storeTypeTag, type Create, type MiddlewareStore } from "../types";
 import { useSyncExternalStore } from "react";
+import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 
-export const create: Create = (initState: any) => {
-  type T = typeof initState extends MiddlewareStore<infer R> ? R : typeof initState
-  const store: Store<T> = initState[storeTypeTag] ? initState.store : createStore(initState)
-  const storeTag = initState[storeTypeTag] ? initState[storeTypeTag] : "basic"
+export const create: Create =<T, K extends Array<StoreType>>(initState: MiddlewareStore<T, K> | T) => {
+  const {store, [storeTypeTag]: storeTag } = getStoreFromInitState<T, K>(initState);
 
   function useStore<S>(selector?: (state: T) => S) {
     const board = useSyncExternalStore(
       store.subscribe,
       () => selector ? selector(store.getStore()) : store.getStore(),
-      () => selector ? selector(store.getInitState()) : store.getInitState());
+      () => selector ? selector(store.getInitState()) : store.getInitState()
+    );
 
-    if (storeTag === "zustand") return board;
-    if (selector && storeTag !== "reducer") {
-      const { setNestedStore } = require("../utils/setNestedStoreUtils")
-      return [board, setNestedStore(store.setStore, selector), store.setStore] as const
-    }
-    else return [board, store.setStore] as const;
+    return [board, store.setStore] as const;
   };
 
-  useStore.derived = <S>(selector: (state: T) => S): S => useStore(selector)[0];
+  useStore.derived = <S>(selector: (state: T) => S): S => useStore(selector)[0] as S;
 
   return useStore
 }

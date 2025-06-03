@@ -1,19 +1,11 @@
-import { createStore } from "./createStore";
 import { storeTypeTag } from "../types";
 import { useSyncExternalStore } from "react";
+import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 export const create = (initState) => {
-    const store = initState[storeTypeTag] ? initState.store : createStore(initState);
-    const storeTag = initState[storeTypeTag] ? initState[storeTypeTag] : "basic";
+    const { store, [storeTypeTag]: storeTag } = getStoreFromInitState(initState);
     function useStore(selector) {
         const board = useSyncExternalStore(store.subscribe, () => selector ? selector(store.getStore()) : store.getStore(), () => selector ? selector(store.getInitState()) : store.getInitState());
-        if (storeTag === "zustand")
-            return board;
-        if (selector && storeTag !== "reducer") {
-            const { setNestedStore } = require("../utils/setNestedStoreUtils");
-            return [board, setNestedStore(store.setStore, selector), store.setStore];
-        }
-        else
-            return [board, store.setStore];
+        return [board, store.setStore];
     }
     ;
     useStore.derived = (selector) => useStore(selector)[0];

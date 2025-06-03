@@ -2,7 +2,7 @@ import { storeTypeTag } from "../types";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 import { getResolver } from "common-resolver/getResolver";
 export const validate = (initState, validator) => {
-    const Store = getStoreFromInitState(initState);
+    const { store: Store, [storeTypeTag]: storeTypeTagArray } = getStoreFromInitState(initState);
     const validateScheme = getResolver(validator);
     const setStore = (nextState, actionName = "validate") => {
         const newState = typeof nextState === "function" ? nextState(Store.getStore()) : nextState;
@@ -15,6 +15,6 @@ export const validate = (initState, validator) => {
     };
     return {
         store: { ...Store, setStore },
-        [storeTypeTag]: "validate"
+        [storeTypeTag]: ["validate", ...storeTypeTagArray]
     };
 };

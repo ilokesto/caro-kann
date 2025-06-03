@@ -1,8 +1,8 @@
-import { Middleware, MiddlewareStore, storeTypeTag } from "../types";
+import { Middleware, MiddlewareStore, StoreType, storeTypeTag } from "../types";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 
-export const devtools: Middleware["devtools"] = <T,>(initState: T | MiddlewareStore<T>, name: string) => {
-  const Store = getStoreFromInitState(initState);
+export const devtools: Middleware["devtools"] = <T,K extends Array<StoreType>>(initState: T | MiddlewareStore<T, K>, name: string) => {
+  const {store: Store, [storeTypeTag]: storeTypeTagArray } = getStoreFromInitState(initState);
 
   // 현재 환경이 production인지 확인
   const isProduction = typeof process !== 'undefined' && process.env.NODE_ENV === 'production';
@@ -52,6 +52,6 @@ export const devtools: Middleware["devtools"] = <T,>(initState: T | MiddlewareSt
 
   return {
     store: { ...Store, setStore },
-    [storeTypeTag]: "devtools"
+    [storeTypeTag]: ["devtools", ...storeTypeTagArray]
   }
 }

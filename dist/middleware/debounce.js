@@ -1,7 +1,7 @@
 import { storeTypeTag } from "../types";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 export const debounce = (initState, wait = 300) => {
-    const Store = getStoreFromInitState(initState);
+    const { store: Store, [storeTypeTag]: storeTypeTagArray } = getStoreFromInitState(initState);
     let timeout = null;
     let updates = [];
     const setStore = (nextState) => {
@@ -25,6 +25,6 @@ export const debounce = (initState, wait = 300) => {
     };
     return {
         store: { ...Store, setStore },
-        [storeTypeTag]: "debounce"
+        [storeTypeTag]: ["debounce", ...storeTypeTagArray]
     };
 };
