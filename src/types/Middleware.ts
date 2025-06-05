@@ -18,7 +18,7 @@ export type MiddlewareStore<
 
 export type Middleware = {
   devtools: <T, K extends Array<StoreType> = []>(initState: T | MiddlewareStore<T, K>, name: string)
-    => MiddlewareStore<T, ["devtools", ...K] >;
+    => MiddlewareStore<T, ["devtools", ...K]>;
 
   persist: <T, K extends Array<StoreType> = [], P extends Array<MigrationFn> = []>(initState: T | MiddlewareStore<T, K>, persistConfig: PersistConfig<T, P>)
     => MiddlewareStore<T, ["persist", ...K]>;
@@ -32,6 +32,6 @@ export type Middleware = {
   logger: <T, K extends Array<StoreType> = []>(initState: T | MiddlewareStore<T, K>, options?: { collapsed?: boolean, diff?: boolean, timestamp?: boolean })
     => MiddlewareStore<T, ["logger", ...K]>;
 
-  validate: <T, K extends Array<StoreType>>(initState: T | MiddlewareStore<T, K>, validator: ValidateSchema<T>[keyof ValidateSchema<T>])
+  validate: <T, K extends Array<StoreType> = []>(initState: T | MiddlewareStore<T, K>, validator: ValidateSchema<T>[keyof ValidateSchema<T>])
     => MiddlewareStore<T, ["validate", ...K]>;
 }

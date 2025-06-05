@@ -24,5 +24,5 @@ export const validate: Middleware["validate"] = <T, K extends Array<StoreType>>(
   return {
     store: { ...Store, setStore },
     [storeTypeTag]: ["validate", ...storeTypeTagArray]
-  };
+  }
 };
