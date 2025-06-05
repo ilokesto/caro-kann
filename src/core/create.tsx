@@ -34,4 +34,4 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: CheckSt
   return useStore;
 }
 
-export const createStore: CreateStoreForProvider = <T, K extends Array<StoreType>>(initState: CheckStoreType<K, MiddlewareStore<T, K> | T>) => getStoreFromInitState<T, K>(initState);
+export const createStore: CreateStoreForProvider = <T, K extends Array<StoreType> = never>(initState: CheckStoreType<K, MiddlewareStore<T, K> | T>) => getStoreFromInitState<T, K>(initState);
