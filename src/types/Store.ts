@@ -67,3 +67,14 @@ export type Create = {
   // create
   <T>(initState: T): UseStore<T>["basic"]
 };
+
+export type CreateStoreForProvider = {
+  <T, K extends Array<StoreType>>(initState: MiddlewareStore<T, K>): {
+      store: Store<T, React.SetStateAction<T>>;
+      [storeTypeTag]: K;
+  };
+  <T>(initState: T): {
+      store: Store<T, React.SetStateAction<T>>;
+      [storeTypeTag]: [];
+  };
+}
