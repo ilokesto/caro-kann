@@ -10,21 +10,23 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
   function useStore<S>(selector: (state: T) => S = (state: T) => state as any){
     const { getStore, setStore, getInitState, subscribe, getSelected, setSelected } = useContext(ContextStore);
 
-    const a = selector(getStore())
+    const s = selector(getStore())
+    const isSelected = typeof s === 'object'
 
-    if (typeof a === 'object') setSelected(selector(getStore()))
+    if (isSelected) setSelected(s)
 
     const board = useSyncExternalStore(
       subscribe,
-      typeof a === 'object' ? getSelected : () => selector(getStore()),
-      typeof a === 'object' ? getSelected : () => selector(getInitState())
+      isSelected ? getSelected : () => selector(getStore()),
+      isSelected ? getSelected : () => selector(getInitState())
     );
 
-    const overrideSetStore = (nextState: SetStateAction<T>) => {
-      setStore(nextState, "setStoreAction", selector)
-    }
-
-    return [board, typeof a === 'object' ? overrideSetStore : setStore] as const;
+    return [
+      board,
+      isSelected
+        ? (nextState: SetStateAction<T>) => setStore(nextState, "setStoreAction", selector)
+        : setStore
+    ] as const;
   };
 
   useStore.Provider = function<PK extends Array<StoreType>>({ store, children }: { 
@@ -34,8 +36,7 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
     }; 
     children: ReactNode; 
   }) {
-    const { store: providerStore } = store;
-    return <ContextStore.Provider value={providerStore}>{children}</ContextStore.Provider>;
+    return <ContextStore.Provider value={store.store}>{children}</ContextStore.Provider>;
   };
 
   return useStore;
