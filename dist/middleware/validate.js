@@ -1,6 +1,6 @@
 import { storeTypeTag } from "../types";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
-import { getResolver } from "common-resolver/getResolver";
+import { getResolver } from "common-resolver/utils";
 export const validate = (initState, validator) => {
     const { store: Store, [storeTypeTag]: storeTypeTagArray } = getStoreFromInitState(initState);
     const validateScheme = getResolver(validator);

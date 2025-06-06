@@ -19,4 +19,3 @@ export const create = (initState) => {
     };
     return useStore;
 };
-export const createStore = (initState) => getStoreFromInitState(initState);

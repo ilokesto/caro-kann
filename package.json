@@ -31,12 +31,18 @@
   ],
   "author": "Jeong Jinho <wpfekdml@me.com>",
   "license": "MIT",
-  "dependencies": {
-    "common-resolver": "^0.0.11",
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "common-resolver": "^0.0.19",
     "immer": "^10.1.1"
   },
-  "peerDependencies": {
-    "react": ">=18.0.0"
+  "peerDependenciesMeta": {
+    "common-resolver": {
+      "optional": true
+    },
+    "immer": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/node": "^22.15.29",
@@ -50,6 +56,8 @@
     "rollup-plugin-visualizer": "^6.0.1",
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
-    "vite-plugin-compression": "^0.5.1"
+    "vite-plugin-compression": "^0.5.1",
+    "common-resolver": "^0.0.19",
+    "immer": "^10.1.1"
   }
 }

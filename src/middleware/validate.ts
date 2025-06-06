@@ -1,7 +1,6 @@
-import { ValidateSchema } from "common-resolver/types";
 import { Middleware, MiddlewareStore, StoreType, storeTypeTag } from "../types";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
-import { getResolver } from "common-resolver/getResolver";
+import { getResolver, ValidateSchema } from "common-resolver/utils";
 
 export const validate: Middleware["validate"] = <T, K extends Array<StoreType>>(initState: T | MiddlewareStore<T, K>, validator: ValidateSchema<T>[keyof ValidateSchema<T>]) => {
   const {store: Store, [storeTypeTag]: storeTypeTagArray } = getStoreFromInitState(initState);
