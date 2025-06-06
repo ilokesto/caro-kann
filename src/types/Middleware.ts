@@ -1,7 +1,7 @@
 import { MigrationFn, PersistConfig } from "./PersistConfig";
 import { Store } from "./";
 import { SetStateAction } from "react";
-import { ValidateSchema } from "common-resolver/types";
+import { ValidateSchema } from "common-resolver/utils";
 
 export const storeTypeTag: unique symbol = Symbol("storeTypeTag")
 
