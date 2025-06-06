@@ -5,15 +5,16 @@ import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 export const create = (initState) => {
     const { store } = getStoreFromInitState(initState);
     const ContextStore = createContext(store);
-    function useStore(selector, overrideStore) {
+    function useStore(selector = (state) => state) {
         const { getStore, setStore, getInitState, subscribe, getSelected, setSelected } = useContext(ContextStore);
-        if (overrideStore && selector)
+        const a = selector(getStore());
+        if (typeof a === 'object')
             setSelected(selector(getStore()));
-        const board = useSyncExternalStore(subscribe, overrideStore ? getSelected : () => selector ? selector(getStore()) : getStore(), overrideStore ? getSelected : () => selector ? selector(getInitState()) : getInitState());
+        const board = useSyncExternalStore(subscribe, typeof a === 'object' ? getSelected : () => selector(getStore()), typeof a === 'object' ? getSelected : () => selector(getInitState()));
         const overrideSetStore = (nextState) => {
             setStore(nextState, "setStoreAction", selector);
         };
-        return [board, overrideStore ? overrideSetStore : setStore];
+        return [board, typeof a === 'object' ? overrideSetStore : setStore];
     }
     ;
     useStore.Provider = ({ store, children }) => {

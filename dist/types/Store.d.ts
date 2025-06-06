@@ -14,7 +14,7 @@ export interface Store<T, S = SetStateAction<T>> {
 export type UseStore<T, K extends Array<StoreType> = [], TAction = unknown> = {
     basic: {
         (): readonly [T, Dispatch<SetStateAction<T>>];
-        <S>(selector: (state: T) => S, overrideStore?: 'select-override'): readonly [
+        <S>(selector: (state: T) => S): readonly [
             S,
             Dispatch<SetStateAction<T>>
         ];
@@ -28,7 +28,7 @@ export type UseStore<T, K extends Array<StoreType> = [], TAction = unknown> = {
     };
     reducer: {
         (): readonly [T, Dispatch<TAction>];
-        <S>(selector: (state: T) => S, overrideStore?: 'select-override'): readonly [S, Dispatch<TAction>];
+        <S>(selector: (state: T) => S): readonly [S, Dispatch<TAction>];
         Provider: <PK extends Array<StoreType>>({ store, children }: {
             store: {
                 store: CheckStoreType<K, PK, Store<T, React.SetStateAction<T>>>;
