@@ -1,4 +1,4 @@
-function immer<T>(recipe: (draft: T) => void): (baseState: T) => T {
+export function adaptor<T>(recipe: (draft: T) => void): (baseState: T) => T {
   // 커링된 함수 반환
   return function produceState(baseState: T): T {
     // 기본 타입이면 직접 처리

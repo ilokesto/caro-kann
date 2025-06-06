@@ -1,5 +1,4 @@
-"use strict";
-function immer(recipe) {
+export function adaptor(recipe) {
     return function produceState(baseState) {
         if (typeof baseState !== 'object' || baseState === null) {
             const result = recipe(baseState);
