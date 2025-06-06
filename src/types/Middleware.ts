@@ -1,7 +1,7 @@
 import { MigrationFn, PersistConfig } from "./PersistConfig";
 import { Store } from "./";
 import { SetStateAction } from "react";
-import { ValidateSchema } from "common-resolver/utils";
+import { Resolver } from "common-resolver/types";
 
 export const storeTypeTag: unique symbol = Symbol("storeTypeTag")
 
@@ -32,6 +32,6 @@ export type Middleware = {
   logger: <T, K extends Array<StoreType> = []>(initState: T | MiddlewareStore<T, K>, options?: { collapsed?: boolean, diff?: boolean, timestamp?: boolean })
     => MiddlewareStore<T, ["logger", ...K]>;
 
-  validate: <T, K extends Array<StoreType> = []>(initState: T | MiddlewareStore<T, K>, validator: ValidateSchema<T>[keyof ValidateSchema<T>])
+  validate: <T, K extends Array<StoreType> = []>(initState: T | MiddlewareStore<T, K>, resolver: Resolver<T>)
     => MiddlewareStore<T, ["validate", ...K]>;
 }

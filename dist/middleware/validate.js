@@ -1,12 +1,10 @@
 import { storeTypeTag } from "../types";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
-import { getResolver } from "common-resolver/utils";
-export const validate = (initState, validator) => {
+export const validate = (initState, resolver) => {
     const { store: Store, [storeTypeTag]: storeTypeTagArray } = getStoreFromInitState(initState);
-    const validateScheme = getResolver(validator);
     const setStore = (nextState, actionName = "validate") => {
         const newState = typeof nextState === "function" ? nextState(Store.getStore()) : nextState;
-        const { valid, error } = validateScheme.validate(newState);
+        const { valid, error } = resolver.validate(newState);
         if (!valid) {
             console.error(`[Validation Error] Invalid state:`, error);
             return;

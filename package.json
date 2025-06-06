@@ -34,10 +34,20 @@
   "peerDependencies": {
     "react": ">=18.0.0",
     "common-resolver": "^0.0.19",
-    "immer": "^10.1.1",
     "zod": "^3.0.0",
     "yup": "^1.0.0",
     "superstruct": "^2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "zod": {
+      "optional": true
+    },
+    "yup": {
+      "optional": true
+    },
+    "superstruct": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/node": "^22.15.29",
