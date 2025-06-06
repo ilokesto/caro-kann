@@ -29,7 +29,7 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
 
   useStore.Provider = <PK extends Array<StoreType>>({ store, children }: { 
     store: {
-      store: CheckStoreType<K, PK, Store<T, React.SetStateAction<T>>>; 
+      store: CheckStoreType<K, PK, Store<T>>;
       [storeTypeTag]: PK;
     }; 
     children: ReactNode 
