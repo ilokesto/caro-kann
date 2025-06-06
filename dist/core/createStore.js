@@ -1,18 +1,33 @@
+import { selected } from "../types";
 export const createStore = (initState) => {
     const callbacks = new Set();
     let store = initState;
-    const setStore = (nextState) => {
-        store = typeof nextState === "function" ? nextState(store) : nextState;
+    const storage = { [selected]: {} };
+    const setStore = (nextState, selector) => {
+        store = typeof nextState === "function"
+            ? nextState(store)
+            : nextState;
+        if (selector) {
+            setSelected(selector(store));
+        }
         callbacks.forEach((cb) => cb());
     };
     const subscribe = (callback) => {
         callbacks.add(callback);
         return () => callbacks.delete(callback);
     };
+    const getStore = () => store;
+    const getInitState = () => initState;
+    const setSelected = (value) => {
+        storage[selected] = value;
+    };
+    const getSelected = () => storage[selected];
     return {
         setStore,
         subscribe,
-        getStore: () => store,
-        getInitState: () => initState
+        getStore,
+        getInitState,
+        setSelected,
+        getSelected
     };
 };

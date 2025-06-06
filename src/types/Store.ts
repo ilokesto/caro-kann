@@ -1,6 +1,8 @@
 import { Dispatch, JSX, ReactNode, SetStateAction } from "react";
 import { MiddlewareStore, StoreType, storeTypeTag } from "./Middleware";
 
+export const selected: unique symbol = Symbol("selected")
+  
 type GetFirstIndex<K extends Array<StoreType>> = K extends [infer F extends StoreType, ...infer R extends Array<StoreType>]
   ? F
   : false;
@@ -19,13 +21,15 @@ export interface Store<T, S = SetStateAction<T>> {
   getStore: () => T;
   subscribe: (callback: () => void) => () => void;
   getInitState: () => T;
+  setSelected: (value: any) => void;
+  getSelected: () => any;
 };
 
 export type UseStore<T, K extends Array<StoreType> = [], TAction = unknown> = {
   basic: {
     // [storeTypeTag]: K;
     (): readonly [T, Store<T>["setStore"]];
-    <S>(selector: (state: T) => S): readonly [
+    <S>(selector: (state: T) => S, overrideStore?: 'select-override'): readonly [
       S,
       Store<T>["setStore"]
     ];
@@ -41,7 +45,7 @@ export type UseStore<T, K extends Array<StoreType> = [], TAction = unknown> = {
   reducer: {
     // [storeTypeTag]: K;
     (): readonly [T, Dispatch<TAction>];
-    <S>(selector: (state: T) => S): readonly [S, Dispatch<TAction>];
+    <S>(selector: (state: T) => S, overrideStore?: 'select-override'): readonly [S, Dispatch<TAction>];
     derived: <S>(selector: (state: T) => S) => S;
     Provider: <PK extends Array<StoreType>>({ store, children }: {
       store: {

@@ -5,10 +5,13 @@ import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 export const create = (initState) => {
     const { store } = getStoreFromInitState(initState);
     const ContextStore = createContext(store);
-    function useStore(selector) {
-        const { getStore, setStore, getInitState, subscribe } = useContext(ContextStore);
-        const board = useSyncExternalStore(subscribe, () => selector ? selector(getStore()) : getStore(), () => selector ? selector(getInitState()) : getInitState());
-        return [board, setStore];
+    function useStore(selector, overrideStore) {
+        const { getStore, setStore, getInitState, subscribe, getSelected } = useContext(ContextStore);
+        const board = useSyncExternalStore(subscribe, overrideStore ? getSelected : () => selector ? selector(getStore()) : getStore(), overrideStore ? getSelected : () => selector ? selector(getInitState()) : getInitState());
+        const overrideSetStore = (nextState) => {
+            setStore(nextState, selector);
+        };
+        return [board, overrideStore ? overrideSetStore : setStore];
     }
     ;
     useStore.derived = (selector) => useStore(selector)[0];
