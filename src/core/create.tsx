@@ -1,5 +1,5 @@
 import { CheckStoreType, Store, StoreType, storeTypeTag, type Create, type MiddlewareStore } from "../types";
-import { createContext, ReactNode, SetStateAction, useContext, useSyncExternalStore } from "react";
+import { createContext, ReactNode, useContext, useSyncExternalStore } from "react";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 
 export const create: Create = <T, K extends Array<StoreType>>(initState: MiddlewareStore<T, K> | T) => {
@@ -24,6 +24,7 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
   useStore.Provider = <PK extends Array<StoreType>>({ store, children }: { 
     store: {
       // GetFirstIndex<PK>의 조건을 Create 인터페이스의 기대와 일치시킴
+      // 기대 : create에 reducer 안 썼으면 Provider에도 쓰지 마라
       store: CheckStoreType<K, PK, Store<T, React.SetStateAction<T>>>; 
       [storeTypeTag]: PK;
     }; 
