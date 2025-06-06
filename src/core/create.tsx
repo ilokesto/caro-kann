@@ -13,7 +13,7 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
     const s = selector(getStore())
     const isSelected = typeof s === 'object'
 
-    if (isSelected) setSelected(s)
+    if (isSelected) setSelected(s);
 
     const board = useSyncExternalStore(
       subscribe,
