@@ -39,17 +39,6 @@
     "yup": "^1.0.0",
     "superstruct": "^2.0.0"
   },
-  "peerDependenciesMeta": {
-    "zod": {
-      "optional": true
-    },
-    "yup": {
-      "optional": true
-    },
-    "superstruct": {
-      "optional": true
-    }
-  },
   "devDependencies": {
     "@types/node": "^22.15.29",
     "@types/prop-types": "^15.7.14",
