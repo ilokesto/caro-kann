@@ -21,7 +21,6 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
     );
 
     const overrideSetStore = (nextState: SetStateAction<T>) => {
-      // @ts-ignore
       setStore(nextState, "setStoreAction", selector)
     }
 
