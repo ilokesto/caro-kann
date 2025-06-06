@@ -3,7 +3,7 @@ export const createStore = (initState) => {
     const callbacks = new Set();
     let store = initState;
     const storage = { [selected]: {} };
-    const setStore = (nextState, selector) => {
+    const setStore = (nextState, actionName, selector) => {
         store = typeof nextState === "function"
             ? nextState(store)
             : nextState;
@@ -28,6 +28,6 @@ export const createStore = (initState) => {
         getStore,
         getInitState,
         setSelected,
-        getSelected
+        getSelected,
     };
 };

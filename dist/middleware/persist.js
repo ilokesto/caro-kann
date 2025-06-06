@@ -8,8 +8,8 @@ export const persist = (initState, options) => {
         ? getStorage({ ...optionObj, initState: Store.getInitState() }).state
         : Store.getInitState();
     Store.setStore(initialState);
-    const setStore = (nextState, actionName = "setStore") => {
-        Store.setStore(nextState, actionName);
+    const setStore = (nextState, actionName, selector) => {
+        Store.setStore(nextState, actionName, selector);
         if (optionObj.storageType)
             setStorage({ ...optionObj, value: Store.getStore() });
     };

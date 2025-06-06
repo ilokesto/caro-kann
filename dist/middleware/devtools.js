@@ -27,8 +27,8 @@ export const devtools = (initState, name) => {
             }
         });
     }
-    const setStore = (nextState, actionName = "setStore") => {
-        Store.setStore(nextState, actionName);
+    const setStore = (nextState, actionName, selector) => {
+        Store.setStore(nextState, actionName, selector);
         if (!isProduction && devTools) {
             try {
                 devTools.send(`${name}:${actionName}`, Store.getStore());

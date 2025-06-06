@@ -5,7 +5,7 @@ import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 export const validate: Middleware["validate"] = <T, K extends Array<StoreType>>(initState: MiddlewareStore<T, K> | T, resolver: Resolver<T>) => {
   const {store: Store, [storeTypeTag]: storeTypeTagArray } = getStoreFromInitState(initState);
 
-  const setStore = (nextState: T | ((prev: T) => T), actionName: string = "validate") => {
+  const setStore = (nextState: T | ((prev: T) => T), actionName: string = "validate", selector?: (state: T) => any) => {
     const newState = typeof nextState === "function" ? (nextState as (prev: T) => T)(Store.getStore()) : nextState;
 
     const { valid, error } = resolver.validate(newState);
@@ -16,7 +16,7 @@ export const validate: Middleware["validate"] = <T, K extends Array<StoreType>>(
     }
 
     // @ts-ignore
-    Store.setStore(newState, actionName);
+    Store.setStore(newState, actionName, selector);
   };
 
   return {

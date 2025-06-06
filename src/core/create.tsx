@@ -8,7 +8,9 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
   const ContextStore = createContext<Store<T>>(store);
 
   function useStore<S>(selector?: (state: T) => S, overrideStore?: 'select-override') {
-    const { getStore, setStore, getInitState, subscribe, getSelected } = useContext(ContextStore);
+    const { getStore, setStore, getInitState, subscribe, getSelected, setSelected } = useContext(ContextStore);
+
+    if (overrideStore && selector) setSelected(selector(getStore()))
 
     const board = useSyncExternalStore(
       subscribe,
@@ -18,13 +20,11 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
 
     const overrideSetStore = (nextState: SetStateAction<T>) => {
       // @ts-ignore
-      setStore(nextState, selector)
+      setStore(nextState, "setStoreAction", selector)
     }
 
     return [board, overrideStore ? overrideSetStore : setStore] as const;
   };
-
-  useStore.derived = <S,>(selector: (state: T) => S): S => useStore(selector)[0] as S;
 
   useStore.Provider = <PK extends Array<StoreType>>({ store, children }: { 
     store: {

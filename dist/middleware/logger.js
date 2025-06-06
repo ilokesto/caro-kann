@@ -3,9 +3,9 @@ import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 export const logger = (initState, options = { collapsed: false, diff: false, timestamp: true }) => {
     const { store: Store, [storeTypeTag]: storeTypeTagArray } = getStoreFromInitState(initState);
     const isProduction = typeof process !== 'undefined' && process.env.NODE_ENV === 'production';
-    const setStore = (nextState, actionName = "setState") => {
+    const setStore = (nextState, actionName, selector) => {
         if (isProduction) {
-            Store.setStore(nextState);
+            Store.setStore(nextState, actionName, selector);
             return;
         }
         const prevState = Store.getStore();

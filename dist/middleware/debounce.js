@@ -4,7 +4,7 @@ export const debounce = (initState, wait = 300) => {
     const { store: Store, [storeTypeTag]: storeTypeTagArray } = getStoreFromInitState(initState);
     let timeout = null;
     let updates = [];
-    const setStore = (nextState) => {
+    const setStore = (nextState, actionName, selector) => {
         updates.push(nextState);
         if (timeout)
             return;
@@ -18,7 +18,7 @@ export const debounce = (initState, wait = 300) => {
                     currentState = update;
                 }
             });
-            Store.setStore(currentState);
+            Store.setStore(currentState, actionName, selector);
             updates = [];
             timeout = null;
         }, wait);
