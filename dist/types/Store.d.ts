@@ -38,4 +38,18 @@ export type Create = {
     <T, K extends Array<StoreType>, A extends object>(initState: MiddlewareStore<T, K, A>): UseStore<T, K, A>["reducer"];
     <T>(initState: T): UseStore<T>["basic"];
 };
+export type CreateStoreFormProvider = {
+    <T, K extends Array<StoreType>, A extends object>(initState: MiddlewareStore<T, K, A>): {
+        store: Store<T, A>;
+        [storeTypeTag]: K;
+    };
+    <T, K extends Array<StoreType>>(initState: MiddlewareStore<T, K>): {
+        store: Store<T>;
+        [storeTypeTag]: Array<StoreType>;
+    };
+    <T>(initState: T): {
+        store: Store<T>;
+        [storeTypeTag]: Array<StoreType>;
+    };
+};
 export {};

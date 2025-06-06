@@ -1,3 +1,3 @@
 export * from "./core/create";
 
-export { getStoreFromInitState as createStore } from "./utils/getStoreFromInitState";
+export { createStoreFormProvider as createStore } from "./utils/getStoreFromInitState";

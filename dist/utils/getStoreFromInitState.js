@@ -6,3 +6,8 @@ const isMiddlewareStore = (initState) => {
 export const getStoreFromInitState = (initState) => isMiddlewareStore(initState)
     ? { store: initState.store, [storeTypeTag]: initState[storeTypeTag] }
     : { store: createStore(initState), [storeTypeTag]: [] };
+export const createStoreFormProvider = (initState) => {
+    return isMiddlewareStore(initState)
+        ? { store: initState.store, [storeTypeTag]: initState[storeTypeTag] }
+        : { store: createStore(initState), [storeTypeTag]: [] };
+};
