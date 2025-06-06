@@ -1,5 +1,9 @@
+import { SetStateAction } from "react";
 import { MiddlewareStore, StoreType, storeTypeTag } from "../types";
-export declare const getStoreFromInitState: <T, K extends Array<StoreType> = never>(initState: T | MiddlewareStore<T, K>) => {
-    store: import("../types").Store<T, import("react").SetStateAction<T>>;
+export declare const getStoreFromInitState: <T, K extends Array<StoreType> = [], A = SetStateAction<T>>(initState: MiddlewareStore<T, K, A> | T) => {
+    store: import("../types").Store<T, A>;
+    [storeTypeTag]: K;
+} | {
+    store: import("../types").Store<T, SetStateAction<T>>;
     [storeTypeTag]: K;
 };

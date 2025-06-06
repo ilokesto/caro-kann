@@ -2,7 +2,7 @@ import { Resolver } from "common-resolver/types";
 import { Middleware, MiddlewareStore, StoreType, storeTypeTag } from "../types";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 
-export const validate: Middleware["validate"] = <T, K extends Array<StoreType>>(initState: T | MiddlewareStore<T, K>, resolver: Resolver<T>) => {
+export const validate: Middleware["validate"] = <T, K extends Array<StoreType>>(initState: MiddlewareStore<T, K> | T, resolver: Resolver<T>) => {
   const {store: Store, [storeTypeTag]: storeTypeTagArray } = getStoreFromInitState(initState);
 
   const setStore = (nextState: T | ((prev: T) => T), actionName: string = "validate") => {
