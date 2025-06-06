@@ -3,7 +3,7 @@ import { createContext, ReactNode, SetStateAction, useContext, useSyncExternalSt
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 
 export const create: Create = <T, K extends Array<StoreType>>(initState: MiddlewareStore<T, K> | T) => {
-  const {store, [storeTypeTag]: storeTag } = getStoreFromInitState<T, K>(initState);
+  const { store } = getStoreFromInitState<T, K>(initState);
 
   const ContextStore = createContext<Store<T>>(store);
 
@@ -21,8 +21,6 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
 
   useStore.derived = <S,>(selector: (state: T) => S): S => useStore(selector)[0] as S;
 
-  useStore[storeTypeTag] = storeTag;
-
   useStore.Provider = <PK extends Array<StoreType>>({ store, children }: { 
     store: {
       // GetFirstIndex<PK>의 조건을 Create 인터페이스의 기대와 일치시킴
@@ -31,7 +29,7 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
     }; 
     children: ReactNode 
   }) => {
-    const {store: providerStore, [storeTypeTag]: providerStoreTag } = store;
+    const {store: providerStore } = store;
     return <ContextStore.Provider value={providerStore}>{children}</ContextStore.Provider>;
   };
 

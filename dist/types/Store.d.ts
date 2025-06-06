@@ -10,7 +10,6 @@ export interface Store<T, S = SetStateAction<T>> {
 }
 export type UseStore<T, K extends Array<StoreType> = [], TAction = unknown> = {
     basic: {
-        [storeTypeTag]: K;
         (): readonly [T, Store<T>["setStore"]];
         <S>(selector: (state: T) => S): readonly [
             S,
@@ -26,7 +25,6 @@ export type UseStore<T, K extends Array<StoreType> = [], TAction = unknown> = {
         }) => JSX.Element;
     };
     reducer: {
-        [storeTypeTag]: K;
         (): readonly [T, Dispatch<TAction>];
         <S>(selector: (state: T) => S): readonly [S, Dispatch<TAction>];
         derived: <S>(selector: (state: T) => S) => S;
