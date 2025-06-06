@@ -18,17 +18,12 @@ export type UseStore<T, K extends Array<StoreType> = [], TAction = unknown> = {
             S,
             Dispatch<SetStateAction<T>>
         ];
-        Provider: <PK extends Array<StoreType>>({ store, children }: {
-            store: {
-                store: CheckStoreType<K, PK, Store<T, React.SetStateAction<T>>>;
-                [storeTypeTag]: PK;
-            };
-            children: ReactNode;
-        }) => JSX.Element;
-    };
+    } & UseStore<T, K, TAction>["Provider"];
     reducer: {
         (): readonly [T, Dispatch<TAction>];
         <S>(selector: (state: T) => S): readonly [S, Dispatch<TAction>];
+    } & UseStore<T, K, TAction>["Provider"];
+    Provider: {
         Provider: <PK extends Array<StoreType>>({ store, children }: {
             store: {
                 store: CheckStoreType<K, PK, Store<T, React.SetStateAction<T>>>;

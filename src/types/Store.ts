@@ -27,25 +27,18 @@ export interface Store<T, S = SetStateAction<T>> {
 
 export type UseStore<T, K extends Array<StoreType> = [], TAction = unknown> = {
   basic: {
-    // [storeTypeTag]: K;
     (): readonly [T, Dispatch<SetStateAction<T>>];
     <S>(selector: (state: T) => S): readonly [
       S,
       Dispatch<SetStateAction<T>>
     ];
-    // derived: <S>(selector: (state: T) => S) => S;
-    Provider: <PK extends Array<StoreType>>({ store, children }: {
-      store: {
-        store: CheckStoreType<K, PK, Store<T, React.SetStateAction<T>>>;
-        [storeTypeTag]: PK;
-      };
-      children: ReactNode;
-    }) => JSX.Element
-  };
+  } & UseStore<T, K, TAction>["Provider"];
   reducer: {
-    // [storeTypeTag]: K;
     (): readonly [T, Dispatch<TAction>];
     <S>(selector: (state: T) => S): readonly [S, Dispatch<TAction>];
+  } & UseStore<T, K, TAction>["Provider"];
+  Provider: {
+    // [storeTypeTag]: K;
     // derived: <S>(selector: (state: T) => S) => S;
     Provider: <PK extends Array<StoreType>>({ store, children }: {
       store: {
@@ -54,7 +47,7 @@ export type UseStore<T, K extends Array<StoreType> = [], TAction = unknown> = {
       };
       children: ReactNode;
     }) => JSX.Element
-  };
+  }
 };
 
 export type Create = {
