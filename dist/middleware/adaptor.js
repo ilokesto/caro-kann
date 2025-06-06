@@ -24,6 +24,14 @@ export function adaptor(recipe) {
                         ['constructor', 'prototype', '__proto__'].includes(prop)) {
                         return target[prop];
                     }
+                    try {
+                        const desc = Object.getOwnPropertyDescriptor(target, prop);
+                        if (desc && !desc.writable && !desc.configurable) {
+                            return target[prop];
+                        }
+                    }
+                    catch (e) {
+                    }
                     const value = target[prop];
                     if (typeof value !== 'object' || value === null) {
                         return value;
@@ -31,6 +39,14 @@ export function adaptor(recipe) {
                     return createDraft(value, target, prop);
                 },
                 set(target, prop, value) {
+                    try {
+                        const desc = Object.getOwnPropertyDescriptor(target, prop);
+                        if (desc && !desc.writable && !desc.configurable) {
+                            return false;
+                        }
+                    }
+                    catch (e) {
+                    }
                     if (Object.is(target[prop], value)) {
                         return true;
                     }
@@ -40,6 +56,14 @@ export function adaptor(recipe) {
                     return true;
                 },
                 deleteProperty(target, prop) {
+                    try {
+                        const desc = Object.getOwnPropertyDescriptor(target, prop);
+                        if (desc && !desc.configurable) {
+                            return false;
+                        }
+                    }
+                    catch (e) {
+                    }
                     if (!(prop in target))
                         return true;
                     const copy = getOrCreateCopy(target);
@@ -79,11 +103,13 @@ export function adaptor(recipe) {
             if (!modified.has(base)) {
                 return base;
             }
-            const copy = copies.get(base);
-            for (const key of Object.keys(copy)) {
-                const value = base[key];
-                if (typeof value === 'object' && value !== null) {
-                    copy[key] = finalize(value);
+            const copy = getOrCreateCopy(base);
+            if (copy) {
+                for (const key of Object.keys(copy)) {
+                    const value = base[key];
+                    if (typeof value === 'object' && value !== null) {
+                        copy[key] = finalize(value);
+                    }
                 }
             }
             return Object.freeze(copy);

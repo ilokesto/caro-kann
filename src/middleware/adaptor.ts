@@ -42,6 +42,17 @@ export function adaptor<T>(recipe: (draft: T) => void): (baseState: T) => T {
             return target[prop as keyof B];
           }
           
+          // 속성 디스크립터 확인 (읽기 전용 확인용)
+          try {
+            const desc = Object.getOwnPropertyDescriptor(target, prop);
+            // 읽기 전용 & 구성 불가능 속성은 원본 값을 직접 반환
+            if (desc && !desc.writable && !desc.configurable) {
+              return target[prop as keyof B];
+            }
+          } catch (e) {
+            // getOwnPropertyDescriptor 실패 시 기본 동작 계속
+          }
+          
           const value = target[prop as keyof B];
           
           // 객체가 아니면 그대로 반환
@@ -54,6 +65,16 @@ export function adaptor<T>(recipe: (draft: T) => void): (baseState: T) => T {
         },
         
         set(target: B, prop: string | symbol, value: any): boolean {
+          try {
+            const desc = Object.getOwnPropertyDescriptor(target, prop);
+            // 읽기 전용 속성은 수정할 수 없음
+            if (desc && !desc.writable && !desc.configurable) {
+              return false;
+            }
+          } catch (e) {
+            // 오류 무시
+          }
+          
           // 값이 같으면 변경하지 않음
           if (Object.is((target as any)[prop], value)) {
             return true;
@@ -67,6 +88,16 @@ export function adaptor<T>(recipe: (draft: T) => void): (baseState: T) => T {
         },
         
         deleteProperty(target: B, prop: string | symbol): boolean {
+          try {
+            const desc = Object.getOwnPropertyDescriptor(target, prop);
+            // 구성 불가능 속성은 삭제할 수 없음
+            if (desc && !desc.configurable) {
+              return false;
+            }
+          } catch (e) {
+            // 오류 무시
+          }
+          
           if (!(prop in target)) return true;
           
           const copy = getOrCreateCopy(target);
@@ -87,6 +118,8 @@ export function adaptor<T>(recipe: (draft: T) => void): (baseState: T) => T {
       
       return draft as Draft<B>;
     }
+    
+    // 나머지 코드는 그대로 유지...
     
     // 객체를 변경됨으로 표시
     function markChanged(target: Base): void {
@@ -126,14 +159,16 @@ export function adaptor<T>(recipe: (draft: T) => void): (baseState: T) => T {
         return base;
       }
       
-      // 변경된 복사본 가져오기
-      const copy = copies.get(base)!;
+      // 복사본 가져오기 또는 생성하기
+      const copy = getOrCreateCopy(base);
       
       // 자식 객체들도 재귀적으로 처리
-      for (const key of Object.keys(copy)) {
-        const value = base[key];
-        if (typeof value === 'object' && value !== null) {
-          copy[key] = finalize(value);
+      if (copy) {  // null/undefined 체크 추가
+        for (const key of Object.keys(copy)) {
+          const value = base[key];
+          if (typeof value === 'object' && value !== null) {
+            copy[key] = finalize(value);
+          }
         }
       }
       
