@@ -27,13 +27,13 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
     return [board, typeof a === 'object' ? overrideSetStore : setStore] as const;
   };
 
-  useStore.Provider = <PK extends Array<StoreType>>({ store, children }: { 
+  useStore.Provider = function<PK extends Array<StoreType>>({ store, children }: { 
     store: {
       store: CheckStoreType<K, PK, Store<T>>;
       [storeTypeTag]: PK;
     }; 
-    children: ReactNode 
-  }) => {
+    children: ReactNode; 
+  }) {
     const { store: providerStore } = store;
     return <ContextStore.Provider value={providerStore}>{children}</ContextStore.Provider>;
   };

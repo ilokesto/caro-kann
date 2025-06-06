@@ -17,7 +17,7 @@ export const create = (initState) => {
         return [board, typeof a === 'object' ? overrideSetStore : setStore];
     }
     ;
-    useStore.Provider = ({ store, children }) => {
+    useStore.Provider = function ({ store, children }) {
         const { store: providerStore } = store;
         return _jsx(ContextStore.Provider, { value: providerStore, children: children });
     };
