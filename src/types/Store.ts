@@ -17,7 +17,7 @@ export type CheckStoreType<K extends Array<StoreType>, PK extends Array<StoreTyp
       : U; // 'reducer'가 아닌 거로 일치
 
 export interface Store<T, S = SetStateAction<T>> {
-  setStore: Dispatch<S>;
+  setStore: (nextState: S, actionName?: string, selector?: (state: T) => any) => void;
   getStore: () => T;
   subscribe: (callback: () => void) => () => void;
   getInitState: () => T;
@@ -28,10 +28,10 @@ export interface Store<T, S = SetStateAction<T>> {
 export type UseStore<T, K extends Array<StoreType> = [], TAction = unknown> = {
   basic: {
     // [storeTypeTag]: K;
-    (): readonly [T, Store<T>["setStore"]];
+    (): readonly [T, Dispatch<SetStateAction<T>>];
     <S>(selector: (state: T) => S, overrideStore?: 'select-override'): readonly [
       S,
-      Store<T>["setStore"]
+      Dispatch<SetStateAction<T>>
     ];
     // derived: <S>(selector: (state: T) => S) => S;
     Provider: <PK extends Array<StoreType>>({ store, children }: {

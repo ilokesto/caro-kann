@@ -23,7 +23,7 @@ export type Middleware = {
   persist: <T, K extends Array<StoreType> = [], P extends Array<MigrationFn> = []>(initState: T | MiddlewareStore<T, K>, persistConfig: PersistConfig<T, P>)
     => MiddlewareStore<T, ["persist", ...K]>;
 
-  reducer: <T, K extends Array<StoreType> = [], A extends object = {}>(reducer: (state: T, action: A) => T, initState: T | MiddlewareStore<T, K>)
+  reducer: <T, K extends Array<StoreType> = [], A extends { type: string, [x: PropertyKey]: any } = { type: "" }>(reducer: (state: T, action: A) => T, initState: T | MiddlewareStore<T, K>)
     => MiddlewareStore<T, ["reducer", ...K], A>;
 
   debounce: <T, K extends Array<StoreType> = []>(initState: T | MiddlewareStore<T, K>, wait?: number)

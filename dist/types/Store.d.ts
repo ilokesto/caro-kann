@@ -4,7 +4,7 @@ export declare const selected: unique symbol;
 type GetFirstIndex<K extends Array<StoreType>> = K extends [infer F extends StoreType, ...infer R extends Array<StoreType>] ? F : false;
 export type CheckStoreType<K extends Array<StoreType>, PK extends Array<StoreType>, U> = GetFirstIndex<K> extends 'reducer' ? GetFirstIndex<PK> extends 'reducer' ? U : never : GetFirstIndex<PK> extends 'reducer' ? never : U;
 export interface Store<T, S = SetStateAction<T>> {
-    setStore: Dispatch<S>;
+    setStore: (nextState: S, actionName?: string, selector?: (state: T) => any) => void;
     getStore: () => T;
     subscribe: (callback: () => void) => () => void;
     getInitState: () => T;
@@ -13,10 +13,10 @@ export interface Store<T, S = SetStateAction<T>> {
 }
 export type UseStore<T, K extends Array<StoreType> = [], TAction = unknown> = {
     basic: {
-        (): readonly [T, Store<T>["setStore"]];
+        (): readonly [T, Dispatch<SetStateAction<T>>];
         <S>(selector: (state: T) => S, overrideStore?: 'select-override'): readonly [
             S,
-            Store<T>["setStore"]
+            Dispatch<SetStateAction<T>>
         ];
         Provider: <PK extends Array<StoreType>>({ store, children }: {
             store: {

@@ -17,7 +17,6 @@ export const logger: Middleware["logger"] = <T, K extends Array<StoreType>>(
   const setStore = (nextState: T | ((prev: T) => T), actionName?: string, selector?: (state: T) => any) => {
     // 프로덕션 모드에서는 로깅 없이 상태만 업데이트
     if (isProduction) {
-      // @ts-ignore
       Store.setStore(nextState, actionName, selector);
       return;
     }

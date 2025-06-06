@@ -11,7 +11,12 @@ export type MiddlewareStore<TInitState, K extends Array<StoreType> = [], TSetSto
 export type Middleware = {
     devtools: <T, K extends Array<StoreType> = []>(initState: T | MiddlewareStore<T, K>, name: string) => MiddlewareStore<T, ["devtools", ...K]>;
     persist: <T, K extends Array<StoreType> = [], P extends Array<MigrationFn> = []>(initState: T | MiddlewareStore<T, K>, persistConfig: PersistConfig<T, P>) => MiddlewareStore<T, ["persist", ...K]>;
-    reducer: <T, K extends Array<StoreType> = [], A extends object = {}>(reducer: (state: T, action: A) => T, initState: T | MiddlewareStore<T, K>) => MiddlewareStore<T, ["reducer", ...K], A>;
+    reducer: <T, K extends Array<StoreType> = [], A extends {
+        type: string;
+        [x: PropertyKey]: any;
+    } = {
+        type: "";
+    }>(reducer: (state: T, action: A) => T, initState: T | MiddlewareStore<T, K>) => MiddlewareStore<T, ["reducer", ...K], A>;
     debounce: <T, K extends Array<StoreType> = []>(initState: T | MiddlewareStore<T, K>, wait?: number) => MiddlewareStore<T, ["debounce", ...K]>;
     logger: <T, K extends Array<StoreType> = []>(initState: T | MiddlewareStore<T, K>, options?: {
         collapsed?: boolean;

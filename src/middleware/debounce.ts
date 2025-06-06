@@ -28,7 +28,6 @@ export const debounce: Middleware["debounce"] = <T, K extends Array<StoreType>>(
       });
       
       // 최종 상태로 업데이트
-      // @ts-ignore
       Store.setStore(currentState, actionName, selector);
       
       // 리셋

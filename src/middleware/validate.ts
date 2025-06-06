@@ -15,7 +15,6 @@ export const validate: Middleware["validate"] = <T, K extends Array<StoreType>>(
       return;
     }
 
-    // @ts-ignore
     Store.setStore(newState, actionName, selector);
   };
 
