@@ -11,7 +11,7 @@ export interface Store<T, S = SetStateAction<T>> {
     setSelected: (value: any) => void;
     getSelected: () => any;
 }
-export type UseStore<T, K extends Array<StoreType> = [], TAction = unknown> = {
+export type UseStore<T, K extends Array<StoreType> = [], TAction = SetStateAction<T>> = {
     basic: {
         (): readonly [T, Dispatch<SetStateAction<T>>];
         <S>(selector: (state: T) => S): readonly [
@@ -34,8 +34,8 @@ export type UseStore<T, K extends Array<StoreType> = [], TAction = unknown> = {
     };
 };
 export type Create = {
-    <T, K extends Array<StoreType> = []>(initState: MiddlewareStore<T, K>): UseStore<T, K>["basic"];
-    <T, K extends Array<StoreType> = [], A = never>(initState: MiddlewareStore<T, K, A>): UseStore<T, K, A>["reducer"];
+    <T, K extends Array<StoreType>>(initState: MiddlewareStore<T, K>): UseStore<T, K>["basic"];
+    <T, K extends Array<StoreType>, A extends object>(initState: MiddlewareStore<T, K, A>): UseStore<T, K, A>["reducer"];
     <T>(initState: T): UseStore<T>["basic"];
 };
 export {};
