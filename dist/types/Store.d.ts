@@ -26,7 +26,7 @@ export type UseStore<T, K extends Array<StoreType> = [], TAction = unknown> = {
     Provider: {
         Provider: <PK extends Array<StoreType>>({ store, children }: {
             store: {
-                store: CheckStoreType<K, PK, Store<T, React.SetStateAction<T>>>;
+                store: CheckStoreType<K, PK, Store<T, TAction>>;
                 [storeTypeTag]: PK;
             };
             children: ReactNode;
