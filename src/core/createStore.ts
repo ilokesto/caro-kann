@@ -1,12 +1,12 @@
 import { SetStateAction } from "react";
-import { selected, type Store } from "../types";
+import type { Store } from "../types";
 
 export const createStore = <T>(initState: T): Store<T> => {
   const callbacks = new Set<() => void>();
   let store = initState;
   
   // Symbol 속성을 가진 객체 생성
-  const storage: { [key: symbol]: any } = { [selected]: {} };
+  let storage = {}
 
   const setStore = (nextState: SetStateAction<T>, actionName?: string, selector?: (state: T) => any) => {
     store = typeof nextState === "function" 
@@ -19,28 +19,17 @@ export const createStore = <T>(initState: T): Store<T> => {
     
     callbacks.forEach((cb) => cb());
   };
-
-  const subscribe = (callback: () => void) => {
-    callbacks.add(callback);
-    return () => callbacks.delete(callback);
-  };
-
-  const getStore = () => store;
   
-  const getInitState = () => initState;
-  
-  const setSelected = (value: any) => {
-    storage[selected] = value;
-  };
-  
-  const getSelected = () => storage[selected];
+  const setSelected = (value: any) => { storage = value };
 
   return {
     setStore,
-    subscribe,
-    getStore,
-    getInitState,
     setSelected,
-    getSelected,
+    subscribe: (callback: () => void) => {
+      callbacks.add(callback);
+      return () => callbacks.delete(callback);
+    },
+    getStore: (init?: 'init') => init ? initState : store,
+    getSelected: () => storage,
   };
 };

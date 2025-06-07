@@ -5,8 +5,8 @@ export const persist = (initState, options) => {
     const { store: Store, [storeTypeTag]: storeTypeTagArray } = getStoreFromInitState(initState);
     const optionObj = parseOptions(options);
     const initialState = optionObj.storageType
-        ? getStorage({ ...optionObj, initState: Store.getInitState() }).state
-        : Store.getInitState();
+        ? getStorage({ ...optionObj, initState: Store.getStore('init') }).state
+        : Store.getStore('init');
     Store.setStore(initialState);
     const setStore = (nextState, actionName, selector) => {
         Store.setStore(nextState, actionName, selector);

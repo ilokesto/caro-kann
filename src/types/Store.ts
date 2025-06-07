@@ -1,7 +1,5 @@
 import { Dispatch, JSX, ReactNode, SetStateAction } from "react";
 import { MiddlewareStore, StoreType, storeTypeTag } from "./Middleware";
-
-export const selected: unique symbol = Symbol("selected")
   
 type GetFirstIndex<K extends Array<StoreType>> = K extends [infer F extends StoreType, ...infer R extends Array<StoreType>]
   ? F
@@ -18,9 +16,8 @@ export type CheckStoreType<K extends Array<StoreType>, PK extends Array<StoreTyp
 
 export interface Store<T, S = SetStateAction<T>> {
   setStore: (nextState: S, actionName?: string, selector?: (state: T) => any) => void;
-  getStore: () => T;
+  getStore: (init?: 'init') => T;
   subscribe: (callback: () => void) => () => void;
-  getInitState: () => T;
   setSelected: (value: any) => void;
   getSelected: () => any;
 };

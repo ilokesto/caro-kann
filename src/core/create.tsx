@@ -8,7 +8,7 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
   const ContextStore = createContext<Store<T>>(store);
 
   function useStore<S>(selector: (state: T) => S = (state: T) => state as any){
-    const { getStore, setStore, getInitState, subscribe, getSelected, setSelected } = useContext(ContextStore);
+    const { getStore, setStore, subscribe, getSelected, setSelected } = useContext(ContextStore);
 
     const s = selector(getStore())
     const isSelected = typeof s === 'object';
@@ -18,7 +18,7 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
     const board = useSyncExternalStore(
       subscribe,
       isSelected ? getSelected : () => selector(getStore()),
-      isSelected ? getSelected : () => selector(getInitState())
+      isSelected ? getSelected : () => selector(getStore('init'))
     );
 
     return [

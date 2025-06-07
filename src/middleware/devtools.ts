@@ -14,7 +14,7 @@ export const devtools: Middleware["devtools"] = <T,K extends Array<StoreType>>(i
 
   // DevTools가 존재하고(프로덕션 모드가 아니고) 초기화할 수 있는 경우에만 실행
   if (devTools) {
-    devTools.init(Store.getInitState());
+    devTools.init(Store.getStore('init'));
 
     devTools.subscribe((message: any) => {
       if (message.type === "DISPATCH") {
