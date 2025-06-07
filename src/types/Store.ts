@@ -1,4 +1,4 @@
-import { Dispatch, JSX, ReactNode, SetStateAction } from "react";
+import { Dispatch, ReactNode, ReactElement, SetStateAction } from "react";
 import { MiddlewareStore, StoreType, storeTypeTag } from "./Middleware";
   
 type GetFirstIndex<K extends Array<StoreType>> = K extends [infer F extends StoreType, ...infer R extends Array<StoreType>]
@@ -43,7 +43,7 @@ export type UseStore<T, K extends Array<StoreType> = [], TAction = SetStateActio
         [storeTypeTag]: PK;
       };
       children: ReactNode;
-    }) => JSX.Element
+    }) => ReactElement;
   }
 };
 
