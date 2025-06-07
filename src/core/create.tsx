@@ -11,7 +11,7 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
     const { getStore, setStore, getInitState, subscribe, getSelected, setSelected } = useContext(ContextStore);
 
     const s = selector(getStore())
-    const isSelected = typeof s === 'object'
+    const isSelected = typeof s === 'object';
 
     if (isSelected) setSelected(s);
 
@@ -24,7 +24,9 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
     return [
       board,
       isSelected
-        ? (nextState: SetStateAction<T>) => setStore(nextState, "setStoreAction", selector)
+        ? (nextState: SetStateAction<T>) => {
+          setStore(nextState, "setStoreAction", selector)
+        }
         : setStore
     ] as const;
   };

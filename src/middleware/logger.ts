@@ -39,7 +39,7 @@ export const logger: Middleware["logger"] = <T, K extends Array<StoreType>>(
     
     console.log("Previous state:", prevState);
     
-    Store.setStore(nextState);
+    Store.setStore(nextState, actionName, selector);
     const newState = Store.getStore();
     
     console.log("Next state:", newState);

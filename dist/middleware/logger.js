@@ -21,7 +21,7 @@ export const logger = (initState, options = { collapsed: false, diff: false, tim
             console.log("Time:", time);
         }
         console.log("Previous state:", prevState);
-        Store.setStore(nextState);
+        Store.setStore(nextState, actionName, selector);
         const newState = Store.getStore();
         console.log("Next state:", newState);
         if (options.diff) {

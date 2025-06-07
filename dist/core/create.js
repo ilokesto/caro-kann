@@ -15,7 +15,9 @@ export const create = (initState) => {
         return [
             board,
             isSelected
-                ? (nextState) => setStore(nextState, "setStoreAction", selector)
+                ? (nextState) => {
+                    setStore(nextState, "setStoreAction", selector);
+                }
                 : setStore
         ];
     }
