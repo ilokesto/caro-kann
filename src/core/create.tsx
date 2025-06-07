@@ -17,8 +17,8 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
 
     const board = useSyncExternalStore(
       subscribe,
-      isSelected ? getSelected : () => selector(getStore()),
-      isSelected ? getSelected : () => selector(getStore('init'))
+      () => isSelected ? getSelected() : selector(getStore()),
+      () => isSelected ? getSelected() : selector(getStore('init')),
     );
 
     return [

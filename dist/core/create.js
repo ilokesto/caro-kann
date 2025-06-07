@@ -11,7 +11,7 @@ export const create = (initState) => {
         const isSelected = typeof s === 'object';
         if (isSelected)
             setSelected(s);
-        const board = useSyncExternalStore(subscribe, isSelected ? getSelected : () => selector(getStore()), isSelected ? getSelected : () => selector(getStore('init')));
+        const board = useSyncExternalStore(subscribe, () => isSelected ? getSelected() : selector(getStore()), () => isSelected ? getSelected() : selector(getStore('init')));
         return [
             board,
             isSelected
