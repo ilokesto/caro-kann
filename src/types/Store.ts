@@ -30,10 +30,12 @@ export type UseStore<T, K extends Array<StoreType> = [], TAction = SetStateActio
       Dispatch<SetStateAction<T>>
     ];
   } & UseStore<T, K, TAction>["Provider"];
+
   reducer: {
     (): readonly [T, Dispatch<TAction>];
     <S>(selector: (state: T) => S): readonly [S, Dispatch<TAction>];
   } & UseStore<T, K, TAction>["Provider"];
+
   Provider: {
     Provider: <PK extends Array<StoreType>>({ store, children }: {
       store: {
@@ -56,7 +58,7 @@ export type Create = {
   <T>(initState: T): UseStore<T>["basic"]
 };
 
-export type CreateStoreFormProvider = {
+export type CreateStoreForProvider = {
   <T, K extends Array<StoreType>, A extends object>(initState: MiddlewareStore<T, K, A>): { store: Store<T, A>, [storeTypeTag]: K },
   <T, K extends Array<StoreType>>(initState: MiddlewareStore<T, K>): { store: Store<T>, [storeTypeTag]: Array<StoreType> },
   <T>(initState: T): { store: Store<T>, [storeTypeTag]: Array<StoreType> }
