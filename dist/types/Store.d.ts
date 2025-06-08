@@ -10,32 +10,21 @@ export interface Store<T, S = SetStateAction<T>> {
     getSelected: () => any;
 }
 export type UseStore<T, K extends Array<StoreType> = [], TAction = SetStateAction<T>> = {
-    basic: {
-        (): readonly [T, Dispatch<SetStateAction<T>>];
-        <S>(selector: (state: T) => S): readonly [
-            S,
-            Dispatch<SetStateAction<T>>
-        ];
-    } & UseStore<T, K, TAction>["common"];
-    reducer: {
-        (): readonly [T, Dispatch<TAction>];
-        <S>(selector: (state: T) => S): readonly [S, Dispatch<TAction>];
-    } & UseStore<T, K, TAction>["common"];
-    common: {
-        Provider: <PK extends Array<StoreType>>({ store, children }: {
-            store: {
-                store: CheckStoreType<K, PK, Store<T, TAction>>;
-                [storeTypeTag]: PK;
-            };
-            children: ReactNode;
-        }) => ReactElement;
-        store: Store<T, TAction>;
-    };
+    (): readonly [T, Dispatch<TAction>];
+    <S>(selector: (state: T) => S): readonly [S, Dispatch<TAction>];
+    Provider: <PK extends Array<StoreType>>({ store, children }: {
+        store: {
+            store: CheckStoreType<K, PK, Store<T, TAction>>;
+            [storeTypeTag]: PK;
+        };
+        children: ReactNode;
+    }) => ReactElement;
+    store: Store<T, TAction>;
 };
 export type Create = {
-    <T, K extends Array<StoreType>>(initState: MiddlewareStore<T, K>): UseStore<T, K>["basic"];
-    <T, K extends Array<StoreType>, A extends object>(initState: MiddlewareStore<T, K, A>): UseStore<T, K, A>["reducer"];
-    <T>(initState: T): UseStore<T>["basic"];
+    <T, K extends Array<StoreType>>(initState: MiddlewareStore<T, K>): UseStore<T, K>;
+    <T, K extends Array<StoreType>, A extends object>(initState: MiddlewareStore<T, K, A>): UseStore<T, K, A>;
+    <T>(initState: T): UseStore<T>;
 };
 export type CreateStoreForProvider = {
     <T, K extends Array<StoreType>, A extends object>(initState: MiddlewareStore<T, K, A>): {

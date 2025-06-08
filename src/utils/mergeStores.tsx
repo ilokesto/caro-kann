@@ -1,5 +1,5 @@
-import { SetStateAction, useSyncExternalStore } from "react";
-import { Store } from "../types";
+import { Dispatch, SetStateAction, useSyncExternalStore } from "react";
+import { Store, UseStore } from "../types";
 
 // 병합 가능한 스토어를 위한 타입 정의
 type MergeableStore<T> = {
@@ -10,7 +10,12 @@ type MergeableStores<T extends Record<string, unknown>> = {
   [K in keyof T]: MergeableStore<T[K]>;
 };
 
-export const merge = <T extends Record<string, unknown>>(stores: MergeableStores<T>) => {
+type a = Omit<UseStore<string>, "Provider" | "store">
+
+export const merge = <T extends Record<string, unknown>>(stores: MergeableStores<T>): {
+    (): readonly [T, Dispatch<SetStateAction<T>>];
+    <S>(selector: (state: T) => S): readonly [S, Dispatch<SetStateAction<T>>];
+} => {
   // 구독자 관리를 위한 Set
   const subscribers = new Set<() => void>();
   let selected = {};
@@ -66,7 +71,7 @@ export const merge = <T extends Record<string, unknown>>(stores: MergeableStores
     setSelected: (value: any) => { selected = value },
   };
 
-  function useStore<S>(selector: (state: T) => S = (state: T) => state as any){
+  function useStore<S>(selector: (state: T) => S = (state: T) => state as any) {
     const { getStore, setStore, subscribe, getSelected, setSelected } = mergedStore;
 
     const s = selector(getStore())
