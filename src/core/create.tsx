@@ -1,14 +1,35 @@
 import { CheckStoreType, Store, StoreType, storeTypeTag, UseStore, type Create, type MiddlewareStore } from "../types";
-import { createContext, ReactNode, useContext } from "react";
+import { createContext, ReactNode, SetStateAction, useContext, useSyncExternalStore } from "react";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
-import { createUseStore } from "./createUseStore";
 
 export const create: Create = <T, K extends Array<StoreType>>(initState: MiddlewareStore<T, K> | T) => {
   const { store } = getStoreFromInitState<T, K>(initState);
 
   const ContextStore = createContext<Store<T>>(store);
 
-  const useStore = createUseStore<T>(() => useContext(ContextStore)) as UseStore<T, K>;
+  function useStore<S>(selector: (state: T) => S = (state: T) => state as any){
+      const { getStore, setStore, subscribe, getSelected, setSelected } = useContext(ContextStore);
+  
+      const s = selector(getStore())
+      const isSelected = typeof s === 'object';
+  
+      if (isSelected) setSelected(s);
+  
+      const board = useSyncExternalStore(
+        subscribe,
+        isSelected ? getSelected : () => selector(getStore()),
+        isSelected ? getSelected : () => selector(getStore('init'))
+      );
+  
+      return [
+        board,
+        isSelected
+          ? (nextState: SetStateAction<T>) => {
+            setStore(nextState, "setStoreAction", selector)
+          }
+          : setStore
+      ] as const;
+    }
 
   useStore.store = store
 

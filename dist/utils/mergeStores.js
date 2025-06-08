@@ -1,4 +1,4 @@
-import { createUseStore } from "../core/createUseStore";
+import { useSyncExternalStore } from "react";
 function createMergedStore(stores, subscribers, selected) {
     const mergedStore = {
         getStore: () => {
@@ -43,5 +43,11 @@ export const merge = (stores) => {
         });
         unsubscribes.push(unsubscribe);
     }
-    return createUseStore(() => createMergedStore(stores, subscribers, selected));
+    function useA(selector = (state) => state) {
+        const { getStore, subscribe } = createMergedStore(stores, subscribers, selected);
+        const board = useSyncExternalStore(subscribe, () => selector(getStore()), () => selector(getStore('init')));
+        return board;
+    }
+    ;
+    return useA;
 };
