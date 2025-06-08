@@ -3,7 +3,7 @@ import { createContext, ReactNode, SetStateAction, useContext, useSyncExternalSt
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 
 export const create: Create = <T, K extends Array<StoreType>>(initState: MiddlewareStore<T, K> | T) => {
-  const { store } = getStoreFromInitState<T, K>(initState);
+  const { store, [storeTypeTag]: storeType } = getStoreFromInitState<T, K>(initState);
 
   const ContextStore = createContext<Store<T>>(store);
 
@@ -33,6 +33,7 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
 
   useStore[context_props] = ContextStore;
   useStore[store_props] = store;
+  useStore[storeTypeTag] = storeType;
 
   useStore.Provider = function<PK extends Array<StoreType>>({ store, children }: { 
     store: {

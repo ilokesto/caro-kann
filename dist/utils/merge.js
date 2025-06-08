@@ -37,9 +37,12 @@ const createMergeStore = (props, getValue) => {
             unsubscribers.forEach(unsubscribe => unsubscribe());
         };
     };
-    return { getStore, subscribe,
+    return {
+        getStore,
+        subscribe,
         setSelected: (value) => { selected = value; },
-        getSelected: () => selected };
+        getSelected: () => selected
+    };
 };
 function getValue(props, getStoreForm) {
     switch (getStoreForm) {

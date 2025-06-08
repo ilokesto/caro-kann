@@ -1,15 +1,19 @@
-import { Store, store_props, context_props, UseStore } from "../types";
-import { useSyncExternalStore } from "react";
+import { Store, store_props, context_props } from "../types";
+import { Context, useSyncExternalStore } from "react";
+
+type MergeableStore<T> = {
+    [store_props]: Store<T, any>;
+    [context_props]: Context<Store<T, any>>;
+}
 
 type MergeProps<T extends Record<string, any>> = {
-  [K in keyof T]: UseStore<T[K]>
-}
+  [K in keyof T]: MergeableStore<T[K]>
+};
 
 export const merge = <T extends Record<string, any>>(props: MergeProps<T>, getStoreForm?: 'root'): {
     ():T;
     <S>(selector: (state: T) => S): S;
   } => {
-
   // 병합된 store 생성
   return function useMergedStores<S>(selector: (state: T) => S = (state: T) => state as any) {
     const { getStore, subscribe, setSelected, getSelected } = createMergeStore(props, getValue(props, getStoreForm));
@@ -66,7 +70,9 @@ const createMergeStore = <T extends Record<string, any>>(props: MergeProps<T>, g
     }
   }
 
-  return { getStore, subscribe,
+  return {
+    getStore,
+    subscribe,
     setSelected: (value: any) => { selected = value },
     getSelected: () => selected
   }
