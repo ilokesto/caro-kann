@@ -1,6 +1,6 @@
 import { Dispatch, ReactNode, ReactElement, SetStateAction } from "react";
 import { MiddlewareStore, StoreType, storeTypeTag } from "./Middleware";
-type GetFirstIndex<K extends Array<StoreType>> = K extends [infer F extends StoreType, ...infer R extends Array<StoreType>] ? F : false;
+export type GetFirstIndex<K extends Array<StoreType>> = K extends [infer F extends StoreType, ...infer R extends Array<StoreType>] ? F : false;
 export type CheckStoreType<K extends Array<StoreType>, PK extends Array<StoreType>, U> = GetFirstIndex<K> extends 'reducer' ? GetFirstIndex<PK> extends 'reducer' ? U : never : GetFirstIndex<PK> extends 'reducer' ? never : U;
 export interface Store<T, S = SetStateAction<T>> {
     setStore: (nextState: S, actionName?: string, selector?: (state: T) => any) => void;
@@ -16,12 +16,12 @@ export type UseStore<T, K extends Array<StoreType> = [], TAction = SetStateActio
             S,
             Dispatch<SetStateAction<T>>
         ];
-    } & UseStore<T, K, TAction>["Provider"];
+    } & UseStore<T, K, TAction>["common"];
     reducer: {
         (): readonly [T, Dispatch<TAction>];
         <S>(selector: (state: T) => S): readonly [S, Dispatch<TAction>];
-    } & UseStore<T, K, TAction>["Provider"];
-    Provider: {
+    } & UseStore<T, K, TAction>["common"];
+    common: {
         Provider: <PK extends Array<StoreType>>({ store, children }: {
             store: {
                 store: CheckStoreType<K, PK, Store<T, TAction>>;
@@ -29,6 +29,7 @@ export type UseStore<T, K extends Array<StoreType> = [], TAction = SetStateActio
             };
             children: ReactNode;
         }) => ReactElement;
+        store: Store<T, TAction>;
     };
 };
 export type Create = {
@@ -50,4 +51,3 @@ export type CreateStoreForProvider = {
         [storeTypeTag]: Array<StoreType>;
     };
 };
-export {};
