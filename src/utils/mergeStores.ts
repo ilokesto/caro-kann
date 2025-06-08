@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useSyncExternalStore } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { Store } from "../types";
 import { createUseStore } from "../core/createUseStore";
 
