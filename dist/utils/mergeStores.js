@@ -1,16 +1,13 @@
-import { context } from "../types";
+import { store_property } from "../types";
 import { createUseStore } from "../core/createUseStore";
 export const merge = (stores) => createUseStore(() => createMergeStore(stores));
 function createMergeStore(stores) {
     const subscribers = new Set();
     let selected = {};
     let state = { test: 'test' };
-    const getStoreFromContext = (key) => {
-        return stores[key][context]._currentValue;
-    };
     const getStore = (mode) => {
         for (const key in stores) {
-            const storeFromContext = getStoreFromContext(key);
+            const storeFromContext = stores[key][store_property];
             state[key] = storeFromContext.getStore(mode);
         }
         return state;
@@ -22,8 +19,8 @@ function createMergeStore(stores) {
             : action;
         for (const key in stores) {
             if (key in nextState && nextState[key] !== prevState[key]) {
-                const storeFromContext = getStoreFromContext(key);
-                storeFromContext.setStore(() => nextState[key], actionName, selector);
+                const store = stores[key][store_property];
+                store.setStore(() => nextState[key], actionName);
             }
         }
         if (selector)
@@ -36,9 +33,9 @@ function createMergeStore(stores) {
         subscribe: (callback) => {
             subscribers.add(callback);
             const unsubscribes = Object.keys(stores).map(key => {
-                const storeFromContext = getStoreFromContext(key);
-                return storeFromContext.subscribe(() => {
-                    state[key] = storeFromContext.getStore();
+                const store = stores[key][store_property];
+                return store.subscribe(() => {
+                    state[key] = store.getStore();
                     callback();
                 });
             });

@@ -22,7 +22,7 @@ export interface Store<T, S = SetStateAction<T>> {
   getSelected: () => any;
 };
 
-export const context: unique symbol = Symbol("context")
+export const store_property: unique symbol = Symbol("store_property")
 
 export type UseStore<T, K extends Array<StoreType> = [], TAction = SetStateAction<T>> = {
     (): readonly [T, Dispatch<TAction>];
@@ -34,7 +34,7 @@ export type UseStore<T, K extends Array<StoreType> = [], TAction = SetStateActio
       };
       children: ReactNode;
     }) => ReactElement;
-    [context]: Context<Store<T, TAction>>;
+    [store_property]: Store<T, TAction>;
 };
 
 export type Create = {

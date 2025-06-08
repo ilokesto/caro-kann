@@ -1,1 +1,1 @@
-import { context } from "./Store";
+import { store_property } from "./Store";

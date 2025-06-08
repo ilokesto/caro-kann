@@ -1,3 +1,3 @@
 import { storeTypeTag } from "./Middleware";
 ;
-export const context = Symbol("context");
+export const store_property = Symbol("store_property");
