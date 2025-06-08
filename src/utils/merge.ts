@@ -1,5 +1,5 @@
 import { Store, UseStore } from "../types";
-import { useState, useEffect, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 
 type MergeProps<T extends Record<string, any>> = {
   [K in keyof T]: UseStore<T[K]>
