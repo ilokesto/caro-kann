@@ -2,9 +2,12 @@ import { createUseStore } from "../core/createUseStore";
 export const merge = (stores) => {
     const subscribers = new Set();
     let selected = {};
+    const getStoreFromContext = (key) => {
+        return stores[key].ContextStore._currentValue;
+    };
     const unsubscribes = [];
     for (const key in stores) {
-        const unsubscribe = stores[key].store.subscribe(() => {
+        const unsubscribe = getStoreFromContext(key).subscribe(() => {
             subscribers.forEach(callback => callback());
         });
         unsubscribes.push(unsubscribe);
@@ -13,7 +16,7 @@ export const merge = (stores) => {
         getStore: () => {
             const state = {};
             for (const key in stores) {
-                state[key] = stores[key].store.getStore();
+                state[key] = getStoreFromContext(key).getStore();
             }
             return state;
         },
@@ -24,7 +27,7 @@ export const merge = (stores) => {
                 : action;
             for (const key in stores) {
                 if (key in nextState && nextState[key] !== prevState[key]) {
-                    stores[key].store.setStore(nextState[key], actionName);
+                    getStoreFromContext(key).setStore(nextState[key], actionName);
                 }
             }
             if (selector)

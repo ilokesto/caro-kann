@@ -4,7 +4,7 @@ import { createUseStore } from "../core/createUseStore";
 
 // 병합 가능한 스토어를 위한 타입 정의
 type MergeableStore<T> = {
-  store: Store<T, SetStateAction<T>>;
+  ContextStore: React.Context<Store<T>>;
 };
 
 type MergeableStores<T extends Record<string, unknown>> = {
@@ -18,11 +18,16 @@ export const merge = <T extends Record<string, unknown>>(stores: MergeableStores
   // 구독자 관리를 위한 Set
   const subscribers = new Set<() => void>();
   let selected = {};
+
+  const getStoreFromContext = (key: keyof T) => {
+    // @ts-ignore
+    return stores[key].ContextStore._currentValue;
+  }
   
   // 각 개별 스토어에 대한 구독 설정
   const unsubscribes: Array<() => void> = [];
   for (const key in stores) {
-    const unsubscribe = stores[key].store.subscribe(() => {
+    const unsubscribe = getStoreFromContext(key).subscribe(() => {
       // 개별 스토어가 변경되면 병합된 스토어의 구독자들에게 알림
       subscribers.forEach(callback => callback());
     });
@@ -36,7 +41,7 @@ export const merge = <T extends Record<string, unknown>>(stores: MergeableStores
       // 모든 개별 스토어의 상태를 하나의 객체로 병합
       const state: Partial<T> = {};
       for (const key in stores) {
-        state[key] = stores[key].store.getStore();
+        state[key] = getStoreFromContext(key).getStore();
       }
       return state as T;
     },
@@ -50,7 +55,7 @@ export const merge = <T extends Record<string, unknown>>(stores: MergeableStores
       // 변경된 부분만 각 개별 스토어에 반영
       for (const key in stores) {
         if (key in nextState && nextState[key] !== prevState[key]) {
-          stores[key].store.setStore(nextState[key], actionName);
+          getStoreFromContext(key).setStore(nextState[key], actionName);
         }
       }
       

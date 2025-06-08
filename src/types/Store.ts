@@ -33,6 +33,7 @@ export type UseStore<T, K extends Array<StoreType> = [], TAction = SetStateActio
       children: ReactNode;
     }) => ReactElement;
     store: Store<T, TAction>;
+    ContextStore: Context<Store<T, TAction>>;
 };
 
 export type Create = {
