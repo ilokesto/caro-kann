@@ -1,10 +1,22 @@
 import { createUseStore } from "../core/createUseStore";
-function createMergedStore(stores, subscribers, selected) {
+const createMergedStore = (stores, getContext) => {
+    const subscribers = new Set();
+    let selected = {};
+    const setupSubscriptions = (callback) => {
+        const unsubscribes = [];
+        for (const key in stores) {
+            const unsubscribe = getContext(key).subscribe(() => {
+                callback();
+            });
+            unsubscribes.push(unsubscribe);
+        }
+        return unsubscribes;
+    };
     const mergedStore = {
         getStore: () => {
             const state = {};
             for (const key in stores) {
-                state[key] = stores[key].store.getStore();
+                state[key] = getContext(key).getStore();
             }
             return state;
         },
@@ -15,35 +27,30 @@ function createMergedStore(stores, subscribers, selected) {
                 : action;
             for (const key in stores) {
                 if (key in nextState && nextState[key] !== prevState[key]) {
-                    stores[key].store.setStore(nextState[key], actionName);
+                    getContext(key).setStore(nextState[key], actionName);
                 }
             }
-            if (selector)
+            if (selector) {
                 selected = selector(nextState);
+            }
             subscribers.forEach(callback => callback());
         },
         subscribe: (callback) => {
             subscribers.add(callback);
+            const unsubscribes = setupSubscriptions(callback);
             return () => {
                 subscribers.delete(callback);
+                unsubscribes.forEach(unsubscribe => unsubscribe());
             };
         },
         getSelected: () => selected,
         setSelected: (value) => { selected = value; },
     };
     return mergedStore;
-}
-export const merge = (stores) => {
-    const subscribers = new Set();
-    let selected = {};
-    const unsubscribes = [];
-    for (const key in stores) {
-        const unsubscribe = stores[key].store.subscribe(() => {
-            subscribers.forEach(callback => callback());
-        });
-        unsubscribes.push(unsubscribe);
-    }
-    const mergedStore = createMergedStore(stores, subscribers, selected);
-    const useStore = createUseStore(() => mergedStore);
-    return useStore;
+};
+export const mergeContext = (stores) => {
+    const getContext = (key) => {
+        return stores[key].ContextStore._currentValue;
+    };
+    return createUseStore(() => createMergedStore(stores, getContext));
 };
