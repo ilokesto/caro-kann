@@ -6,4 +6,4 @@ export declare const merge: <T extends Record<string, any>>(props: MergeProps<T>
     (): T;
     <S>(selector: (state: T) => S): S;
 };
-export default merge;
+export {};

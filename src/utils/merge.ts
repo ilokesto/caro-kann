@@ -9,13 +9,21 @@ export const merge = <T extends Record<string, any>>(props: MergeProps<T>, getSt
     ():T;
     <S>(selector: (state: T) => S): S;
   } => {
-  //@ts-ignore
-  const getValueFromContext = (key: keyof T) => props[key].context._currentValue;
-  const getValueFromStore = (key: keyof T) => props[key].store;
+  const getValue = (getStoreForm: 'root' | 'context') => {
+    switch (getStoreForm) {
+      case 'root':
+        return (key: keyof T) => (window as any).__CARO_KANN_STORE__[key] as Store<T[keyof T]>;
+      case 'context':
+        // @ts-ignore
+        return (key: keyof T) => (props[key] as Store<T[keyof T]>);
+      default:
+        throw new Error('Invalid getStoreForm');
+    }
+  }
 
   // 병합된 store 생성
   function useMerge<S>(selector: (state: T) => S = (state: T) => state as any) {
-    const { getStore, subscribe, setSelected, getSelected } = createMergeStore(props, getStoreForm === 'root' ? getValueFromStore : getValueFromContext);
+    const { getStore, subscribe, setSelected, getSelected } = createMergeStore(props, getValue(getStoreForm));
 
     const s = selector(getStore())
     const isSelected = typeof s === 'object';
@@ -76,5 +84,3 @@ const createMergeStore = <T extends Record<string, any>>(props: MergeProps<T>, g
     getSelected: () => selected
   }
 }
-
-export default merge;
