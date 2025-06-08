@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, useSyncExternalStore } from "react";
-import { Store, UseStore } from "../types";
+import { Store } from "../types";
+import { createUseStore } from "../core/createUseStore";
 
 // 병합 가능한 스토어를 위한 타입 정의
 type MergeableStore<T> = {
@@ -9,8 +10,6 @@ type MergeableStore<T> = {
 type MergeableStores<T extends Record<string, unknown>> = {
   [K in keyof T]: MergeableStore<T[K]>;
 };
-
-type a = Omit<UseStore<string>, "Provider" | "store">
 
 export const merge = <T extends Record<string, unknown>>(stores: MergeableStores<T>): {
     (): readonly [T, Dispatch<SetStateAction<T>>];
@@ -71,29 +70,7 @@ export const merge = <T extends Record<string, unknown>>(stores: MergeableStores
     setSelected: (value: any) => { selected = value },
   };
 
-  function useStore<S>(selector: (state: T) => S = (state: T) => state as any) {
-    const { getStore, setStore, subscribe, getSelected, setSelected } = mergedStore;
-
-    const s = selector(getStore())
-    const isSelected = typeof s === 'object';
-
-    if (isSelected) setSelected(s);
-
-    const board = useSyncExternalStore(
-      subscribe,
-      isSelected ? getSelected : () => selector(getStore()),
-      isSelected ? getSelected : () => selector(getStore('init'))
-    );
-
-    return [
-      board,
-      isSelected
-        ? (nextState: SetStateAction<T>) => {
-          setStore(nextState, "setStoreAction", selector)
-        }
-        : setStore
-    ] as const;
-  };
+  const useStore = createUseStore<T>(() => mergedStore)
   
   return useStore;
 };

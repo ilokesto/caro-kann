@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { createUseStore } from "../core/createUseStore";
 export const merge = (stores) => {
     const subscribers = new Set();
     let selected = {};
@@ -40,22 +40,6 @@ export const merge = (stores) => {
         getSelected: () => selected,
         setSelected: (value) => { selected = value; },
     };
-    function useStore(selector = (state) => state) {
-        const { getStore, setStore, subscribe, getSelected, setSelected } = mergedStore;
-        const s = selector(getStore());
-        const isSelected = typeof s === 'object';
-        if (isSelected)
-            setSelected(s);
-        const board = useSyncExternalStore(subscribe, isSelected ? getSelected : () => selector(getStore()), isSelected ? getSelected : () => selector(getStore('init')));
-        return [
-            board,
-            isSelected
-                ? (nextState) => {
-                    setStore(nextState, "setStoreAction", selector);
-                }
-                : setStore
-        ];
-    }
-    ;
+    const useStore = createUseStore(() => mergedStore);
     return useStore;
 };
