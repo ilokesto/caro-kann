@@ -1,19 +1,16 @@
 import { useSyncExternalStore } from "react";
-export const merge = (stores) => {
+const createMergeStore = (stores) => {
     const subscribers = new Set();
     let selected = {};
-    const unsubscribes = [];
-    for (const key in stores) {
-        const unsubscribe = stores[key].store.subscribe(() => {
-            subscribers.forEach(callback => callback());
-        });
-        unsubscribes.push(unsubscribe);
-    }
+    let state = {};
+    const getStoreFromContext = (key) => {
+        return stores[key].context._currentValue;
+    };
     const mergedStore = {
-        getStore: () => {
-            const state = {};
+        getStore: (mode) => {
             for (const key in stores) {
-                state[key] = stores[key].store.getStore();
+                const storeFromContext = getStoreFromContext(key);
+                state[key] = storeFromContext.getStore(mode);
             }
             return state;
         },
@@ -24,7 +21,8 @@ export const merge = (stores) => {
                 : action;
             for (const key in stores) {
                 if (key in nextState && nextState[key] !== prevState[key]) {
-                    stores[key].store.setStore(nextState[key], actionName);
+                    const storeFromContext = getStoreFromContext(key);
+                    storeFromContext.setStore(() => nextState[key], actionName);
                 }
             }
             if (selector)
@@ -33,15 +31,26 @@ export const merge = (stores) => {
         },
         subscribe: (callback) => {
             subscribers.add(callback);
+            const unsubscribes = Object.keys(stores).map(key => {
+                const storeFromContext = getStoreFromContext(key);
+                return storeFromContext.subscribe(() => {
+                    state[key] = storeFromContext.getStore();
+                    callback();
+                });
+            });
             return () => {
                 subscribers.delete(callback);
+                unsubscribes.forEach(unsubscribe => unsubscribe());
             };
         },
         getSelected: () => selected,
         setSelected: (value) => { selected = value; },
     };
+    return mergedStore;
+};
+export const merge = (stores) => {
     function useStore(selector = (state) => state) {
-        const { getStore, setStore, subscribe, getSelected, setSelected } = mergedStore;
+        const { getStore, setStore, subscribe, getSelected, setSelected } = createMergeStore(stores);
         const s = selector(getStore());
         const isSelected = typeof s === 'object';
         if (isSelected)

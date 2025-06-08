@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { Store } from "../types";
-type MergeableStore<T> = {
-    store: Store<T, SetStateAction<T>>;
+type MergeableStore<T, A = SetStateAction<T>> = {
+    context: React.Context<Store<T, A>>;
 };
 type MergeableStores<T extends Record<string, unknown>> = {
     [K in keyof T]: MergeableStore<T[K]>;
