@@ -43,7 +43,5 @@ export const merge = (stores) => {
         });
         unsubscribes.push(unsubscribe);
     }
-    const mergedStore = createMergedStore(stores, subscribers, selected);
-    const useStore = createUseStore(() => mergedStore);
-    return useStore;
+    return createUseStore(() => createMergedStore(stores, subscribers, selected));
 };

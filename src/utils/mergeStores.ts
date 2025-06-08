@@ -80,10 +80,6 @@ export const merge = <T extends Record<string, unknown>>(stores: MergeableStores
     unsubscribes.push(unsubscribe);
   }
   
-  // 병합된 스토어 생성
-  const mergedStore = createMergedStore(stores, subscribers, selected);
-
-  const useStore = createUseStore<T>(() => mergedStore)
-  
-  return useStore;
+  // 병합된 스토어 생성  
+  return createUseStore<T>(() => createMergedStore(stores, subscribers, selected));
 };
