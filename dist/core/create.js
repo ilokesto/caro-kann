@@ -8,7 +8,6 @@ export const create = (initState) => {
     const ContextStore = createContext(store);
     const useStore = createUseStore(() => useContext(ContextStore));
     useStore.store = store;
-    useStore.ContextStore = ContextStore;
     useStore.Provider = function ({ store, children }) {
         return _jsx(ContextStore.Provider, { value: store.store, children: children });
     };

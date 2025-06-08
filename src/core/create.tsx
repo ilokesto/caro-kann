@@ -11,7 +11,6 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
   const useStore = createUseStore<T>(() => useContext(ContextStore)) as UseStore<T, K>;
 
   useStore.store = store
-  useStore.ContextStore = ContextStore;
 
   useStore.Provider = function<PK extends Array<StoreType>>({ store, children }: { 
     store: {

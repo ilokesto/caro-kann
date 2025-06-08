@@ -4,7 +4,6 @@ import { createUseStore } from "../core/createUseStore";
 
 // 병합 가능한 스토어를 위한 타입 정의
 type MergeableStore<T> = {
-  ContextStore: React.Context<Store<T>>;
   store: Store<T>;
 };
 
