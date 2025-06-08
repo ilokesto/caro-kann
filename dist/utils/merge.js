@@ -1,6 +1,7 @@
+import { store_props, context_props } from "../types";
 import { useSyncExternalStore } from "react";
-export const merge = (props, getStoreForm = 'context') => {
-    function useMergedStores(selector = (state) => state) {
+export const merge = (props, getStoreForm) => {
+    return function useMergedStores(selector = (state) => state) {
         const { getStore, subscribe, setSelected, getSelected } = createMergeStore(props, getValue(props, getStoreForm));
         const s = selector(getStore());
         const isSelected = typeof s === 'object';
@@ -8,8 +9,7 @@ export const merge = (props, getStoreForm = 'context') => {
             setSelected(s);
         const state = useSyncExternalStore(subscribe, isSelected ? getSelected : () => selector(getStore()), isSelected ? getSelected : () => selector(getStore()));
         return state;
-    }
-    return useMergedStores;
+    };
 };
 const createMergeStore = (props, getValue) => {
     const store = {};
@@ -44,10 +44,8 @@ const createMergeStore = (props, getValue) => {
 function getValue(props, getStoreForm) {
     switch (getStoreForm) {
         case 'root':
-            return (key) => props[key].store;
-        case 'context':
-            return (key) => props[key].context._currentValue;
+            return (key) => props[key][store_props];
         default:
-            throw new Error('Invalid getStoreForm');
+            return (key) => props[key][context_props]._currentValue;
     }
 }

@@ -1,5 +1,5 @@
 import { jsx as _jsx } from "react/jsx-runtime";
-import { storeTypeTag } from "../types";
+import { context_props, store_props, storeTypeTag } from "../types";
 import { createContext, useContext, useSyncExternalStore } from "react";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 export const create = (initState) => {
@@ -21,8 +21,8 @@ export const create = (initState) => {
                 : setStore
         ];
     }
-    useStore.store = store;
-    useStore.context = ContextStore;
+    useStore[context_props] = ContextStore;
+    useStore[store_props] = store;
     useStore.Provider = function ({ store, children }) {
         return _jsx(ContextStore.Provider, { value: store.store, children: children });
     };

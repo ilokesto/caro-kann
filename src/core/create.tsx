@@ -1,4 +1,4 @@
-import { CheckStoreType, Store, StoreType, storeTypeTag, UseStore, type Create, type MiddlewareStore } from "../types";
+import { CheckStoreType, context_props, Store, store_props, StoreType, storeTypeTag, UseStore, type Create, type MiddlewareStore } from "../types";
 import { createContext, ReactNode, SetStateAction, useContext, useSyncExternalStore } from "react";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 
@@ -31,8 +31,8 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
       ] as const;
     }
 
-  useStore.store = store;
-  useStore.context = ContextStore;
+  useStore[context_props] = ContextStore;
+  useStore[store_props] = store;
 
   useStore.Provider = function<PK extends Array<StoreType>>({ store, children }: { 
     store: {

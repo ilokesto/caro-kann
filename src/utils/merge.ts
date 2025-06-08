@@ -1,17 +1,17 @@
-import { Store, UseStore } from "../types";
+import { Store, store_props, context_props, UseStore } from "../types";
 import { useSyncExternalStore } from "react";
 
 type MergeProps<T extends Record<string, any>> = {
   [K in keyof T]: UseStore<T[K]>
 }
 
-export const merge = <T extends Record<string, any>>(props: MergeProps<T>, getStoreForm: 'root' | 'context' = 'context'): {
+export const merge = <T extends Record<string, any>>(props: MergeProps<T>, getStoreForm?: 'root'): {
     ():T;
     <S>(selector: (state: T) => S): S;
   } => {
 
   // 병합된 store 생성
-  function useMergedStores<S>(selector: (state: T) => S = (state: T) => state as any) {
+  return function useMergedStores<S>(selector: (state: T) => S = (state: T) => state as any) {
     const { getStore, subscribe, setSelected, getSelected } = createMergeStore(props, getValue(props, getStoreForm));
 
     const s = selector(getStore())
@@ -27,8 +27,6 @@ export const merge = <T extends Record<string, any>>(props: MergeProps<T>, getSt
 
     return state;
   }
-
-  return useMergedStores;
 }
 
 const createMergeStore = <T extends Record<string, any>>(props: MergeProps<T>, getValue: (key: keyof T) => Store<T[keyof T]>) => {
@@ -74,14 +72,12 @@ const createMergeStore = <T extends Record<string, any>>(props: MergeProps<T>, g
   }
 }
 
-function getValue<T extends Record<string, any>>(props: MergeProps<T>, getStoreForm: 'root' | 'context'): (key: keyof T) => Store<T[keyof T]> {
+function getValue<T extends Record<string, any>>(props: MergeProps<T>, getStoreForm?: 'root'): (key: keyof T) => Store<T[keyof T]> {
   switch (getStoreForm) {
     case 'root':
-      return (key: keyof T) => props[key].store;
-    case 'context':
-      // @ts-ignore
-      return (key: keyof T) => props[key].context._currentValue;
+      return (key: keyof T) => props[key][store_props];     
     default:
-      throw new Error('Invalid getStoreForm');
+      // @ts-ignore
+      return (key: keyof T) => props[key][context_props]._currentValue;
   }
 }
