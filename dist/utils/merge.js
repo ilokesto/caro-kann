@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 export const merge = (props, getStoreForm = 'context') => {
-    function useMerge(selector = (state) => state) {
+    function useMergedStores(selector = (state) => state) {
         const { getStore, subscribe, setSelected, getSelected } = createMergeStore(props, getValue(props, getStoreForm));
         const s = selector(getStore());
         const isSelected = typeof s === 'object';
@@ -9,7 +9,7 @@ export const merge = (props, getStoreForm = 'context') => {
         const state = useSyncExternalStore(subscribe, isSelected ? getSelected : () => selector(getStore()), isSelected ? getSelected : () => selector(getStore()));
         return state;
     }
-    return useMerge;
+    return useMergedStores;
 };
 const createMergeStore = (props, getValue) => {
     const store = {};

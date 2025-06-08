@@ -5,7 +5,7 @@ type MergeProps<T extends Record<string, any>> = {
   [K in keyof T]: UseStore<T[K]>
 }
 
-export const mergeStores = <T extends Record<string, any>>(props: MergeProps<T>, getStoreForm: 'root' | 'context' = 'context'): {
+export const merge = <T extends Record<string, any>>(props: MergeProps<T>, getStoreForm: 'root' | 'context' = 'context'): {
     ():T;
     <S>(selector: (state: T) => S): S;
   } => {
