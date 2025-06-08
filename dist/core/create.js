@@ -22,6 +22,7 @@ export const create = (initState) => {
         ];
     }
     useStore.store = store;
+    useStore.context = ContextStore;
     useStore.Provider = function ({ store, children }) {
         return _jsx(ContextStore.Provider, { value: store.store, children: children });
     };

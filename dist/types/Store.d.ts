@@ -1,4 +1,4 @@
-import { Dispatch, ReactNode, ReactElement, SetStateAction } from "react";
+import { Dispatch, ReactNode, ReactElement, SetStateAction, Context } from "react";
 import { MiddlewareStore, StoreType, storeTypeTag } from "./Middleware";
 export type GetFirstIndex<K extends Array<StoreType>> = K extends [infer F extends StoreType, ...infer R extends Array<StoreType>] ? F : false;
 export type CheckStoreType<K extends Array<StoreType>, PK extends Array<StoreType>, U> = GetFirstIndex<K> extends 'reducer' ? GetFirstIndex<PK> extends 'reducer' ? U : never : GetFirstIndex<PK> extends 'reducer' ? never : U;
@@ -20,6 +20,7 @@ export type UseStore<T, K extends Array<StoreType> = [], TAction = SetStateActio
         children: ReactNode;
     }) => ReactElement;
     store: Store<T, TAction>;
+    context: Context<Store<T, TAction>>;
 };
 export type Create = {
     <T, K extends Array<StoreType>>(initState: MiddlewareStore<T, K>): UseStore<T, K>;
