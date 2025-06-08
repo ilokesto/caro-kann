@@ -1,17 +1,7 @@
 import { useSyncExternalStore } from "react";
 export const merge = (props, getStoreForm = 'context') => {
-    const getValue = (getStoreForm) => {
-        switch (getStoreForm) {
-            case 'root':
-                return (key) => window.__CARO_KANN_STORE__[key];
-            case 'context':
-                return (key) => props[key];
-            default:
-                throw new Error('Invalid getStoreForm');
-        }
-    };
     function useMerge(selector = (state) => state) {
-        const { getStore, subscribe, setSelected, getSelected } = createMergeStore(props, getValue(getStoreForm));
+        const { getStore, subscribe, setSelected, getSelected } = createMergeStore(props, getValue(props, getStoreForm));
         const s = selector(getStore());
         const isSelected = typeof s === 'object';
         if (isSelected)
@@ -51,3 +41,13 @@ const createMergeStore = (props, getValue) => {
         setSelected: (value) => { selected = value; },
         getSelected: () => selected };
 };
+function getValue(props, getStoreForm) {
+    switch (getStoreForm) {
+        case 'root':
+            return (key) => props[key].store;
+        case 'context':
+            return (key) => props[key].context._currentValue;
+        default:
+            throw new Error('Invalid getStoreForm');
+    }
+}

@@ -5,25 +5,14 @@ type MergeProps<T extends Record<string, any>> = {
   [K in keyof T]: UseStore<T[K]>
 }
 
-export const merge = <T extends Record<string, any>>(props: MergeProps<T>, getStoreForm: 'root' | 'context' = 'context'): {
+export const mergeStores = <T extends Record<string, any>>(props: MergeProps<T>, getStoreForm: 'root' | 'context' = 'context'): {
     ():T;
     <S>(selector: (state: T) => S): S;
   } => {
-  const getValue = (getStoreForm: 'root' | 'context') => {
-    switch (getStoreForm) {
-      case 'root':
-        return (key: keyof T) => (window as any).__CARO_KANN_STORE__[key] as Store<T[keyof T]>;
-      case 'context':
-        // @ts-ignore
-        return (key: keyof T) => (props[key] as Store<T[keyof T]>);
-      default:
-        throw new Error('Invalid getStoreForm');
-    }
-  }
 
   // 병합된 store 생성
-  function useMerge<S>(selector: (state: T) => S = (state: T) => state as any) {
-    const { getStore, subscribe, setSelected, getSelected } = createMergeStore(props, getValue(getStoreForm));
+  function useMergedStores<S>(selector: (state: T) => S = (state: T) => state as any) {
+    const { getStore, subscribe, setSelected, getSelected } = createMergeStore(props, getValue(props, getStoreForm));
 
     const s = selector(getStore())
     const isSelected = typeof s === 'object';
@@ -39,7 +28,7 @@ export const merge = <T extends Record<string, any>>(props: MergeProps<T>, getSt
     return state;
   }
 
-  return useMerge;
+  return useMergedStores;
 }
 
 const createMergeStore = <T extends Record<string, any>>(props: MergeProps<T>, getValue: (key: keyof T) => Store<T[keyof T]>) => {
@@ -82,5 +71,17 @@ const createMergeStore = <T extends Record<string, any>>(props: MergeProps<T>, g
   return { getStore, subscribe,
     setSelected: (value: any) => { selected = value },
     getSelected: () => selected
+  }
+}
+
+function getValue<T extends Record<string, any>>(props: MergeProps<T>, getStoreForm: 'root' | 'context'): (key: keyof T) => Store<T[keyof T]> {
+  switch (getStoreForm) {
+    case 'root':
+      return (key: keyof T) => props[key].store;
+    case 'context':
+      // @ts-ignore
+      return (key: keyof T) => props[key].context._currentValue;
+    default:
+      throw new Error('Invalid getStoreForm');
   }
 }
