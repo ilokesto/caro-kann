@@ -3,7 +3,7 @@ import { context_props, store_props, storeTypeTag } from "../types";
 import { createContext, useContext, useSyncExternalStore } from "react";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 export const create = (initState) => {
-    const { store, [storeTypeTag]: storeType } = getStoreFromInitState(initState);
+    const { store } = getStoreFromInitState(initState);
     const ContextStore = createContext(store);
     function useStore(selector = (state) => state) {
         const { getStore, setStore, subscribe, getSelected, setSelected } = useContext(ContextStore);
