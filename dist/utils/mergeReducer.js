@@ -1,7 +1,6 @@
-import { createContext } from "react";
 import { store_props, context_props } from "../types";
-import { useContext, useSyncExternalStore } from "react";
-export const merge = (props, getStoreFrom = 'context') => {
+import { createContext, useContext, useSyncExternalStore } from "react";
+export const mergeReducer = (props, getStoreFrom = 'context') => {
     const storeObject = getStoreObjectFromProps(props);
     return function useMergedStores(selector = (state) => state) {
         const contextObject = useGetStoreObjectFromProps(props);
@@ -21,12 +20,8 @@ const createMergeStore = (storeObject, selector) => {
         return store;
     };
     const setMergedStore = (nextState, actionName) => {
-        const newState = typeof nextState === "function"
-            ? nextState(setStore())
-            : nextState;
         for (const key in storeObject) {
-            const K = key;
-            storeObject[K].setStore(newState[K], actionName);
+            storeObject[key].setStore(nextState[key], actionName);
         }
         callbacks.forEach((cb) => cb());
     };

@@ -1,23 +1,23 @@
-import { createContext } from "react";
-import { Store, store_props, context_props } from "../types";
-import { Context, Dispatch, SetStateAction, useContext, useSyncExternalStore } from "react";
 
-type MergeableStore<T> = {
-    [store_props]: Store<T, SetStateAction<T>>;
-    [context_props]: Context<Store<T, SetStateAction<T>>>;
+import { Store, store_props, context_props } from "../types";
+import { Context, createContext, Dispatch, useContext, useSyncExternalStore } from "react";
+
+type MergeableStore<T, A> = {
+    [store_props]: Store<T, A>;
+    [context_props]: Context<Store<T, A>>;
 }
 
-type MergeProps<T extends Record<string, any>> = {
-  [K in keyof T]: MergeableStore<T[K]>
+type MergeProps<T extends Record<string, any>, A extends Record<keyof T, any>> = {
+  [K in keyof T]: MergeableStore<T[K], A[K]>
 };
 
-type StoreObject<T> = {
-  [k in keyof T]: Store<T[k], SetStateAction<T[k]>>;
+type StoreObject<T, A extends Record<keyof T, any>> = {
+  [k in keyof T]: Store<T[k], A[k]>;
 }
 
-export const merge = <T extends Record<string, any>>(props: MergeProps<T>, getStoreFrom: 'root' | 'context' = 'context'): {
-    (): [T, Dispatch<SetStateAction<T>>];
-    <S>(selector: (state: T) => S): [S, Dispatch<SetStateAction<T>>];
+export const mergeReducer = <T extends Record<string, any>, A extends Record<keyof T, any>>(props: MergeProps<T, A>, getStoreFrom: 'root' | 'context' = 'context'): { 
+    (): [T, Dispatch<A>];
+    <S>(selector: (state: T) => S): [S, Dispatch<A>];
   } => {
   const storeObject = getStoreObjectFromProps(props);
 
@@ -36,7 +36,7 @@ export const merge = <T extends Record<string, any>>(props: MergeProps<T>, getSt
   }
 }
 
-const createMergeStore = <T extends Record<string, any>>(storeObject: StoreObject<T>, selector: (state: T) => any) => {
+const createMergeStore = <T extends Record<string, any>, A extends Record<keyof T, any>>(storeObject: StoreObject<T, A>, selector: (state: T) => any) => {
   const callbacks = new Set<() => void>();
 
   const setStore = () => {
@@ -48,15 +48,11 @@ const createMergeStore = <T extends Record<string, any>>(storeObject: StoreObjec
     return store;
   }
 
-  const setMergedStore = (nextState: SetStateAction<T>, actionName?: string) => {
-    const newState = typeof nextState === "function"
-      ? (nextState as (prev: T) => T)(setStore())
-      : nextState;
-
+  const setMergedStore = (nextState: A, actionName?: string) => {
     for (const key in storeObject) {
-      const K = key as keyof T;
-      storeObject[K].setStore(newState[K], actionName);
+      storeObject[key].setStore(nextState[key], actionName);
     }
+
     callbacks.forEach((cb) => cb());
   }
 
@@ -101,18 +97,18 @@ const createMergeStore = <T extends Record<string, any>>(storeObject: StoreObjec
   }
 }
 
-function getStoreObjectFromProps<T extends Record<string, any>>(props: MergeProps<T>): StoreObject<T> {
+function getStoreObjectFromProps<T extends Record<string, any>, A extends Record<keyof T, any>>(props: MergeProps<T, A>): StoreObject<T, A> {  
   // 일반 객체로 만든 후 최종 결과만 타입 단언
   const result: Record<string, any> = {};
   
   Object.keys(props).forEach(key => {
     result[key] = props[key][store_props];
   });
-  
-  return result as StoreObject<T>;
+
+  return result as StoreObject<T, A>;
 }
 const undefinedContext = createContext(undefined)
-function useGetStoreObjectFromProps<T extends Record<string, any>>(props: MergeProps<T>): StoreObject<T> {
+function useGetStoreObjectFromProps<T extends Record<string, any>, A extends Record<keyof T, any>>(props: MergeProps<T, A>): StoreObject<T, A> {
   const taggedObject = Object.keys(props).reduce((acc, key, index) => {
     acc[index] = key;
     return acc;
@@ -131,7 +127,7 @@ function useGetStoreObjectFromProps<T extends Record<string, any>>(props: MergeP
 
   return contextArray.reduce((acc, key, index) => {
     const originalKey = taggedObject[index] as keyof T; 
-    acc[originalKey] = contextArray[index] as Store<T[keyof T], SetStateAction<T[keyof T]>>;
+    acc[originalKey] = contextArray[index] as Store<T[keyof T], object>;
     return acc
-  }, {} as StoreObject<T>);
+  }, {} as StoreObject<T, A>);
 }
