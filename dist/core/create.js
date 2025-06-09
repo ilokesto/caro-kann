@@ -1,5 +1,5 @@
 import { jsx as _jsx } from "react/jsx-runtime";
-import { context_props, store_props, storeTypeTag } from "../types";
+import { context_props, store_props } from "../types";
 import { createContext, useContext, useSyncExternalStore } from "react";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 export const create = (initState) => {

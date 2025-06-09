@@ -1,4 +1,5 @@
-import { CheckStoreType, context_props, Store, store_props, StoreType, storeTypeTag, UseStore, type Create, type MiddlewareStore } from "../types";
+import type { CheckStoreType, Store, StoreType, storeTypeTag, Create, MiddlewareStore } from "../types";
+import {context_props, store_props} from "../types";
 import { createContext, ReactNode, SetStateAction, useContext, useSyncExternalStore } from "react";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 
