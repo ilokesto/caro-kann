@@ -1,33 +1,36 @@
+import { createContext } from "vm";
 import { store_props, context_props } from "../types";
-import { useSyncExternalStore } from "react";
-export const merge = (props, getStoreFrom) => {
+import { useContext, useSyncExternalStore } from "react";
+export const merge = (props, getStoreFrom = 'context') => {
+    const storeObject = getStoreObjectFromProps(props);
     return function useMergedStores(selector = (state) => state) {
-        const { getStore, subscribe, setSelected, getSelected } = createMergeStore(props, getValue(props, getStoreFrom));
-        const s = selector(getStore());
-        const isSelected = typeof s === 'object';
-        if (isSelected)
-            setSelected(s);
-        const state = useSyncExternalStore(subscribe, isSelected ? getSelected : () => selector(getStore()), isSelected ? getSelected : () => selector(getStore()));
+        const contextObject = useGetStoreObjectFromProps(props);
+        const { getStore, subscribe, getSelected } = createMergeStore(getStoreFrom === 'context' ? contextObject : storeObject, selector);
+        const state = useSyncExternalStore(subscribe, typeof getSelected === 'object' ? getSelected : () => selector(getStore()), typeof getSelected === 'object' ? getSelected : () => selector(getStore()));
         return state;
     };
 };
-const createMergeStore = (props, getValue) => {
-    const store = {};
+const createMergeStore = (storeObject, selector) => {
     const callbacks = new Set();
-    let selected = {};
-    const getStore = () => {
-        for (const key in props) {
+    const setStore = () => {
+        const store = {};
+        for (const key in storeObject) {
             const K = key;
-            store[K] = getValue(K).getStore();
+            store[K] = storeObject[key].getStore();
         }
         return store;
     };
+    let store = setStore();
+    let selected = selector(store);
+    const getStore = () => store;
     const subscribe = (callback) => {
         callbacks.add(callback);
         const unsubscribers = new Set();
-        for (const key in props) {
+        for (const key in storeObject) {
             const K = key;
-            const unsubscribe = getValue(K).subscribe(() => {
+            const unsubscribe = storeObject[K].subscribe(() => {
+                store = setStore();
+                selected = selector(store);
                 callbacks.forEach(cb => cb());
             });
             unsubscribers.add(unsubscribe);
@@ -44,11 +47,31 @@ const createMergeStore = (props, getValue) => {
         getSelected: () => selected
     };
 };
-function getValue(props, getStoreForm) {
-    switch (getStoreForm) {
-        case 'root':
-            return (key) => props[key][store_props];
-        default:
-            return (key) => props[key][context_props]._currentValue;
-    }
+function getStoreObjectFromProps(props) {
+    return Object.keys(props).reduce((acc, key) => {
+        const k = key;
+        acc[k] = props[key][store_props];
+        return acc;
+    }, {});
+}
+const undefinedContext = createContext(undefined);
+function useGetStoreObjectFromProps(props) {
+    const taggedObject = Object.keys(props).reduce((acc, key, index) => {
+        acc[index] = key;
+        return acc;
+    }, {});
+    const zero = useContext(props[taggedObject[0]]?.[context_props] ?? undefinedContext);
+    const one = useContext(props[taggedObject[1]]?.[context_props] ?? undefinedContext);
+    const two = useContext(props[taggedObject[2]]?.[context_props] ?? undefinedContext);
+    const three = useContext(props[taggedObject[3]]?.[context_props] ?? undefinedContext);
+    const four = useContext(props[taggedObject[4]]?.[context_props] ?? undefinedContext);
+    const five = useContext(props[taggedObject[5]]?.[context_props] ?? undefinedContext);
+    const six = useContext(props[taggedObject[6]]?.[context_props] ?? undefinedContext);
+    const seven = useContext(props[taggedObject[7]]?.[context_props] ?? undefinedContext);
+    const contextArray = [zero, one, two, three, four, five, six, seven].filter(context => context !== undefined);
+    return contextArray.reduce((acc, key, index) => {
+        const originalKey = taggedObject[index];
+        acc[originalKey] = contextArray[index];
+        return acc;
+    }, {});
 }

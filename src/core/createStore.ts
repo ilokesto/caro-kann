@@ -12,7 +12,7 @@ export const createStore = <T>(initState: T): Store<T> => {
       : nextState;
     
     if (selector) selected = selector(store);
-    
+
     callbacks.forEach((cb) => cb());
   };
 
