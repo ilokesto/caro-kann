@@ -10,13 +10,13 @@ type MergeProps<T extends Record<string, any>> = {
   [K in keyof T]: MergeableStore<T[K]>
 };
 
-export const merge = <T extends Record<string, any>>(props: MergeProps<T>, getStoreForm?: 'root'): {
+export const merge = <T extends Record<string, any>>(props: MergeProps<T>, getStoreFrom?: 'root'): {
     ():T;
     <S>(selector: (state: T) => S): S;
   } => {
   // 병합된 store 생성
   return function useMergedStores<S>(selector: (state: T) => S = (state: T) => state as any) {
-    const { getStore, subscribe, setSelected, getSelected } = createMergeStore(props, getValue(props, getStoreForm));
+    const { getStore, subscribe, setSelected, getSelected } = createMergeStore(props, getValue(props, getStoreFrom));
 
     const s = selector(getStore())
     const isSelected = typeof s === 'object';

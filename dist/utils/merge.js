@@ -1,8 +1,8 @@
 import { store_props, context_props } from "../types";
 import { useSyncExternalStore } from "react";
-export const merge = (props, getStoreForm) => {
+export const merge = (props, getStoreFrom) => {
     return function useMergedStores(selector = (state) => state) {
-        const { getStore, subscribe, setSelected, getSelected } = createMergeStore(props, getValue(props, getStoreForm));
+        const { getStore, subscribe, setSelected, getSelected } = createMergeStore(props, getValue(props, getStoreFrom));
         const s = selector(getStore());
         const isSelected = typeof s === 'object';
         if (isSelected)

@@ -33,7 +33,6 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
 
   useStore[context_props] = ContextStore;
   useStore[store_props] = store;
-  useStore[storeTypeTag] = storeType;
 
   useStore.Provider = function<PK extends Array<StoreType>>({ store, children }: { 
     store: {
