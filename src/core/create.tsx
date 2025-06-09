@@ -23,11 +23,9 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
   
       return [
         board,
-        isSelected
-          ? (nextState: SetStateAction<T>) => {
-            setStore(nextState, "setStoreAction", selector)
-          }
-          : setStore
+        (nextState: SetStateAction<T>) => {
+          setStore(nextState, "setStoreAction", selector)
+        }
       ] as const;
     }
 
