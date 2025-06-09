@@ -24,9 +24,7 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
   
       return [
         board,
-        (nextState: SetStateAction<T>) => {
-          setStore(nextState, "setStoreAction", selector)
-        }
+        (nextState: SetStateAction<T>) => setStore(nextState, "setStoreAction", selector)
       ] as const;
     }
 
