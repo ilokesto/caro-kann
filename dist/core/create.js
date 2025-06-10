@@ -19,8 +19,9 @@ export const create = (initState) => {
     }
     useStore[context_props] = ContextStore;
     useStore[store_props] = store;
+    const dummy = {};
     useStore.readOnly = (selector = (state) => state) => useStore(selector)[0];
-    useStore.writeOnly = () => useStore()[1];
+    useStore.writeOnly = () => useStore(() => dummy)[1];
     useStore.Provider = function ({ store, children }) {
         return _jsx(ContextStore.Provider, { value: store.store, children: children });
     };

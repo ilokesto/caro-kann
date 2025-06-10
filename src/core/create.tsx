@@ -30,9 +30,11 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
 
   useStore[context_props] = ContextStore;
   useStore[store_props] = store;
+  
+  const dummy = {}
 
   useStore.readOnly = <S,>(selector: (state: T) => S = (state: T) => state as any): S => useStore(selector)[0];
-  useStore.writeOnly = () => useStore()[1];
+  useStore.writeOnly = () => useStore(() => dummy)[1];
 
   useStore.Provider = function<PK extends Array<StoreType>>({ store, children }: { 
     store: {

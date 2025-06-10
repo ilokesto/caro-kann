@@ -14,7 +14,10 @@ export declare const store_props: unique symbol;
 export type UseStore<T, K extends Array<StoreType> = [], TAction = SetStateAction<T>> = {
     (): readonly [T, Dispatch<TAction>];
     <S>(selector: (state: T) => S): readonly [S, Dispatch<TAction>];
-    readOnly<S>(selector: (state: T) => S): S;
+    readOnly: {
+        (): T;
+        <S>(selector?: (state: T) => S): S;
+    };
     writeOnly(): Dispatch<TAction>;
     Provider: <PK extends Array<StoreType>>({ store, children }: {
         store: {
