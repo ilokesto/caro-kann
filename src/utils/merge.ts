@@ -26,6 +26,10 @@ export const merge = <T extends Record<string, any>, GST extends GetStoreFrom<T>
     };
     writeOnly(): Dispatch<SetStateAction<T>>;
   } => {
+  if (Object.keys(props).length > 8) {
+    throw new Error("merge function can only merge up to 8 stores at a time. Please reduce the number of stores you are trying to merge.");
+  }
+
   const rootObject = getStoreObjectFromRoot(props);
 
   function useMergedStores<S>(selector: (state: T) => S = (state: T) => state as any): any {

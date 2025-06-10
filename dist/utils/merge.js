@@ -2,6 +2,9 @@ import { createContext } from "react";
 import { store_props, context_props } from "../types";
 import { useContext, useSyncExternalStore } from "react";
 export const merge = (props, getStoreFrom) => {
+    if (Object.keys(props).length > 8) {
+        throw new Error("merge function can only merge up to 8 stores at a time. Please reduce the number of stores you are trying to merge.");
+    }
     const rootObject = getStoreObjectFromRoot(props);
     function useMergedStores(selector = (state) => state) {
         const contextObject = useGetStoreObjectFromContext(props);
