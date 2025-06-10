@@ -31,6 +31,9 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
   useStore[context_props] = ContextStore;
   useStore[store_props] = store;
 
+  useStore.readOnly = <S,>(selector: (state: T) => S): S => useStore(selector)[0];
+  useStore.writeOnly = () => useStore()[1];
+
   useStore.Provider = function<PK extends Array<StoreType>>({ store, children }: { 
     store: {
       store: CheckStoreType<K, PK, Store<T>>;
