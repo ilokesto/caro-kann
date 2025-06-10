@@ -15,7 +15,7 @@ type StoreObject<T> = {
   [k in keyof T]: Store<T[k], SetStateAction<T[k]>>;
 }
 
-export const merge = <T extends Record<string, any>>(props: MergeProps<T>, getStoreFrom: 'root' | 'context' = 'context'): {
+export const merge = <T extends Record<string, any>>(props: MergeProps<T>, getStoreFrom?: 'root'): {
     (): [T, Dispatch<SetStateAction<T>>];
     <S>(selector: (state: T) => S): [S, Dispatch<SetStateAction<T>>];
   } => {
@@ -24,7 +24,7 @@ export const merge = <T extends Record<string, any>>(props: MergeProps<T>, getSt
   return function useMergedStores<S>(selector: (state: T) => S = (state: T) => state as any): any {
 
     const contextObject = useGetStoreObjectFromProps(props);
-    const { getStore, subscribe, getSelected, setMergedStore } = createMergeStore(getStoreFrom === 'context' ? contextObject : storeObject, selector);
+    const { getStore, subscribe, getSelected, setMergedStore } = createMergeStore(getStoreFrom === 'root' ? storeObject : contextObject, selector);
 
     const state = useSyncExternalStore(
       subscribe,
@@ -76,6 +76,7 @@ const createMergeStore = <T extends Record<string, any>>(storeObject: StoreObjec
       
       // 각 store의 변경사항을 감지하여 모든 콜백 실행
       const unsubscribe = storeObject[K].subscribe(() => {
+        
         store = setStore()
         selected = selector(store);
 

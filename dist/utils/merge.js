@@ -1,11 +1,11 @@
 import { createContext } from "react";
 import { store_props, context_props } from "../types";
 import { useContext, useSyncExternalStore } from "react";
-export const merge = (props, getStoreFrom = 'context') => {
+export const merge = (props, getStoreFrom) => {
     const storeObject = getStoreObjectFromProps(props);
     return function useMergedStores(selector = (state) => state) {
         const contextObject = useGetStoreObjectFromProps(props);
-        const { getStore, subscribe, getSelected, setMergedStore } = createMergeStore(getStoreFrom === 'context' ? contextObject : storeObject, selector);
+        const { getStore, subscribe, getSelected, setMergedStore } = createMergeStore(getStoreFrom === 'root' ? storeObject : contextObject, selector);
         const state = useSyncExternalStore(subscribe, typeof getSelected === 'object' ? getSelected : () => selector(getStore()), typeof getSelected === 'object' ? getSelected : () => selector(getStore()));
         return [state, setMergedStore];
     };
