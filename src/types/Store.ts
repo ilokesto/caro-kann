@@ -9,9 +9,9 @@ export type CheckStoreType<K extends Array<StoreType>, PK extends Array<StoreTyp
   GetFirstIndex<K> extends 'reducer'
     ? GetFirstIndex<PK> extends 'reducer'
       ? U // 'reducer'로 일치
-      : never // 불일치
+      : "Warning: Reducer usage must be consistent. Both should use reducers, or neither should." // 불일치
     : GetFirstIndex<PK> extends 'reducer'
-      ? never // 불일치
+      ? "Warning: Reducer usage must be consistent. Both should use reducers, or neither should." // 불일치
       : U; // 'reducer'가 아닌 거로 일치
 
 export interface Store<T, S = SetStateAction<T>> {

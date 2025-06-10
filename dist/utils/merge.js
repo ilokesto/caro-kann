@@ -2,10 +2,10 @@ import { createContext } from "react";
 import { store_props, context_props } from "../types";
 import { useContext, useSyncExternalStore } from "react";
 export const merge = (props, getStoreFrom) => {
-    const storeObject = getStoreObjectFromProps(props);
+    const rootObject = getStoreObjectFromRoot(props);
     function useMergedStores(selector = (state) => state) {
-        const contextObject = useGetStoreObjectFromProps(props);
-        const { getStore, subscribe, getSelected, setMergedStore } = createMergeStore(getStoreFrom === 'root' ? storeObject : contextObject, selector);
+        const contextObject = useGetStoreObjectFromContext(props);
+        const { getStore, subscribe, getSelected, setMergedStore } = createMergeStore(getCorrectStore(rootObject, contextObject, getStoreFrom), selector);
         const state = useSyncExternalStore(subscribe, typeof getSelected === 'object' ? getSelected : () => selector(getStore()), typeof getSelected === 'object' ? getSelected : () => selector(getStore()));
         return [state, setMergedStore];
     }
@@ -13,6 +13,20 @@ export const merge = (props, getStoreFrom) => {
     useMergedStores.readOnly = (selector = (state) => state) => useMergedStores(selector)[0];
     useMergedStores.writeOnly = () => useMergedStores(() => dummy)[1];
     return useMergedStores;
+};
+const getCorrectStore = (rootObject, contextObject, getStoreFrom) => {
+    if (getStoreFrom === undefined)
+        return contextObject;
+    const result = { ...contextObject };
+    for (const key in getStoreFrom) {
+        if (getStoreFrom[key] === 'root') {
+            result[key] = rootObject[key];
+        }
+        else if (getStoreFrom[key] === 'context') {
+            continue;
+        }
+    }
+    return result;
 };
 const createMergeStore = (storeObject, selector) => {
     const callbacks = new Set();
@@ -62,7 +76,7 @@ const createMergeStore = (storeObject, selector) => {
         setMergedStore
     };
 };
-function getStoreObjectFromProps(props) {
+function getStoreObjectFromRoot(props) {
     const result = {};
     Object.keys(props).forEach(key => {
         result[key] = props[key][store_props];
@@ -70,7 +84,7 @@ function getStoreObjectFromProps(props) {
     return result;
 }
 const undefinedContext = createContext(undefined);
-function useGetStoreObjectFromProps(props) {
+function useGetStoreObjectFromContext(props) {
     const taggedObject = Object.keys(props).reduce((acc, key, index) => {
         acc[index] = key;
         return acc;

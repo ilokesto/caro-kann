@@ -43,7 +43,7 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
     }; 
     children: ReactNode; 
   }) {
-    return <ContextStore.Provider value={store.store}>{children}</ContextStore.Provider>;
+    return <ContextStore.Provider value={store.store as Store<T>}>{children}</ContextStore.Provider>;
   };
 
   return useStore;

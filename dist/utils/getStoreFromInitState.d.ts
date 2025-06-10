@@ -7,4 +7,4 @@ export declare const getStoreFromInitState: <T, K extends Array<StoreType>, A = 
     store: import("../types").Store<T, SetStateAction<T>>;
     [storeTypeTag]: K;
 };
-export declare const createStoreFormProvider: CreateStoreForProvider;
+export declare const createStoreForProvider: CreateStoreForProvider;

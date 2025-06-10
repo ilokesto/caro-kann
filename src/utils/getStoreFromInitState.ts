@@ -10,7 +10,7 @@ export const getStoreFromInitState = <T, K extends Array<StoreType>, A = SetStat
   ? { store: initState.store, [storeTypeTag]: initState[storeTypeTag] }
   : { store: createStore(initState), [storeTypeTag]: [] as unknown as K };
 
-export const createStoreFormProvider: CreateStoreForProvider = <T, K extends Array<StoreType>, A extends object>(initState: MiddlewareStore<T, K, A> | T) => {
+export const createStoreForProvider: CreateStoreForProvider = <T, K extends Array<StoreType>, A extends object>(initState: MiddlewareStore<T, K, A> | T) => {
   return isMiddlewareStore(initState)
   ? { store: initState.store, [storeTypeTag]: initState[storeTypeTag] }
   : { store: createStore(initState), [storeTypeTag]: [] as unknown as K };
