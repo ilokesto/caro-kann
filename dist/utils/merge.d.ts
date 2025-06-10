@@ -10,5 +10,10 @@ type MergeProps<T extends Record<string, any>> = {
 export declare const merge: <T extends Record<string, any>>(props: MergeProps<T>, getStoreFrom?: "root") => {
     (): [T, Dispatch<SetStateAction<T>>];
     <S>(selector: (state: T) => S): [S, Dispatch<SetStateAction<T>>];
+    readOnly: {
+        (): T;
+        <S>(selector?: (state: T) => S): S;
+    };
+    writeOnly(): Dispatch<T>;
 };
 export {};

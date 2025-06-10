@@ -1,6 +1,6 @@
 {
   "name": "caro-kann",
-  "version": "4.0.0-rc.1",
+  "version": "4.0.0-rc.2",
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly"
   },
@@ -37,7 +37,7 @@
   "license": "MIT",
   "peerDependencies": {
     "react": ">=18.0.0",
-    "common-resolver": "^0.0.20",
+    "common-resolver": "^1.0.0",
     "immer": ">=9.0.0",
     "zod": "^3.0.0",
     "yup": "^1.0.0",

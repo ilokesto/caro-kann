@@ -18,10 +18,15 @@ type StoreObject<T> = {
 export const merge = <T extends Record<string, any>>(props: MergeProps<T>, getStoreFrom?: 'root'): {
     (): [T, Dispatch<SetStateAction<T>>];
     <S>(selector: (state: T) => S): [S, Dispatch<SetStateAction<T>>];
+    readOnly: {
+      (): T;
+      <S>(selector?: (state: T) => S): S
+    };
+    writeOnly(): Dispatch<T>;
   } => {
   const storeObject = getStoreObjectFromProps(props);
 
-  return function useMergedStores<S>(selector: (state: T) => S = (state: T) => state as any): any {
+  function useMergedStores<S>(selector: (state: T) => S = (state: T) => state as any): any {
 
     const contextObject = useGetStoreObjectFromProps(props);
     const { getStore, subscribe, getSelected, setMergedStore } = createMergeStore(getStoreFrom === 'root' ? storeObject : contextObject, selector);
@@ -34,6 +39,13 @@ export const merge = <T extends Record<string, any>>(props: MergeProps<T>, getSt
 
     return [state, setMergedStore] as const;
   }
+
+  const dummy = {}
+
+  useMergedStores.readOnly = <S,>(selector: (state: T) => S = (state: T) => state as any): S => useMergedStores(selector)[0];
+  useMergedStores.writeOnly = () => useMergedStores(() => dummy)[1];
+
+  return useMergedStores
 }
 
 const createMergeStore = <T extends Record<string, any>>(storeObject: StoreObject<T>, selector: (state: T) => any) => {
