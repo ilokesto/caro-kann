@@ -12,7 +12,13 @@ export const merge: MergeFn = <T extends Record<string, any>, GST extends GetSto
 
   function useMergedStores<S>(selector: (state: T) => S = (state: T) => state as any) {
     const contextObject = useGetStoreObjectFromContext(props);
-    const store = createMergeStore(getCorrectStore(rootObject, contextObject, getStoreFrom), selector);
+    const storeObject = getCorrectStore(rootObject, contextObject, getStoreFrom);
+    const initState = Object.keys(storeObject).reduce((acc, key) => {
+      const K = key as keyof T;
+      acc[K] = storeObject[key].getStore();
+      return acc;
+    }, {} as T);
+    const store = createMergeStore(initState, storeObject, selector);
 
     return createUseStore<T, S>(store, selector);
   }
@@ -25,46 +31,23 @@ export const merge: MergeFn = <T extends Record<string, any>, GST extends GetSto
   return useMergedStores
 }
 
-const getCorrectStore = <T extends Record<string, any>, GST extends Partial<Record<keyof T, 'root' | 'context'>>>(rootObject: StoreObject<T>, contextObject: StoreObject<T>, getStoreFrom?: GST) => {
-  if (getStoreFrom === undefined) return contextObject
-
-  const result = { ...contextObject };
-
-  for (const key in getStoreFrom) {
-    if (getStoreFrom[key] === 'root') {
-      result[key] = rootObject[key];
-    } else if (getStoreFrom[key] === 'context') {
-      continue;
-    }
-  }
-
-  return result;
-}
-
-const createMergeStore = <T extends Record<string, any>>(storeObject: StoreObject<T>, selector: (state: T) => any): Store<T> => {
+const createMergeStore = <T extends Record<string, any>>(initState: T, storeObject: StoreObject<T>, selector: (state: T) => any): Store<T> => {
   const callbacks = new Set<() => void>();
+  let store = initState;
   let selected = {};
 
-  const setStore = () => {
-    const store = {} as T;
-    for (const key in storeObject) {
-      const K = key as keyof T;
-      store[K] = storeObject[key].getStore();
-    }
-    return store;
-  }
-
-  let store = setStore();
-
   const setMergedStore = (nextState: SetStateAction<T>, actionName?: string) => {
-    const newState = typeof nextState === "function"
-      ? (nextState as (prev: T) => T)(setStore())
+    store = typeof nextState === "function"
+      ? (nextState as (prev: T) => T)(store)
       : nextState;
 
     for (const key in storeObject) {
       const K = key as keyof T;
-      if (store[K] !== newState[K]) storeObject[K].setStore(newState[K], actionName);
+      storeObject[K].setStore(store[K], actionName);
     }
+
+    if (selector) selected = selector(store);
+
     callbacks.forEach((cb) => cb());
   }
 
@@ -80,7 +63,11 @@ const createMergeStore = <T extends Record<string, any>>(storeObject: StoreObjec
       // 각 store의 변경사항을 감지하여 모든 콜백 실행
       const unsubscribe = storeObject[K].subscribe(() => {
         
-        store = setStore()
+        store = Object.keys(storeObject).reduce((acc, key) => {
+          const K = key as keyof T;
+          acc[K] = storeObject[key].getStore();
+          return acc;
+        }, {} as T);
         selected = selector(store);
 
         callbacks.forEach(cb => cb());
@@ -101,15 +88,24 @@ const createMergeStore = <T extends Record<string, any>>(storeObject: StoreObjec
     getStore: () => store,
     setStore: setMergedStore,
     getSelected: () => selected,
-    setSelected: (selector: (state: T) => any) => {
-      const s = selector(store);
-      const isSelected = typeof s === 'object';
-
-      if (isSelected) selected = s;
-
-      return isSelected
-    },
+    isSelected: typeof selected === 'object' && Object.keys(selected).length > 0,
   }
+}
+
+const getCorrectStore = <T extends Record<string, any>, GST extends Partial<Record<keyof T, 'root' | 'context'>>>(rootObject: StoreObject<T>, contextObject: StoreObject<T>, getStoreFrom?: GST) => {
+  if (getStoreFrom === undefined) return contextObject
+
+  const result = { ...contextObject };
+
+  for (const key in getStoreFrom) {
+    if (getStoreFrom[key] === 'root') {
+      result[key] = rootObject[key];
+    } else if (getStoreFrom[key] === 'context') {
+      continue;
+    }
+  }
+
+  return result;
 }
 
 function getStoreObjectFromRoot<T extends Record<string, any>>(props: MergeProps<T>): StoreObject<T> {

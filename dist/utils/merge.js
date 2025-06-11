@@ -8,7 +8,13 @@ export const merge = (props, getStoreFrom) => {
     const rootObject = getStoreObjectFromRoot(props);
     function useMergedStores(selector = (state) => state) {
         const contextObject = useGetStoreObjectFromContext(props);
-        const store = createMergeStore(getCorrectStore(rootObject, contextObject, getStoreFrom), selector);
+        const storeObject = getCorrectStore(rootObject, contextObject, getStoreFrom);
+        const initState = Object.keys(storeObject).reduce((acc, key) => {
+            const K = key;
+            acc[K] = storeObject[key].getStore();
+            return acc;
+        }, {});
+        const store = createMergeStore(initState, storeObject, selector);
         return createUseStore(store, selector);
     }
     const dummy = {};
@@ -16,41 +22,20 @@ export const merge = (props, getStoreFrom) => {
     useMergedStores.writeOnly = () => useMergedStores(() => dummy)[1];
     return useMergedStores;
 };
-const getCorrectStore = (rootObject, contextObject, getStoreFrom) => {
-    if (getStoreFrom === undefined)
-        return contextObject;
-    const result = { ...contextObject };
-    for (const key in getStoreFrom) {
-        if (getStoreFrom[key] === 'root') {
-            result[key] = rootObject[key];
-        }
-        else if (getStoreFrom[key] === 'context') {
-            continue;
-        }
-    }
-    return result;
-};
-const createMergeStore = (storeObject, selector) => {
+const createMergeStore = (initState, storeObject, selector) => {
     const callbacks = new Set();
+    let store = initState;
     let selected = {};
-    const setStore = () => {
-        const store = {};
-        for (const key in storeObject) {
-            const K = key;
-            store[K] = storeObject[key].getStore();
-        }
-        return store;
-    };
-    let store = setStore();
     const setMergedStore = (nextState, actionName) => {
-        const newState = typeof nextState === "function"
-            ? nextState(setStore())
+        store = typeof nextState === "function"
+            ? nextState(store)
             : nextState;
         for (const key in storeObject) {
             const K = key;
-            if (store[K] !== newState[K])
-                storeObject[K].setStore(newState[K], actionName);
+            storeObject[K].setStore(store[K], actionName);
         }
+        if (selector)
+            selected = selector(store);
         callbacks.forEach((cb) => cb());
     };
     const subscribe = (callback) => {
@@ -59,7 +44,11 @@ const createMergeStore = (storeObject, selector) => {
         for (const key in storeObject) {
             const K = key;
             const unsubscribe = storeObject[K].subscribe(() => {
-                store = setStore();
+                store = Object.keys(storeObject).reduce((acc, key) => {
+                    const K = key;
+                    acc[K] = storeObject[key].getStore();
+                    return acc;
+                }, {});
                 selected = selector(store);
                 callbacks.forEach(cb => cb());
             });
@@ -75,14 +64,22 @@ const createMergeStore = (storeObject, selector) => {
         getStore: () => store,
         setStore: setMergedStore,
         getSelected: () => selected,
-        setSelected: (selector) => {
-            const s = selector(store);
-            const isSelected = typeof s === 'object';
-            if (isSelected)
-                selected = s;
-            return isSelected;
-        },
+        isSelected: typeof selected === 'object' && Object.keys(selected).length > 0,
     };
+};
+const getCorrectStore = (rootObject, contextObject, getStoreFrom) => {
+    if (getStoreFrom === undefined)
+        return contextObject;
+    const result = { ...contextObject };
+    for (const key in getStoreFrom) {
+        if (getStoreFrom[key] === 'root') {
+            result[key] = rootObject[key];
+        }
+        else if (getStoreFrom[key] === 'context') {
+            continue;
+        }
+    }
+    return result;
 };
 function getStoreObjectFromRoot(props) {
     const result = {};

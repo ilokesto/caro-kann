@@ -10,17 +10,10 @@ export const createStore = <T>(initState: T): Store<T> => {
       ? (nextState as (prev: T) => T)(store) 
       : nextState;
 
+    if (selector) selected = selector(store);
+
     callbacks.forEach((cb) => cb());
   };
-
-  const setSelected = (selector: (state: T) => any) => {
-    const s = selector(store);
-    const isSelected = typeof s === 'object';
-
-    if (isSelected) selected = s;
-
-    return isSelected
-  }
 
   return {
     setStore,
@@ -30,6 +23,6 @@ export const createStore = <T>(initState: T): Store<T> => {
       callbacks.add(callback);
       return () => callbacks.delete(callback);
     },
-    setSelected
+    isSelected: typeof selected === 'object' && Object.keys(selected).length > 0,
   };
 };

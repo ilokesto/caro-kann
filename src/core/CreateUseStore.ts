@@ -2,9 +2,7 @@ import { useSyncExternalStore } from "react";
 import type { SetStateAction, Store } from "../types";
 
 export function createUseStore<T, S>(store: Store<T>, selector: (state: T) => S) {
-  const { getStore, setStore, subscribe, getSelected, setSelected } = store;
-
-  const isSelected = setSelected(selector);
+  const { getStore, setStore, subscribe, getSelected, isSelected } = store;
 
   const board = useSyncExternalStore(
     subscribe,
@@ -14,6 +12,8 @@ export function createUseStore<T, S>(store: Store<T>, selector: (state: T) => S)
 
   return [
     board,
-    (nextState: SetStateAction<T>) => setStore(nextState, "setStoreAction", selector)
+    (nextState: SetStateAction<T>) => {
+      setStore(nextState, "setStoreAction", selector)
+    }
   ] as const;
 }

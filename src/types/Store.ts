@@ -18,7 +18,7 @@ export interface Store<T, S = SetStateAction<T>> {
   getStore: (init?: 'init') => T;
   subscribe: (callback: () => void) => () => void;
   getSelected: () => any;
-  setSelected: (selector: (state: T) => any) => boolean;
+  isSelected?: boolean;
 };
 
 export const context_props: unique symbol = Symbol("context_props")
