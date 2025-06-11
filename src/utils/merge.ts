@@ -2,7 +2,6 @@ import { createContext, useContext, useSyncExternalStore } from "react";
 import { store_props, context_props } from "../types";
 import type { Store, GetStoreFrom, MergeFn, MergeProps, StoreObject, SetStateAction } from "../types";
 
-
 export const merge: MergeFn = <T extends Record<string, any>, GST extends GetStoreFrom<T>>(props: MergeProps<T>, getStoreFrom?: GST)=> {
   if (Object.keys(props).length > 8) {
     throw new Error("merge function can only merge up to 8 stores at a time. Please reduce the number of stores you are trying to merge.");
