@@ -4,7 +4,7 @@ export const createStore = <T>(initState: T): Store<T> => {
   const callbacks = new Set<() => void>();
   let store = initState;
 
-  const setStore = (nextState: SetStateAction<T>, actionName?: string) => {
+  const setStore = (nextState: SetStateAction<T>) => {
     store = typeof nextState === "function" 
       ? (nextState as (prev: T) => T)(store) 
       : nextState;
@@ -14,7 +14,7 @@ export const createStore = <T>(initState: T): Store<T> => {
 
   return {
     setStore,
-    getStore: (init?: 'init') => init ? initState : store,
+    getStore: () => store,
     subscribe: (callback: () => void) => {
       callbacks.add(callback);
       return () => callbacks.delete(callback);

@@ -15,7 +15,7 @@ export type CheckStoreType<K extends Array<StoreType>, PK extends Array<StoreTyp
 
 export interface Store<T, S = SetStateAction<T>> {
   setStore: (nextState: S, actionName?: string) => void;
-  getStore: (init?: 'init') => T;
+  getStore: () => T;
   subscribe: (callback: () => void) => () => void;
 };
 

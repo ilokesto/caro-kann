@@ -7,7 +7,7 @@ export const devtools = (initState, name) => {
         typeof window !== "undefined" &&
         window.__REDUX_DEVTOOLS_EXTENSION__?.connect({ name });
     if (devTools) {
-        devTools.init(Store.getStore('init'));
+        devTools.init(Store.getStore());
         devTools.subscribe((message) => {
             if (message.type === "DISPATCH") {
                 switch (message.payload.type) {

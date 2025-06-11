@@ -78,7 +78,7 @@ const createMergeStore = <T extends Record<string, any>>(initState: T, storeObje
 
   return {
     subscribe,
-    getStore: (init?: 'init') => init ? initState : store,
+    getStore: () => store,
     setStore: setMergedStore,
   }
 }

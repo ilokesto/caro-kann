@@ -3,7 +3,7 @@ export type GetFirstIndex<K extends Array<StoreType>> = K extends [infer F exten
 export type CheckStoreType<K extends Array<StoreType>, PK extends Array<StoreType>, U> = GetFirstIndex<K> extends 'reducer' ? GetFirstIndex<PK> extends 'reducer' ? U : "Warning: Reducer usage must be consistent. Both should use reducers, or neither should." : GetFirstIndex<PK> extends 'reducer' ? "Warning: Reducer usage must be consistent. Both should use reducers, or neither should." : U;
 export interface Store<T, S = SetStateAction<T>> {
     setStore: (nextState: S, actionName?: string) => void;
-    getStore: (init?: 'init') => T;
+    getStore: () => T;
     subscribe: (callback: () => void) => () => void;
 }
 export declare const context_props: unique symbol;

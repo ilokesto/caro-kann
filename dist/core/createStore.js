@@ -1,7 +1,7 @@
 export const createStore = (initState) => {
     const callbacks = new Set();
     let store = initState;
-    const setStore = (nextState, actionName) => {
+    const setStore = (nextState) => {
         store = typeof nextState === "function"
             ? nextState(store)
             : nextState;
@@ -9,7 +9,7 @@ export const createStore = (initState) => {
     };
     return {
         setStore,
-        getStore: (init) => init ? initState : store,
+        getStore: () => store,
         subscribe: (callback) => {
             callbacks.add(callback);
             return () => callbacks.delete(callback);

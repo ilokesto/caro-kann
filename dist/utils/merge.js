@@ -55,7 +55,7 @@ const createMergeStore = (initState, storeObject, selector) => {
     };
     return {
         subscribe,
-        getStore: (init) => init ? initState : store,
+        getStore: () => store,
         setStore: setMergedStore,
     };
 };
