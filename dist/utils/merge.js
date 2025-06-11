@@ -25,17 +25,14 @@ export const merge = (props, getStoreFrom) => {
 const createMergeStore = (initState, storeObject, selector) => {
     const callbacks = new Set();
     let store = initState;
-    let selected = {};
     const setMergedStore = (nextState, actionName) => {
         store = typeof nextState === "function"
             ? nextState(store)
             : nextState;
         for (const key in storeObject) {
             const K = key;
-            storeObject[K].setStore(store[K], actionName);
+            storeObject[K].setStore(store[K]);
         }
-        if (selector)
-            selected = selector(store);
         callbacks.forEach((cb) => cb());
     };
     const subscribe = (callback) => {
@@ -49,7 +46,6 @@ const createMergeStore = (initState, storeObject, selector) => {
                     acc[K] = storeObject[key].getStore();
                     return acc;
                 }, {});
-                selected = selector(store);
                 callbacks.forEach(cb => cb());
             });
             unsubscribers.add(unsubscribe);
@@ -61,10 +57,8 @@ const createMergeStore = (initState, storeObject, selector) => {
     };
     return {
         subscribe,
-        getStore: () => store,
+        getStore: (init) => init ? initState : store,
         setStore: setMergedStore,
-        getSelected: () => selected,
-        isSelected: typeof selected === 'object' && Object.keys(selected).length > 0,
     };
 };
 const getCorrectStore = (rootObject, contextObject, getStoreFrom) => {

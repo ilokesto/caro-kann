@@ -9,15 +9,17 @@ export const merge: MergeFn = <T extends Record<string, any>, GST extends GetSto
   }
 
   const rootObject = getStoreObjectFromRoot(props);
-
+  
   function useMergedStores<S>(selector: (state: T) => S = (state: T) => state as any) {
     const contextObject = useGetStoreObjectFromContext(props);
     const storeObject = getCorrectStore(rootObject, contextObject, getStoreFrom);
+
     const initState = Object.keys(storeObject).reduce((acc, key) => {
       const K = key as keyof T;
       acc[K] = storeObject[key].getStore();
       return acc;
     }, {} as T);
+
     const store = createMergeStore(initState, storeObject, selector);
 
     return createUseStore<T, S>(store, selector);
@@ -34,7 +36,6 @@ export const merge: MergeFn = <T extends Record<string, any>, GST extends GetSto
 const createMergeStore = <T extends Record<string, any>>(initState: T, storeObject: StoreObject<T>, selector: (state: T) => any): Store<T> => {
   const callbacks = new Set<() => void>();
   let store = initState;
-  let selected = {};
 
   const setMergedStore = (nextState: SetStateAction<T>, actionName?: string) => {
     store = typeof nextState === "function"
@@ -43,10 +44,8 @@ const createMergeStore = <T extends Record<string, any>>(initState: T, storeObje
 
     for (const key in storeObject) {
       const K = key as keyof T;
-      storeObject[K].setStore(store[K], actionName);
+      storeObject[K].setStore(store[K]);
     }
-
-    if (selector) selected = selector(store);
 
     callbacks.forEach((cb) => cb());
   }
@@ -62,13 +61,11 @@ const createMergeStore = <T extends Record<string, any>>(initState: T, storeObje
       
       // 각 store의 변경사항을 감지하여 모든 콜백 실행
       const unsubscribe = storeObject[K].subscribe(() => {
-        
         store = Object.keys(storeObject).reduce((acc, key) => {
           const K = key as keyof T;
           acc[K] = storeObject[key].getStore();
           return acc;
         }, {} as T);
-        selected = selector(store);
 
         callbacks.forEach(cb => cb());
       });
@@ -85,10 +82,8 @@ const createMergeStore = <T extends Record<string, any>>(initState: T, storeObje
 
   return {
     subscribe,
-    getStore: () => store,
+    getStore: (init?: 'init') => init ? initState : store,
     setStore: setMergedStore,
-    getSelected: () => selected,
-    isSelected: typeof selected === 'object' && Object.keys(selected).length > 0,
   }
 }
 

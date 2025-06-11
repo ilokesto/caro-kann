@@ -1,7 +1,6 @@
-import { useSyncExternalStore } from "react";
-export function createUseStore(store, selector) {
-    const { getSnapshot, setStore, subscribe } = store;
-    const board = useSyncExternalStore(subscribe, () => getSnapshot(selector), () => getSnapshot(selector));
+import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/shim/with-selector';
+export function createUseStore({ getStore, setStore, subscribe }, selector) {
+    const board = useSyncExternalStoreWithSelector(subscribe, getStore, getStore, selector);
     return [
         board,
         (nextState) => {

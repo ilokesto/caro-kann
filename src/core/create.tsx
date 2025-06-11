@@ -6,11 +6,11 @@ import { createUseStore } from "./CreateUseStore";
 
 export const create: Create = <T, K extends Array<StoreType>>(initState: MiddlewareStore<T, K> | T) => {
   const { store } = getStoreFromInitState<T, K>(initState);
-
   const ContextStore = createContext<Store<T>>(store);
 
   function useStore<S>(selector: (state: T) => S = (state: T) => state as any){
     const store = useContext(ContextStore);
+
     return createUseStore<T, S>(store, selector);
   }
 

@@ -1,16 +1,15 @@
-import { useSyncExternalStore } from "react";
+import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/shim/with-selector'
 import type { SetStateAction, Store } from "../types";
 
 export function createUseStore<T, S>(
-  store: Store<T>,
-  selector: (state: T) => S
+  { getStore, setStore, subscribe }: Store<T>,
+  selector: (state: T) => S,
 ) {
-  const { getSnapshot, setStore, subscribe } = store;
-
-    const board = useSyncExternalStore(
-      subscribe,
-      () => getSnapshot(selector),
-      () => getSnapshot(selector)
+  const board = useSyncExternalStoreWithSelector(
+    subscribe,
+    getStore,
+    getStore,
+    selector,
   );
 
   return [
