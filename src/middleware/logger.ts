@@ -15,10 +15,10 @@ export const logger: Middleware["logger"] = <T, K extends Array<StoreType>>(
   // 현재 환경이 production인지 확인
   const isProduction = typeof process !== 'undefined' && process.env.NODE_ENV === 'production';
 
-  const setStore = (nextState: T | ((prev: T) => T), actionName?: string, selector?: (state: T) => any) => {
+  const setStore = (nextState: T | ((prev: T) => T), actionName?: string) => {
     // 프로덕션 모드에서는 로깅 없이 상태만 업데이트
     if (isProduction) {
-      Store.setStore(nextState, actionName, selector);
+      Store.setStore(nextState, actionName);
       return;
     }
     
@@ -40,7 +40,7 @@ export const logger: Middleware["logger"] = <T, K extends Array<StoreType>>(
     
     console.log("Previous state:", prevState);
     
-    Store.setStore(nextState, actionName, selector);
+    Store.setStore(nextState, actionName);
     const newState = Store.getStore();
     
     console.log("Next state:", newState);

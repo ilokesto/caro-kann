@@ -3,9 +3,9 @@ import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 export const logger = (initState, options = { collapsed: false, diff: false, timestamp: true }) => {
     const { store: Store, [storeTypeTag]: storeTypeTagArray } = getStoreFromInitState(initState);
     const isProduction = typeof process !== 'undefined' && process.env.NODE_ENV === 'production';
-    const setStore = (nextState, actionName, selector) => {
+    const setStore = (nextState, actionName) => {
         if (isProduction) {
-            Store.setStore(nextState, actionName, selector);
+            Store.setStore(nextState, actionName);
             return;
         }
         const prevState = Store.getStore();
@@ -21,7 +21,7 @@ export const logger = (initState, options = { collapsed: false, diff: false, tim
             console.log("Time:", time);
         }
         console.log("Previous state:", prevState);
-        Store.setStore(nextState, actionName, selector);
+        Store.setStore(nextState, actionName);
         const newState = Store.getStore();
         console.log("Next state:", newState);
         if (options.diff) {

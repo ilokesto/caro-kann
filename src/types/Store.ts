@@ -14,7 +14,7 @@ export type CheckStoreType<K extends Array<StoreType>, PK extends Array<StoreTyp
       : U; // 'reducer'가 아닌 거로 일치
 
 export interface Store<T, S = SetStateAction<T>> {
-  setStore: (nextState: S, actionName?: string, selector?: (state: T) => any) => void;
+  setStore: (nextState: S, actionName?: string) => void;
   getStore: (init?: 'init') => T;
   subscribe: (callback: () => void) => () => void;
 };

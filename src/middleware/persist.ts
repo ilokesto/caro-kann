@@ -12,8 +12,8 @@ export const persist: Middleware["persist"] = <T, K extends Array<StoreType>, P 
     : Store.getStore('init');
   Store.setStore(initialState);
 
-  const setStore = (nextState: T | ((prev: T) => T), actionName?: string, selector?: (state: T) => any ) => {
-    Store.setStore(nextState, actionName, selector);
+  const setStore = (nextState: T | ((prev: T) => T), actionName?: string) => {
+    Store.setStore(nextState, actionName);
 
     if (optionObj.storageType)
       setStorage({ ...optionObj, value: Store.getStore() });

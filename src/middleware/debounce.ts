@@ -7,7 +7,7 @@ export const debounce: Middleware["debounce"] = <T, K extends Array<StoreType>>(
   let timeout: NodeJS.Timeout | null = null;
   let updates: Array<SetStateAction<T>> = [];
 
-  const setStore = (nextState: SetStateAction<T>, actionName?: string, selector?: (state: T) => any) => {
+  const setStore = (nextState: SetStateAction<T>, actionName?: string) => {
     // 업데이트를 큐에 추가
     updates.push(nextState);
     
@@ -28,7 +28,7 @@ export const debounce: Middleware["debounce"] = <T, K extends Array<StoreType>>(
       });
       
       // 최종 상태로 업데이트
-      Store.setStore(currentState, actionName, selector);
+      Store.setStore(currentState, actionName);
       
       // 리셋
       updates = [];

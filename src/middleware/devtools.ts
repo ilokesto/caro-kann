@@ -37,8 +37,8 @@ export const devtools: Middleware["devtools"] = <T,K extends Array<StoreType>>(i
     });
   }
 
-  const setStore = (nextState: T | ((prev: T) => T), actionName?: string, selector?: (state: T) => any) => {
-    Store.setStore(nextState, actionName, selector);
+  const setStore = (nextState: T | ((prev: T) => T), actionName?: string) => {
+    Store.setStore(nextState, actionName);
 
     // 프로덕션이 아닌 환경에서만 DevTools에 상태 전송
     if (!isProduction && devTools) {
