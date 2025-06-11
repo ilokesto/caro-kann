@@ -20,9 +20,7 @@ export const merge: MergeFn = <T extends Record<string, any>, GST extends GetSto
       return acc;
     }, {} as T);
 
-    const store = createMergeStore(initState, storeObject, selector);
-
-    return createUseStore<T, S>(store, selector);
+    return createUseStore<T, S>(createMergeStore(initState, storeObject, selector), selector);
   }
 
   const dummy = {}
@@ -35,7 +33,7 @@ export const merge: MergeFn = <T extends Record<string, any>, GST extends GetSto
 
 const createMergeStore = <T extends Record<string, any>>(initState: T, storeObject: StoreObject<T>, selector: (state: T) => any): Store<T> => {
   const callbacks = new Set<() => void>();
-  let store = initState;
+  let store = { ...initState };
 
   const setMergedStore = (nextState: SetStateAction<T>, actionName?: string) => {
     store = typeof nextState === "function"
@@ -46,8 +44,6 @@ const createMergeStore = <T extends Record<string, any>>(initState: T, storeObje
       const K = key as keyof T;
       storeObject[K].setStore(store[K]);
     }
-
-    callbacks.forEach((cb) => cb());
   }
 
   const subscribe = (callback: () => void) => {

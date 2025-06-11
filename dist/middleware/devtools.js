@@ -27,7 +27,7 @@ export const devtools = (initState, name) => {
             }
         });
     }
-    const setStore = (nextState, actionName) => {
+    const setStore = (nextState, actionName = "setStateAction") => {
         Store.setStore(nextState, actionName);
         if (!isProduction && devTools) {
             try {
