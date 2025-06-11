@@ -1,18 +1,14 @@
 import { jsx as _jsx } from "react/jsx-runtime";
 import { context_props, store_props } from "../types";
-import { createContext, useContext, useSyncExternalStore } from "react";
+import { createContext, useContext } from "react";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
+import { createUseStore } from "./CreateUseStore";
 export const create = (initState) => {
     const { store } = getStoreFromInitState(initState);
     const ContextStore = createContext(store);
     function useStore(selector = (state) => state) {
-        const { getStore, setStore, subscribe, getSelected, setSelected } = useContext(ContextStore);
-        const isSelected = setSelected(selector);
-        const board = useSyncExternalStore(subscribe, isSelected ? getSelected : () => selector(getStore()), isSelected ? getSelected : () => selector(getStore('init')));
-        return [
-            board,
-            (nextState) => setStore(nextState, "setStoreAction", selector)
-        ];
+        const store = useContext(ContextStore);
+        return createUseStore(store, selector);
     }
     useStore[context_props] = ContextStore;
     useStore[store_props] = store;

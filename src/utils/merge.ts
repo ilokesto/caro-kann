@@ -1,6 +1,7 @@
-import { createContext, useContext, useSyncExternalStore } from "react";
+import { createContext, useContext } from "react";
 import { store_props, context_props } from "../types";
 import type { Store, GetStoreFrom, MergeFn, MergeProps, StoreObject, SetStateAction } from "../types";
+import { createUseStore } from "../core/CreateUseStore";
 
 export const merge: MergeFn = <T extends Record<string, any>, GST extends GetStoreFrom<T>>(props: MergeProps<T>, getStoreFrom?: GST)=> {
   if (Object.keys(props).length > 8) {
@@ -11,15 +12,9 @@ export const merge: MergeFn = <T extends Record<string, any>, GST extends GetSto
 
   function useMergedStores<S>(selector: (state: T) => S = (state: T) => state as any) {
     const contextObject = useGetStoreObjectFromContext(props);
-    const { getStore, subscribe, getSelected, setMergedStore } = createMergeStore(getCorrectStore(rootObject, contextObject, getStoreFrom), selector);
+    const store = createMergeStore(getCorrectStore(rootObject, contextObject, getStoreFrom), selector);
 
-    const state = useSyncExternalStore(
-      subscribe,
-      typeof getSelected() === 'object' ? getSelected : () => selector(getStore()),
-      typeof getSelected() === 'object' ? getSelected : () => selector(getStore())
-    )
-
-    return [state, setMergedStore] as const;
+    return createUseStore<T, S>(store, selector);
   }
 
   const dummy = {}
@@ -46,8 +41,9 @@ const getCorrectStore = <T extends Record<string, any>, GST extends Partial<Reco
   return result;
 }
 
-const createMergeStore = <T extends Record<string, any>>(storeObject: StoreObject<T>, selector: (state: T) => any) => {
+const createMergeStore = <T extends Record<string, any>>(storeObject: StoreObject<T>, selector: (state: T) => any): Store<T> => {
   const callbacks = new Set<() => void>();
+  let selected = {};
 
   const setStore = () => {
     const store = {} as T;
@@ -58,6 +54,8 @@ const createMergeStore = <T extends Record<string, any>>(storeObject: StoreObjec
     return store;
   }
 
+  let store = setStore();
+
   const setMergedStore = (nextState: SetStateAction<T>, actionName?: string) => {
     const newState = typeof nextState === "function"
       ? (nextState as (prev: T) => T)(setStore())
@@ -65,15 +63,10 @@ const createMergeStore = <T extends Record<string, any>>(storeObject: StoreObjec
 
     for (const key in storeObject) {
       const K = key as keyof T;
-      storeObject[K].setStore(newState[K], actionName);
+      if (store[K] !== newState[K]) storeObject[K].setStore(newState[K], actionName);
     }
     callbacks.forEach((cb) => cb());
   }
-
-  let store = setStore();
-  let selected = selector(store);
-
-  const getStore = () => store
 
   const subscribe = (callback: () => void) => {
     callbacks.add(callback);
@@ -104,11 +97,18 @@ const createMergeStore = <T extends Record<string, any>>(storeObject: StoreObjec
   }
 
   return {
-    getStore,
     subscribe,
-    setSelected: (value: any) => { selected = value },
+    getStore: () => store,
+    setStore: setMergedStore,
     getSelected: () => selected,
-    setMergedStore
+    setSelected: (selector: (state: T) => any) => {
+      const s = selector(store);
+      const isSelected = typeof s === 'object';
+
+      if (isSelected) selected = s;
+
+      return isSelected
+    },
   }
 }
 

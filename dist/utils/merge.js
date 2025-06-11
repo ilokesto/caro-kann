@@ -1,5 +1,6 @@
-import { createContext, useContext, useSyncExternalStore } from "react";
+import { createContext, useContext } from "react";
 import { store_props, context_props } from "../types";
+import { createUseStore } from "../core/CreateUseStore";
 export const merge = (props, getStoreFrom) => {
     if (Object.keys(props).length > 8) {
         throw new Error("merge function can only merge up to 8 stores at a time. Please reduce the number of stores you are trying to merge.");
@@ -7,9 +8,8 @@ export const merge = (props, getStoreFrom) => {
     const rootObject = getStoreObjectFromRoot(props);
     function useMergedStores(selector = (state) => state) {
         const contextObject = useGetStoreObjectFromContext(props);
-        const { getStore, subscribe, getSelected, setMergedStore } = createMergeStore(getCorrectStore(rootObject, contextObject, getStoreFrom), selector);
-        const state = useSyncExternalStore(subscribe, typeof getSelected() === 'object' ? getSelected : () => selector(getStore()), typeof getSelected() === 'object' ? getSelected : () => selector(getStore()));
-        return [state, setMergedStore];
+        const store = createMergeStore(getCorrectStore(rootObject, contextObject, getStoreFrom), selector);
+        return createUseStore(store, selector);
     }
     const dummy = {};
     useMergedStores.readOnly = (selector = (state) => state) => useMergedStores(selector)[0];
@@ -32,6 +32,7 @@ const getCorrectStore = (rootObject, contextObject, getStoreFrom) => {
 };
 const createMergeStore = (storeObject, selector) => {
     const callbacks = new Set();
+    let selected = {};
     const setStore = () => {
         const store = {};
         for (const key in storeObject) {
@@ -40,19 +41,18 @@ const createMergeStore = (storeObject, selector) => {
         }
         return store;
     };
+    let store = setStore();
     const setMergedStore = (nextState, actionName) => {
         const newState = typeof nextState === "function"
             ? nextState(setStore())
             : nextState;
         for (const key in storeObject) {
             const K = key;
-            storeObject[K].setStore(newState[K], actionName);
+            if (store[K] !== newState[K])
+                storeObject[K].setStore(newState[K], actionName);
         }
         callbacks.forEach((cb) => cb());
     };
-    let store = setStore();
-    let selected = selector(store);
-    const getStore = () => store;
     const subscribe = (callback) => {
         callbacks.add(callback);
         const unsubscribers = new Set();
@@ -71,11 +71,17 @@ const createMergeStore = (storeObject, selector) => {
         };
     };
     return {
-        getStore,
         subscribe,
-        setSelected: (value) => { selected = value; },
+        getStore: () => store,
+        setStore: setMergedStore,
         getSelected: () => selected,
-        setMergedStore
+        setSelected: (selector) => {
+            const s = selector(store);
+            const isSelected = typeof s === 'object';
+            if (isSelected)
+                selected = s;
+            return isSelected;
+        },
     };
 };
 function getStoreObjectFromRoot(props) {
