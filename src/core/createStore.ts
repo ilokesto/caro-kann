@@ -9,20 +9,27 @@ export const createStore = <T>(initState: T): Store<T> => {
     store = typeof nextState === "function" 
       ? (nextState as (prev: T) => T)(store) 
       : nextState;
-    
-    if (selector) selected = selector(store);
 
     callbacks.forEach((cb) => cb());
   };
 
+  const setSelected = (selector: (state: T) => any) => {
+    const s = selector(store);
+    const isSelected = typeof s === 'object';
+
+    if (isSelected) selected = s;
+
+    return isSelected
+  }
+
   return {
     setStore,
-    setSelected: (value: any) => { selected = value },
     getStore: (init?: 'init') => init ? initState : store,
     getSelected: () => selected,
     subscribe: (callback: () => void) => {
       callbacks.add(callback);
       return () => callbacks.delete(callback);
     },
+    setSelected
   };
 };

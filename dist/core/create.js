@@ -7,10 +7,7 @@ export const create = (initState) => {
     const ContextStore = createContext(store);
     function useStore(selector = (state) => state) {
         const { getStore, setStore, subscribe, getSelected, setSelected } = useContext(ContextStore);
-        const s = selector(getStore());
-        const isSelected = typeof s === 'object';
-        if (isSelected)
-            setSelected(s);
+        const isSelected = setSelected(selector);
         const board = useSyncExternalStore(subscribe, isSelected ? getSelected : () => selector(getStore()), isSelected ? getSelected : () => selector(getStore('init')));
         return [
             board,

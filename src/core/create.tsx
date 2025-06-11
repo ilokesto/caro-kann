@@ -11,10 +11,7 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
   function useStore<S>(selector: (state: T) => S = (state: T) => state as any){
       const { getStore, setStore, subscribe, getSelected, setSelected } = useContext(ContextStore);
   
-      const s = selector(getStore())
-      const isSelected = typeof s === 'object';
-  
-      if (isSelected) setSelected(s);
+      const isSelected = setSelected(selector);
   
       const board = useSyncExternalStore(
         subscribe,
