@@ -1,5 +1,5 @@
 import { useMemo, useSyncExternalStore } from "react";
-import type { SetStateAction, Store } from "../types";
+import type { Store } from "../types";
 import { deepCompare } from "../utils/deepCompare";
 
 export function createUseStore<T, S>(
@@ -44,8 +44,5 @@ export function createUseStore<T, S>(
     getSelection,
   );
 
-  return [
-    value,
-    setStore
-  ] as const;
+  return [value, setStore] as const;
 }

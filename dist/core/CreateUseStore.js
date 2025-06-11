@@ -25,8 +25,5 @@ export function createUseStore({ getStore, setStore, subscribe }, selector) {
         return () => mSelector(getStore());
     }, [getStore, selector]);
     const value = useSyncExternalStore(subscribe, getSelection, getSelection);
-    return [
-        value,
-        setStore
-    ];
+    return [value, setStore];
 }
