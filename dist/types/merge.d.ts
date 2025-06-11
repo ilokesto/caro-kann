@@ -12,8 +12,8 @@ export type StoreObject<T> = {
 };
 export type GetStoreFrom<T extends Record<string, any>> = Partial<Record<keyof T, 'root' | 'context'>>;
 export type MergeFn = <T extends Record<string, any>, GST extends GetStoreFrom<T>>(props: MergeProps<T>, getStoreFrom?: GST) => {
-    (): [T, Dispatch<SetStateAction<T>>];
-    <S>(selector: (state: T) => S): [S, Dispatch<SetStateAction<T>>];
+    (): readonly [T, Dispatch<SetStateAction<T>>];
+    <S>(selector: (state: T) => S): readonly [S, Dispatch<SetStateAction<T>>];
     readOnly: {
         (): T;
         <S>(selector?: (state: T) => S): S;

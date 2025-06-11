@@ -9,14 +9,14 @@ export const merge: MergeFn = <T extends Record<string, any>, GST extends GetSto
 
   const rootObject = getStoreObjectFromRoot(props);
 
-  function useMergedStores<S>(selector: (state: T) => S = (state: T) => state as any): any {
+  function useMergedStores<S>(selector: (state: T) => S = (state: T) => state as any) {
     const contextObject = useGetStoreObjectFromContext(props);
     const { getStore, subscribe, getSelected, setMergedStore } = createMergeStore(getCorrectStore(rootObject, contextObject, getStoreFrom), selector);
 
     const state = useSyncExternalStore(
       subscribe,
-      typeof getSelected === 'object' ? getSelected : () => selector(getStore()),
-      typeof getSelected === 'object' ? getSelected : () => selector(getStore())
+      typeof getSelected() === 'object' ? getSelected : () => selector(getStore()),
+      typeof getSelected() === 'object' ? getSelected : () => selector(getStore())
     )
 
     return [state, setMergedStore] as const;
