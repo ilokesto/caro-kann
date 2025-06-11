@@ -1,5 +1,4 @@
-import { SetStateAction } from "react";
-import type { Store } from "../types";
+import type { Store, SetStateAction } from "../types";
 
 export const createStore = <T>(initState: T): Store<T> => {
   const callbacks = new Set<() => void>();

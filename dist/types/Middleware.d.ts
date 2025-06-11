@@ -1,7 +1,5 @@
-import { MigrationFn, PersistConfig } from "./PersistConfig";
-import { Store } from "./";
-import { SetStateAction } from "react";
-import { Resolver } from "common-resolver/types";
+import type { Store, MigrationFn, PersistConfig, SetStateAction } from "../types";
+import type { Resolver } from "common-resolver/types";
 export declare const storeTypeTag: unique symbol;
 export type StoreType = "devtools" | "persist" | "reducer" | "zustand" | "validate" | "debounce" | "logger";
 export type MiddlewareStore<TInitState, K extends Array<StoreType> = [], TSetStore = SetStateAction<TInitState>> = {

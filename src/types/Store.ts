@@ -1,5 +1,4 @@
-import { Dispatch, ReactNode, ReactElement, SetStateAction, Context } from "react";
-import { MiddlewareStore, StoreType, storeTypeTag } from "./Middleware";
+import { MiddlewareStore, StoreType, storeTypeTag, Dispatch, ReactNode, ReactElement, SetStateAction, Context } from "../types";
   
 export type GetFirstIndex<K extends Array<StoreType>> = K extends [infer F extends StoreType, ...infer R extends Array<StoreType>]
   ? F

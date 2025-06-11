@@ -1,6 +1,6 @@
-import type { CheckStoreType, Store, StoreType, storeTypeTag, Create, MiddlewareStore } from "../types";
+import type { CheckStoreType, Store, StoreType, storeTypeTag, Create, MiddlewareStore, ReactNode, SetStateAction } from "../types";
 import {context_props, store_props} from "../types";
-import { createContext, ReactNode, SetStateAction, useContext, useSyncExternalStore } from "react";
+import { createContext, useContext, useSyncExternalStore } from "react";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 
 export const create: Create = <T, K extends Array<StoreType>>(initState: MiddlewareStore<T, K> | T) => {

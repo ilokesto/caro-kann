@@ -1,4 +1,4 @@
-import { MigrationFn, PersistConfig, PersistUtils } from "../types";
+import type { MigrationFn, PersistConfig, PersistUtils } from "../types";
 export declare function getCookie(name: string): string | null;
 export declare const execMigrate: PersistUtils["execMigration"];
 export declare const getStorage: PersistUtils["getStorage"];

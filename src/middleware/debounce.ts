@@ -1,5 +1,6 @@
-import { SetStateAction } from "react";
-import { Middleware, MiddlewareStore, StoreType, storeTypeTag } from "../types";
+
+import type { Middleware, MiddlewareStore, StoreType, SetStateAction } from "../types";
+import { storeTypeTag } from "../types";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 
 export const debounce: Middleware["debounce"] = <T, K extends Array<StoreType>>(initState: T | MiddlewareStore<T, K>, wait = 300) => {

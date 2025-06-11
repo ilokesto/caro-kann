@@ -1,4 +1,5 @@
-import { Middleware, MiddlewareStore, MigrationFn, PersistConfig, StoreType, storeTypeTag } from "../types";
+import type { Middleware, MiddlewareStore, MigrationFn, PersistConfig, StoreType } from "../types";
+import { storeTypeTag } from "../types";
 import { getStorage, parseOptions, setStorage } from "../utils/persistUtils";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 

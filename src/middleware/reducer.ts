@@ -1,4 +1,5 @@
-import { Middleware, MiddlewareStore, StoreType, storeTypeTag } from "../types";
+import type { Middleware, MiddlewareStore, StoreType } from "../types";
+import { storeTypeTag } from "../types";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 
 export const reducer: Middleware["reducer"] = <T, K extends Array<StoreType>, A extends { type: string, [x: PropertyKey]: any }>(reducer: (state: T, action: A) => T, initState: T | MiddlewareStore<T, K>) => {

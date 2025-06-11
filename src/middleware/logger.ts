@@ -1,4 +1,5 @@
-import { Middleware, MiddlewareStore, StoreType, storeTypeTag } from "../types";
+import type { Middleware, MiddlewareStore, StoreType } from "../types";
+import { storeTypeTag } from "../types";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 
 export const logger: Middleware["logger"] = <T, K extends Array<StoreType>>(
