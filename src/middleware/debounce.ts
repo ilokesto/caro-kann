@@ -1,4 +1,3 @@
-
 import type { Middleware, MiddlewareStore, StoreType, SetStateAction } from "../types";
 import { storeTypeTag } from "../types";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";

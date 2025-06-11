@@ -1,5 +1,5 @@
 import type { Store, Context, Dispatch, SetStateAction } from "../types";
-import {context_props, store_props} from "../types"
+import { context_props, store_props } from "../types"
 
 type MergeableStore<T> = {
     [store_props]: Store<T, SetStateAction<T>>;

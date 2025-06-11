@@ -1,6 +1,6 @@
-import { createStore } from "../core/createStore";
 import type { CreateStoreForProvider, MiddlewareStore, StoreType, SetStateAction } from "../types";
 import { storeTypeTag } from "../types";
+import { createStore } from "../core/createStore";
 
 const isMiddlewareStore = <T, K extends Array<StoreType>, A = SetStateAction<T>>(initState: T | MiddlewareStore<T, K, A>): initState is MiddlewareStore<T, K, A> =>
   typeof initState === 'object' ? Reflect.has((initState as object), storeTypeTag) : false
