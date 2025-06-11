@@ -4,9 +4,8 @@ export type CheckStoreType<K extends Array<StoreType>, PK extends Array<StoreTyp
 export interface Store<T, S = SetStateAction<T>> {
     setStore: (nextState: S, actionName?: string, selector?: (state: T) => any) => void;
     getStore: (init?: 'init') => T;
+    getSnapshot: <S>(selector: (state: T) => S) => S;
     subscribe: (callback: () => void) => () => void;
-    getSelected: () => any;
-    isSelected?: boolean;
 }
 export declare const context_props: unique symbol;
 export declare const store_props: unique symbol;

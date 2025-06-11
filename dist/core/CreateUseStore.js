@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from "react";
 export function createUseStore(store, selector) {
-    const { getStore, setStore, subscribe, getSelected, isSelected } = store;
-    const board = useSyncExternalStore(subscribe, isSelected ? getSelected : () => selector(getStore()), isSelected ? getSelected : () => selector(getStore('init')));
+    const { getSnapshot, setStore, subscribe } = store;
+    const board = useSyncExternalStore(subscribe, () => getSnapshot(selector), () => getSnapshot(selector));
     return [
         board,
         (nextState) => {
