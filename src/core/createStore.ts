@@ -6,9 +6,9 @@ export class CreateStore<T> implements Store<T> {
 
   constructor(initState: T) { this.store = initState };
 
-  getStore = () => this.store;
+  getStore() { return this.store; }
 
-  setStore = (nextState: SetStateAction<T>) => {
+  setStore(nextState: SetStateAction<T>) {
     this.store = typeof nextState === "function"
       ? (nextState as (prev: T) => T)(this.store)
       : nextState;
@@ -16,7 +16,7 @@ export class CreateStore<T> implements Store<T> {
     this.callbacks.forEach((cb) => cb());
   }
 
-  subscribe = (callback: () => void) => {
+  subscribe(callback: () => void) {
     this.callbacks.add(callback);
     return () => this.callbacks.delete(callback);
   }
