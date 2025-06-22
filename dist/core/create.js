@@ -6,17 +6,15 @@ import { createUseStore } from "./CreateUseStore";
 export const create = (initState) => {
     const { store } = getStoreFromInitState(initState);
     const ContextStore = createContext(store);
-    function useStore(selector = (state) => state) {
+    const useStore = Object.assign((selector = (state) => state) => {
         const store = useContext(ContextStore);
         return createUseStore(store, selector);
-    }
-    useStore[context_props] = ContextStore;
-    useStore[store_props] = store;
-    const dummy = {};
-    useStore.readOnly = (selector = (state) => state) => useStore(selector)[0];
-    useStore.writeOnly = () => useStore(() => dummy)[1];
-    useStore.Provider = function ({ store, children }) {
-        return _jsx(ContextStore.Provider, { value: store.store, children: children });
-    };
+    }, {
+        [context_props]: ContextStore,
+        [store_props]: store,
+        writeOnly: () => useContext(ContextStore).setStore,
+        readOnly: (selector = (state) => state) => useStore(selector)[0],
+        Provider: ({ store, children }) => _jsx(ContextStore.Provider, { value: store.store, children: children })
+    });
     return useStore;
 };

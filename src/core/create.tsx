@@ -8,29 +8,28 @@ export const create: Create = <T, K extends Array<StoreType>>(initState: Middlew
   const { store } = getStoreFromInitState<T, K>(initState);
   const ContextStore = createContext<Store<T>>(store);
 
-  function useStore<S>(selector: (state: T) => S = (state: T) => state as any){
-    const store = useContext(ContextStore);
-
-    return createUseStore<T, S>(store, selector);
-  }
-
-  useStore[context_props] = ContextStore;
-  useStore[store_props] = store;
-  
-  const dummy = {}
-
-  useStore.readOnly = <S,>(selector: (state: T) => S = (state: T) => state as any): S => useStore(selector)[0];
-  useStore.writeOnly = () => useStore(() => dummy)[1];
-
-  useStore.Provider = function<PK extends Array<StoreType>>({ store, children }: { 
-    store: {
-      store: CheckStoreType<K, PK, Store<T>>;
-      [storeTypeTag]: PK;
-    }; 
-    children: ReactNode; 
-  }) {
-    return <ContextStore.Provider value={store.store as Store<T>}>{children}</ContextStore.Provider>;
-  };
+  const useStore = Object.assign(
+    <S,>(selector: (state: T) => S = (state: T) => state as any) => {
+      const store = useContext(ContextStore);
+      return createUseStore(store, selector);
+    },
+    {
+      [context_props]: ContextStore,
+      [store_props]: store,
+      writeOnly: () => useContext(ContextStore).setStore,
+      readOnly: <S,>(selector: (state: T) => S = (state: T) => state as any): S => useStore(selector)[0],
+      Provider: <PK extends Array<StoreType>>({ 
+        store, 
+        children 
+      }: { 
+        store: {
+          store: CheckStoreType<K, PK, Store<T>>;
+          [storeTypeTag]: PK;
+        }; 
+        children: ReactNode; 
+      }) => <ContextStore.Provider value={store.store as Store<T>}>{children}</ContextStore.Provider>
+    }
+  );
 
   return useStore;
 }

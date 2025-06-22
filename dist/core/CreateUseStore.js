@@ -1,6 +1,6 @@
 import { useMemo, useSyncExternalStore } from "react";
 import { deepCompare } from "../utils/deepCompare";
-export function createUseStore({ getStore, setStore, subscribe }, selector) {
+export function createUseStore(store, selector) {
     const getSelection = useMemo(() => {
         let hasMemo = false;
         let mStore;
@@ -22,8 +22,8 @@ export function createUseStore({ getStore, setStore, subscribe }, selector) {
             mSelection = nSelection;
             return nSelection;
         };
-        return () => mSelector(getStore());
-    }, [getStore, selector]);
-    const value = useSyncExternalStore(subscribe, getSelection, getSelection);
-    return [value, setStore];
+        return () => mSelector(store.getStore());
+    }, [store, selector]);
+    const value = useSyncExternalStore(store.subscribe, getSelection, getSelection);
+    return [value, store.setStore];
 }

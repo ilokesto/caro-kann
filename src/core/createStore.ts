@@ -1,23 +1,23 @@
 import type { Store, SetStateAction } from "../types";
 
-export const createStore = <T>(initState: T): Store<T> => {
-  const callbacks = new Set<() => void>();
-  let store = initState;
+export class CreateStore<T> implements Store<T> {
+  private store: T;
+  private callbacks: Set<() => void> = new Set();
 
-  const setStore = (nextState: SetStateAction<T>) => {
-    store = typeof nextState === "function" 
-      ? (nextState as (prev: T) => T)(store) 
+  constructor(initState: T) { this.store = initState };
+
+  getStore = () => this.store;
+
+  setStore = (nextState: SetStateAction<T>) => {
+    this.store = typeof nextState === "function"
+      ? (nextState as (prev: T) => T)(this.store)
       : nextState;
 
-    callbacks.forEach((cb) => cb());
-  };
+    this.callbacks.forEach((cb) => cb());
+  }
 
-  return {
-    setStore,
-    getStore: () => store,
-    subscribe: (callback: () => void) => {
-      callbacks.add(callback);
-      return () => callbacks.delete(callback);
-    },
-  };
-};
+  subscribe = (callback: () => void) => {
+    this.callbacks.add(callback);
+    return () => this.callbacks.delete(callback);
+  }
+}

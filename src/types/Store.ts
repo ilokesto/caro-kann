@@ -56,4 +56,12 @@ export type CreateStoreForProvider = {
   <T, K extends Array<StoreType>, A extends object>(initState: MiddlewareStore<T, K, A>): { store: Store<T, A>, [storeTypeTag]: K },
   <T, K extends Array<StoreType>>(initState: MiddlewareStore<T, K>): { store: Store<T>, [storeTypeTag]: Array<StoreType> },
   <T>(initState: T): { store: Store<T>, [storeTypeTag]: Array<StoreType> }
-}
+};
+
+export type StoreProvider<T, K extends Array<StoreType>> = <PK extends Array<StoreType>>({ store, children }: { 
+    store: {
+      store: CheckStoreType<K, PK, Store<T>>;
+      [storeTypeTag]: PK;
+    },
+    children: ReactNode; 
+  }) => ReactElement;

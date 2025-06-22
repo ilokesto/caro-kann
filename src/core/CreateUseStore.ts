@@ -3,7 +3,7 @@ import type { Store } from "../types";
 import { deepCompare } from "../utils/deepCompare";
 
 export function createUseStore<T, S>(
-  { getStore, setStore, subscribe }: Store<T>,
+  store: Store<T>,
   selector: (state: T) => S,
 ) {
   const getSelection = useMemo(() => {
@@ -35,14 +35,14 @@ export function createUseStore<T, S>(
       return nSelection;
     };
 
-    return () => mSelector(getStore());
-  }, [getStore, selector]);
+    return () => mSelector(store.getStore());
+  }, [store, selector]);
 
   const value = useSyncExternalStore(
-    subscribe,
+    store.subscribe,
     getSelection,
     getSelection,
   );
 
-  return [value, setStore] as const;
+  return [value, store.setStore] as const;
 }

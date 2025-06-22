@@ -45,3 +45,10 @@ export type CreateStoreForProvider = {
         [storeTypeTag]: Array<StoreType>;
     };
 };
+export type StoreProvider<T, K extends Array<StoreType>> = <PK extends Array<StoreType>>({ store, children }: {
+    store: {
+        store: CheckStoreType<K, PK, Store<T>>;
+        [storeTypeTag]: PK;
+    };
+    children: ReactNode;
+}) => ReactElement;
