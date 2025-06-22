@@ -4,7 +4,7 @@ export declare const getStoreFromInitState: <T, K extends Array<StoreType>, A = 
     store: Store<T, A>;
     [storeTypeTag]: K;
 } | {
-    store: Store<T>;
+    store: Store<T, SetStateAction<T>>;
     [storeTypeTag]: K;
 };
 export declare const createStoreForProvider: CreateStoreForProvider;

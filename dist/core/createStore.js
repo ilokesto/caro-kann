@@ -1,17 +1,17 @@
-export class CreateStore {
-    store;
-    callbacks = new Set();
-    constructor(initState) { this.store = initState; }
-    ;
-    getStore() { return this.store; }
-    setStore(nextState) {
-        this.store = typeof nextState === "function"
-            ? nextState(this.store)
-            : nextState;
-        this.callbacks.forEach((cb) => cb());
-    }
-    subscribe(callback) {
-        this.callbacks.add(callback);
-        return () => this.callbacks.delete(callback);
-    }
+export function createStore(initState) {
+    let store = initState;
+    const callbacks = new Set();
+    return {
+        getStore: () => store,
+        setStore: (nextState) => {
+            store = typeof nextState === "function"
+                ? nextState(store)
+                : nextState;
+            callbacks.forEach((cb) => cb());
+        },
+        subscribe: (callback) => {
+            callbacks.add(callback);
+            return () => callbacks.delete(callback);
+        }
+    };
 }
