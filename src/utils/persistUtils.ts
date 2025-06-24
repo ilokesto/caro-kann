@@ -1,4 +1,4 @@
-import { MigrationFn, PersistConfig, PersistUtils } from "../types";
+import type { MigrationFn, PersistConfig, PersistUtils } from "../types";
 
 export function getCookie(name: string) {
   const cookies = document.cookie.split("; ");

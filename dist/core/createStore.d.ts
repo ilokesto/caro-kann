@@ -1,2 +1,2 @@
 import type { Store } from "../types";
-export declare const createStore: <T>(initState: T) => Store<T>;
+export declare function createStore<T>(initState: T): Store<T>;

@@ -1,8 +1,9 @@
-import { Middleware, MiddlewareStore, storeTypeTag } from "../types";
+import type { Middleware, MiddlewareStore, StoreType } from "../types";
+import { storeTypeTag } from "../types";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 
-export const devtools: Middleware["devtools"] = <T,>(initState: T | MiddlewareStore<T>, name: string) => {
-  const Store = getStoreFromInitState(initState);
+export const devtools: Middleware["devtools"] = <T,K extends Array<StoreType>>(initState: T | MiddlewareStore<T, K>, name: string) => {
+  const {store: Store, [storeTypeTag]: storeTypeTagArray } = getStoreFromInitState(initState);
 
   // 현재 환경이 production인지 확인
   const isProduction = typeof process !== 'undefined' && process.env.NODE_ENV === 'production';
@@ -14,7 +15,7 @@ export const devtools: Middleware["devtools"] = <T,>(initState: T | MiddlewareSt
 
   // DevTools가 존재하고(프로덕션 모드가 아니고) 초기화할 수 있는 경우에만 실행
   if (devTools) {
-    devTools.init(Store.getInitState());
+    devTools.init(Store.getStore());
 
     devTools.subscribe((message: any) => {
       if (message.type === "DISPATCH") {
@@ -35,9 +36,8 @@ export const devtools: Middleware["devtools"] = <T,>(initState: T | MiddlewareSt
       }
     });
   }
-  
-  const setStore = (nextState: T | ((prev: T) => T), actionName: string = "setStore") => {
-    // @ts-ignore
+
+  const setStore = (nextState: T | ((prev: T) => T), actionName: string = "setStateAction") => {
     Store.setStore(nextState, actionName);
 
     // 프로덕션이 아닌 환경에서만 DevTools에 상태 전송
@@ -52,6 +52,6 @@ export const devtools: Middleware["devtools"] = <T,>(initState: T | MiddlewareSt
 
   return {
     store: { ...Store, setStore },
-    [storeTypeTag]: "devtools"
+    [storeTypeTag]: ["devtools", ...storeTypeTagArray]
   }
 }

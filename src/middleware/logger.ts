@@ -1,20 +1,21 @@
-import { Middleware, MiddlewareStore, storeTypeTag } from "../types";
+import type { Middleware, MiddlewareStore, StoreType } from "../types";
+import { storeTypeTag } from "../types";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 
-export const logger: Middleware["logger"] = <T>(
-  initState: T | MiddlewareStore<T>, 
+export const logger: Middleware["logger"] = <T, K extends Array<StoreType>>(
+  initState: T | MiddlewareStore<T, K>, 
   options: { 
     collapsed?: boolean, 
     diff?: boolean,
     timestamp?: boolean,
   } = { collapsed: false, diff: false, timestamp: true }
 ) => {
-  const Store = getStoreFromInitState(initState);
+  const {store: Store, [storeTypeTag]: storeTypeTagArray } = getStoreFromInitState(initState);
   
   // 현재 환경이 production인지 확인
   const isProduction = typeof process !== 'undefined' && process.env.NODE_ENV === 'production';
-  
-  const setStore = (nextState: T | ((prev: T) => T), actionName = "setState") => {
+
+  const setStore = (nextState: T | ((prev: T) => T), actionName: string = "setStateAction") => {
     // 프로덕션 모드에서는 로깅 없이 상태만 업데이트
     if (isProduction) {
       Store.setStore(nextState);
@@ -39,7 +40,7 @@ export const logger: Middleware["logger"] = <T>(
     
     console.log("Previous state:", prevState);
     
-    Store.setStore(nextState);
+    Store.setStore(nextState, actionName);
     const newState = Store.getStore();
     
     console.log("Next state:", newState);
@@ -72,10 +73,9 @@ export const logger: Middleware["logger"] = <T>(
 
   return {
     store: { ...Store, setStore },
-    [storeTypeTag]: "logger"
+    [storeTypeTag]: ["logger", ...storeTypeTagArray]
   }
 };
-
 
 // 모든 타입의 값 차이점을 계산하는 함수
 function getObjectDiff(prev: unknown, next: unknown) {

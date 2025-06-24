@@ -1,13 +1,13 @@
-import { SetStateAction } from "react";
-import { Middleware, MiddlewareStore, storeTypeTag } from "../types";
+import type { Middleware, MiddlewareStore, StoreType, SetStateAction } from "../types";
+import { storeTypeTag } from "../types";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 
-export const debounce: Middleware["debounce"] = <T>(initState: T | MiddlewareStore<T>, wait = 300) => {
-  const Store = getStoreFromInitState(initState);
+export const debounce: Middleware["debounce"] = <T, K extends Array<StoreType>>(initState: T | MiddlewareStore<T, K>, wait = 300) => {
+  const {store: Store, [storeTypeTag]: storeTypeTagArray } = getStoreFromInitState<T, K>(initState);
   let timeout: NodeJS.Timeout | null = null;
   let updates: Array<SetStateAction<T>> = [];
 
-  const setStore = (nextState: SetStateAction<T>) => {
+  const setStore = (nextState: SetStateAction<T>, actionName?: string) => {
     // 업데이트를 큐에 추가
     updates.push(nextState);
     
@@ -28,7 +28,7 @@ export const debounce: Middleware["debounce"] = <T>(initState: T | MiddlewareSto
       });
       
       // 최종 상태로 업데이트
-      Store.setStore(currentState);
+      Store.setStore(currentState, actionName);
       
       // 리셋
       updates = [];
@@ -38,6 +38,6 @@ export const debounce: Middleware["debounce"] = <T>(initState: T | MiddlewareSto
 
   return {
     store: { ...Store, setStore },
-    [storeTypeTag]: "debounce"
+    [storeTypeTag]: ["debounce", ...storeTypeTagArray]
   }
 }

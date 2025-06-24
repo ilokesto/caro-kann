@@ -1,18 +1,17 @@
-export const createStore = (initState) => {
-    const callbacks = new Set();
+export function createStore(initState) {
     let store = initState;
-    const setStore = (nextState) => {
-        store = typeof nextState === "function" ? nextState(store) : nextState;
-        callbacks.forEach((cb) => cb());
-    };
-    const subscribe = (callback) => {
-        callbacks.add(callback);
-        return () => callbacks.delete(callback);
-    };
+    const callbacks = new Set();
     return {
-        setStore,
-        subscribe,
         getStore: () => store,
-        getInitState: () => initState
+        setStore: (nextState) => {
+            store = typeof nextState === "function"
+                ? nextState(store)
+                : nextState;
+            callbacks.forEach((cb) => cb());
+        },
+        subscribe: (callback) => {
+            callbacks.add(callback);
+            return () => callbacks.delete(callback);
+        }
     };
-};
+}

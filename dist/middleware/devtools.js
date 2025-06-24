@@ -1,13 +1,13 @@
 import { storeTypeTag } from "../types";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 export const devtools = (initState, name) => {
-    const Store = getStoreFromInitState(initState);
+    const { store: Store, [storeTypeTag]: storeTypeTagArray } = getStoreFromInitState(initState);
     const isProduction = typeof process !== 'undefined' && process.env.NODE_ENV === 'production';
     const devTools = !isProduction &&
         typeof window !== "undefined" &&
         window.__REDUX_DEVTOOLS_EXTENSION__?.connect({ name });
     if (devTools) {
-        devTools.init(Store.getInitState());
+        devTools.init(Store.getStore());
         devTools.subscribe((message) => {
             if (message.type === "DISPATCH") {
                 switch (message.payload.type) {
@@ -27,7 +27,7 @@ export const devtools = (initState, name) => {
             }
         });
     }
-    const setStore = (nextState, actionName = "setStore") => {
+    const setStore = (nextState, actionName = "setStateAction") => {
         Store.setStore(nextState, actionName);
         if (!isProduction && devTools) {
             try {
@@ -40,6 +40,6 @@ export const devtools = (initState, name) => {
     };
     return {
         store: { ...Store, setStore },
-        [storeTypeTag]: "devtools"
+        [storeTypeTag]: ["devtools", ...storeTypeTagArray]
     };
 };

@@ -1,9 +1,9 @@
 import { storeTypeTag } from "../types";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 export const logger = (initState, options = { collapsed: false, diff: false, timestamp: true }) => {
-    const Store = getStoreFromInitState(initState);
+    const { store: Store, [storeTypeTag]: storeTypeTagArray } = getStoreFromInitState(initState);
     const isProduction = typeof process !== 'undefined' && process.env.NODE_ENV === 'production';
-    const setStore = (nextState, actionName = "setState") => {
+    const setStore = (nextState, actionName = "setStateAction") => {
         if (isProduction) {
             Store.setStore(nextState);
             return;
@@ -21,7 +21,7 @@ export const logger = (initState, options = { collapsed: false, diff: false, tim
             console.log("Time:", time);
         }
         console.log("Previous state:", prevState);
-        Store.setStore(nextState);
+        Store.setStore(nextState, actionName);
         const newState = Store.getStore();
         console.log("Next state:", newState);
         if (options.diff) {
@@ -49,7 +49,7 @@ export const logger = (initState, options = { collapsed: false, diff: false, tim
     };
     return {
         store: { ...Store, setStore },
-        [storeTypeTag]: "logger"
+        [storeTypeTag]: ["logger", ...storeTypeTagArray]
     };
 };
 function getObjectDiff(prev, next) {

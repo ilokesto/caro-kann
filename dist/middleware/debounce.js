@@ -1,10 +1,10 @@
 import { storeTypeTag } from "../types";
 import { getStoreFromInitState } from "../utils/getStoreFromInitState";
 export const debounce = (initState, wait = 300) => {
-    const Store = getStoreFromInitState(initState);
+    const { store: Store, [storeTypeTag]: storeTypeTagArray } = getStoreFromInitState(initState);
     let timeout = null;
     let updates = [];
-    const setStore = (nextState) => {
+    const setStore = (nextState, actionName) => {
         updates.push(nextState);
         if (timeout)
             return;
@@ -18,13 +18,13 @@ export const debounce = (initState, wait = 300) => {
                     currentState = update;
                 }
             });
-            Store.setStore(currentState);
+            Store.setStore(currentState, actionName);
             updates = [];
             timeout = null;
         }, wait);
     };
     return {
         store: { ...Store, setStore },
-        [storeTypeTag]: "debounce"
+        [storeTypeTag]: ["debounce", ...storeTypeTagArray]
     };
 };
