@@ -33,13 +33,16 @@
     "global state management",
     "caro-kann"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "Jeong Jinho <wpfekdml@me.com>",
   "license": "MIT",
   "dependencies": {
     "immer": ">=9.0.0"
   },
   "peerDependencies": {
-    "common-resolver": "^1.0.0",
+    "@ilokesto/common-resolver": "^1.0.0",
     "react": ">=18.0.0",
     "superstruct": "^2.0.0",
     "yup": "^1.0.0",
