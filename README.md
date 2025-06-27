@@ -1,4 +1,4 @@
-![caro 복사본](https://github.com/user-attachments/assets/1fa53294-205c-45a3-b6f8-b1be585ce11e)
+![ilokestoCaroKann](https://github.com/user-attachments/assets/776e065c-4f61-4010-b4d5-36a56938e0ff)
 
 [![Build Size](https://img.shields.io/bundlephobia/minzip/caro-kann?label=bundle%20size&style=flat&colorA=000000&colorB=000000)](https://bundlephobia.com/result?p=caro-kann)
 [![Version](https://img.shields.io/npm/v/caro-kann?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/caro-kann)
