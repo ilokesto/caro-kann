@@ -6,7 +6,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ayden94/caro-kann"
+    "url": "git+https://github.com/ilokesto/caro-kann"
   },
   "sideEffects": false,
   "types": "dist/index.d.ts",
