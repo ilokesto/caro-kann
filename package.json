@@ -1,12 +1,12 @@
 {
-  "name": "caro-kann",
-  "version": "4.0.3",
+  "name": "@ilokesto/caro-kann",
+  "version": "4.0.1",
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ayden94/caro-kann"
+    "url": "git+https://github.com/ilokesto/caro-kann"
   },
   "sideEffects": false,
   "types": "dist/index.d.ts",
@@ -33,13 +33,16 @@
     "global state management",
     "caro-kann"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "Jeong Jinho <wpfekdml@me.com>",
   "license": "MIT",
   "dependencies": {
     "immer": ">=9.0.0"
   },
   "peerDependencies": {
-    "common-resolver": "^1.0.0",
+    "@ilokesto/common-resolver": "^1.0.0",
     "react": ">=18.0.0",
     "superstruct": "^2.0.0",
     "yup": "^1.0.0",
