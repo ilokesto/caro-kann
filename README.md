@@ -1,11 +1,10 @@
-![ilokestoCaroKann](https://github.com/user-attachments/assets/776e065c-4f61-4010-b4d5-36a56938e0ff)
 
-[![Build Size](https://img.shields.io/bundlephobia/minzip/caro-kann?label=bundle%20size&style=flat&colorA=000000&colorB=000000)](https://bundlephobia.com/result?p=caro-kann)
-[![Version](https://img.shields.io/npm/v/caro-kann?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/caro-kann)
-[![Downloads](https://img.shields.io/npm/dt/caro-kann.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/caro-kann)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/%40ilokesto%2Fcaro-kann?label=bundle%20size&style=flat&colorA=000000&colorB=000000)](https://bundlephobia.com/result?p=@ilokesto%2Fcaro-kann)
+[![Version](https://img.shields.io/npm/v/%40ilokesto%2Fcaro-kann?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/@ilokesto/caro-kann)
+[![Downloads](https://img.shields.io/npm/dt/%40ilokesto%2Fcaro-kann.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/@ilokesto/caro-kann)
 
 
-[Official documents](https://caro-kann.vercel.com/en)
+[Official documents](https://ilokesto.vercel.com/caro-kann)
 
 &nbsp;
 
@@ -29,11 +28,8 @@ Caro-Kann is a global state management tool internally built with the useSyncExt
 ## install and import
 
 ```ts
-npm i caro-kann@latest
+npm install @ilokesto/caro-kann
+pnpm add @ilokesto/caro-kann
+yarn add @ilokesto/caro-kann
+bun add @ilokesto/caro-kann
 ```
-
-```ts
-import { create } from "caro-kann";
-import { persist, zustand, reducer, devtools } from "caro-kann/middleware"
-```
-

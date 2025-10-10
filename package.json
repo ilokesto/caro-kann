@@ -1,6 +1,6 @@
 {
   "name": "@ilokesto/caro-kann",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly"
   },
@@ -8,6 +8,7 @@
     "type": "git",
     "url": "git+https://github.com/ilokesto/caro-kann"
   },
+  "homepage": "https://ilokesto.vercel.app/caro-kann",
   "sideEffects": false,
   "types": "dist/index.d.ts",
   "module": "dist/index.js",
