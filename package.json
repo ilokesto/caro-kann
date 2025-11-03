@@ -2,7 +2,7 @@
   "name": "@ilokesto/caro-kann",
   "version": "4.0.3",
   "scripts": {
-    "build": "vite build && tsc --emitDeclarationOnly"
+    "build": "rm -rf dist && tsc"
   },
   "repository": {
     "type": "git",

@@ -1,5 +1,5 @@
-import type { Store, MigrationFn, PersistConfig, SetStateAction } from "../types";
-import type { Resolver } from "common-resolver/types";
+import { Resolver } from "@ilokesto/common-resolver/types";
+import type { MigrationFn, PersistConfig, SetStateAction, Store } from "../types";
 export declare const storeTypeTag: unique symbol;
 export type StoreType = "devtools" | "persist" | "reducer" | "zustand" | "validate" | "debounce" | "logger";
 export type MiddlewareStore<TInitState, K extends Array<StoreType> = [], TSetStore = SetStateAction<TInitState>> = {

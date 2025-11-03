@@ -1,10 +1,10 @@
-import type { CreateStoreForProvider, MiddlewareStore, StoreType, SetStateAction, Store } from "../types";
+import type { CreateStoreForProvider, MiddlewareStore, SetStateAction, StoreType } from "../types";
 import { storeTypeTag } from "../types";
 export declare const getStoreFromInitState: <T, K extends Array<StoreType>, A = SetStateAction<T>>(initState: MiddlewareStore<T, K, A> | T) => {
-    store: Store<T, A>;
+    store: import("../types").Store<T, A>;
     [storeTypeTag]: K;
 } | {
-    store: Store<T, SetStateAction<T>>;
+    store: import("../types").Store<T, SetStateAction<T>>;
     [storeTypeTag]: K;
 };
 export declare const createStoreForProvider: CreateStoreForProvider;
